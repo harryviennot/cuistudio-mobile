@@ -8,13 +8,12 @@
       "@components/*": ["src/components/*"],
       "@hooks/*": ["src/hooks/*"],
       "@constants": ["src/constants"],
-      "@theme": ["src/theme"]
+      "@theme": ["src/theme"],
+      "@utils": ["src/utils"],
+      "@types": ["src/types"],
+      "@locales": ["src/locales"],
+      "@api": ["src/api"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }
