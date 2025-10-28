@@ -1,1 +1,1 @@
-export const APP_NAME = 'CuiStudio Mobile';
+export const APP_NAME = 'Cuistudio';

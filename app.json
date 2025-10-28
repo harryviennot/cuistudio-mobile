@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "cuistudio-mobile",
-    "slug": "cuistudio-mobile",
+    "slug": "cuistudio",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -43,6 +43,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0f300a72-fd10-4f4e-a8ad-b4e837472843"
+      }
+    },
+    "owner": "harrys-expo-org"
   }
 }
