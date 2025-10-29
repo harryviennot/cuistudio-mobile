@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function Index() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { user, isLoading, isAuthenticated, isAnonymous } = useAuth();
+  const { user, isLoading, isAnonymous } = useAuth();
 
   return (
     <ScrollView className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>

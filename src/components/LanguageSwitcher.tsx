@@ -22,9 +22,7 @@ export default function LanguageSwitcher() {
 
   return (
     <View className="gap-4 rounded-lg bg-surface-elevated p-4">
-      <Text className="text-lg font-bold text-foreground-heading">
-        {t("language.title")}
-      </Text>
+      <Text className="text-lg font-bold text-foreground-heading">{t("language.title")}</Text>
       <Text className="text-sm text-foreground-secondary">
         {t("language.current")}: {getCurrentLanguageLabel()}
       </Text>

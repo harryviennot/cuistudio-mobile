@@ -21,9 +21,13 @@ export const authService = {
    * Returns access token and refresh token for persistent anonymous session
    */
   signInAnonymously: async () => {
-    const response = await api.public.post<AuthResponse>("/auth/anonymous", {}, {
-      skipAuthRetry: true,
-    });
+    const response = await api.public.post<AuthResponse>(
+      "/auth/anonymous",
+      {},
+      {
+        skipAuthRetry: true,
+      }
+    );
     return response.data;
   },
 
