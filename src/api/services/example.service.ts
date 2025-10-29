@@ -117,12 +117,9 @@ export const exampleService = {
    */
   checkAuth: async () => {
     try {
-      const response = await api.get<{ authenticated: boolean }>(
-        "/auth/check",
-        {
-          skipAuthRedirect: true,
-        },
-      );
+      const response = await api.get<{ authenticated: boolean }>("/auth/check", {
+        skipAuthRedirect: true,
+      });
       return response.data;
     } catch {
       return { authenticated: false };

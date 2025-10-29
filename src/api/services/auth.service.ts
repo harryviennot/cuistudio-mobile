@@ -10,9 +10,27 @@ import type {
   VerifyEmailOTPRequest,
   VerifyPhoneOTPRequest,
   RefreshTokenRequest,
+  LinkEmailIdentityRequest,
+  LinkPhoneIdentityRequest,
+  User,
 } from "@/types/auth";
 
 export const authService = {
+  /**
+   * Anonymous sign-in (public endpoint, no credentials required)
+   * Returns access token and refresh token for persistent anonymous session
+   */
+  signInAnonymously: async () => {
+    const response = await api.public.post<AuthResponse>(
+      "/auth/anonymous",
+      {},
+      {
+        skipAuthRetry: true,
+      }
+    );
+    return response.data;
+  },
+
   /**
    * Send magic link to email (public endpoint, no auth required)
    */
@@ -78,6 +96,32 @@ export const authService = {
    */
   getSession: async () => {
     const response = await api.get<AuthResponse>("/auth/session");
+    return response.data;
+  },
+
+  /**
+   * Get current user info (authenticated endpoint)
+   */
+  getCurrentUser: async () => {
+    const response = await api.get<User>("/auth/me");
+    return response.data;
+  },
+
+  /**
+   * Link email identity to anonymous account (authenticated endpoint)
+   * Sends magic link for verification
+   */
+  linkEmailIdentity: async (data: LinkEmailIdentityRequest) => {
+    const response = await api.post<{ message: string }>("/auth/link-identity/email", data);
+    return response.data;
+  },
+
+  /**
+   * Link phone identity to anonymous account (authenticated endpoint)
+   * Sends OTP for verification
+   */
+  linkPhoneIdentity: async (data: LinkPhoneIdentityRequest) => {
+    const response = await api.post<{ message: string }>("/auth/link-identity/phone", data);
     return response.data;
   },
 };

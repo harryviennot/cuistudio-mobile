@@ -13,6 +13,7 @@ export interface User {
   created_at: string;
   user_metadata?: Record<string, unknown>;
   is_new_user: boolean;
+  is_anonymous: boolean;
 }
 
 export interface AuthResponse {
@@ -70,4 +71,16 @@ export interface UpdateProfileRequest {
 
 export interface RefreshTokenRequest {
   refresh_token: string;
+}
+
+// ============================================================================
+// IDENTITY LINKING (ANONYMOUS TO AUTHENTICATED)
+// ============================================================================
+
+export interface LinkEmailIdentityRequest {
+  email: string;
+}
+
+export interface LinkPhoneIdentityRequest {
+  phone: string;
 }
