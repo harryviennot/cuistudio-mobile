@@ -17,10 +17,7 @@ export const authService = {
    * Send magic link to email (public endpoint, no auth required)
    */
   sendMagicLink: async (data: EmailAuthRequest) => {
-    const response = await api.public.post<{ message: string }>(
-      "/auth/magic-link",
-      data,
-    );
+    const response = await api.public.post<{ message: string }>("/auth/magic-link", data);
     return response.data;
   },
 
@@ -28,13 +25,9 @@ export const authService = {
    * Verify email OTP token (public endpoint)
    */
   verifyEmailOTP: async (data: VerifyEmailOTPRequest) => {
-    const response = await api.public.post<AuthResponse>(
-      "/auth/verify-email",
-      data,
-      {
-        skipAuthRetry: true, // Don't retry on 401
-      },
-    );
+    const response = await api.public.post<AuthResponse>("/auth/verify-email", data, {
+      skipAuthRetry: true, // Don't retry on 401
+    });
     return response.data;
   },
 
@@ -42,10 +35,7 @@ export const authService = {
    * Send OTP to phone (public endpoint)
    */
   sendPhoneOTP: async (data: PhoneAuthRequest) => {
-    const response = await api.public.post<{ message: string }>(
-      "/auth/phone-otp",
-      data,
-    );
+    const response = await api.public.post<{ message: string }>("/auth/phone-otp", data);
     return response.data;
   },
 
@@ -53,13 +43,9 @@ export const authService = {
    * Verify phone OTP (public endpoint)
    */
   verifyPhoneOTP: async (data: VerifyPhoneOTPRequest) => {
-    const response = await api.public.post<AuthResponse>(
-      "/auth/verify-phone",
-      data,
-      {
-        skipAuthRetry: true, // Don't retry on 401
-      },
-    );
+    const response = await api.public.post<AuthResponse>("/auth/verify-phone", data, {
+      skipAuthRetry: true, // Don't retry on 401
+    });
     return response.data;
   },
 
@@ -67,13 +53,9 @@ export const authService = {
    * Refresh access token (public endpoint, manual handling)
    */
   refreshToken: async (data: RefreshTokenRequest) => {
-    const response = await api.public.post<AuthResponse>(
-      "/auth/refresh",
-      data,
-      {
-        skipAuthRetry: true, // Don't retry on 401
-      },
-    );
+    const response = await api.public.post<AuthResponse>("/auth/refresh", data, {
+      skipAuthRetry: true, // Don't retry on 401
+    });
     return response.data;
   },
 
@@ -86,7 +68,7 @@ export const authService = {
       {},
       {
         skipAuthRedirect: true, // Don't redirect on auth failure
-      },
+      }
     );
     return response.data;
   },

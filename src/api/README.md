@@ -5,6 +5,7 @@ A flexible, mobile-optimized API client that handles all your HTTP requests with
 ## What Does This Do?
 
 This API client automatically:
+
 - **Adds your authentication token** to every request (so you don't have to)
 - **Refreshes expired tokens** and retries failed requests (seamlessly in the background)
 - **Handles errors gracefully** with user-friendly messages
@@ -32,6 +33,7 @@ const recipes = recipesResponse.data;
 ```
 
 **What's happening here?**
+
 1. You make a simple GET request to `/users/me`
 2. The client automatically grabs your stored auth token
 3. It adds the token to the request headers
@@ -68,6 +70,7 @@ await api.delete("/recipes/123");
 ```
 
 **What's the difference between PUT and PATCH?**
+
 - `PUT`: Replace the entire resource (send all fields)
 - `PATCH`: Update only specific fields (send just what changed)
 
@@ -105,14 +108,10 @@ Sometimes you need to call a completely different API (like GitHub, Weather API,
 import { api } from "@/api";
 
 // Get data from GitHub's API
-const githubUser = await api.external.get(
-  "https://api.github.com/users/octocat"
-);
+const githubUser = await api.external.get("https://api.github.com/users/octocat");
 
 // Call a weather API
-const weather = await api.external.get(
-  "https://api.weather.com/v1/forecast?city=Paris"
-);
+const weather = await api.external.get("https://api.weather.com/v1/forecast?city=Paris");
 
 // Send data to an external webhook
 await api.external.post("https://hooks.slack.com/your-webhook-url", {
@@ -121,6 +120,7 @@ await api.external.post("https://hooks.slack.com/your-webhook-url", {
 ```
 
 **What's different about external calls?**
+
 - Uses the **full URL** you provide (doesn't add your API's base URL)
 - Still adds your auth token by default (unless you skip it)
 - Good for integrating third-party services
@@ -140,6 +140,7 @@ await api.get("/new-feature", {
 ```
 
 **When would you use this?**
+
 - Testing a new API version
 - Your API has multiple versions (v1, v2)
 - Different microservices with different base URLs
@@ -256,6 +257,7 @@ await api.post("/upload", formData, {
 ```
 
 **Step by step:**
+
 1. Create a `FormData` object (like an HTML form)
 2. Add your file and any extra data
 3. Set `Content-Type` to `multipart/form-data`
@@ -308,6 +310,7 @@ try {
 ```
 
 **Common status codes:**
+
 - `400`: Bad request (you sent invalid data)
 - `401`: Unauthorized (not logged in or token expired)
 - `403`: Forbidden (logged in but don't have permission)
@@ -400,6 +403,7 @@ await recipeService.createRecipe({ title: "Pizza", ingredients: [...] });
 ```
 
 **Why use services?**
+
 - All API calls in one place (easy to find and update)
 - Consistent error handling
 - Type safety with TypeScript
@@ -410,18 +414,18 @@ await recipeService.createRecipe({ title: "Pizza", ingredients: [...] });
 
 All options you can pass to requests:
 
-| Option             | Type      | What it does                                                   | Example                     |
-| ------------------ | --------- | -------------------------------------------------------------- | --------------------------- |
-| `skipAuth`         | `boolean` | Don't add auth token to this request                           | `{ skipAuth: true }`        |
-| `skipAuthRetry`    | `boolean` | Don't auto-retry with refreshed token on 401                   | `{ skipAuthRetry: true }`   |
-| `skipAuthRedirect` | `boolean` | Don't redirect to login if auth fails                          | `{ skipAuthRedirect: true}` |
-| `absoluteUrl`      | `boolean` | Use full URL (for external APIs)                               | `{ absoluteUrl: true }`     |
-| `customBaseURL`    | `string`  | Override the base URL for this request                         | `{ customBaseURL: "..." }`  |
-| `silent`           | `boolean` | Don't log errors to console                                    | `{ silent: true }`          |
-| `timeout`          | `number`  | Max time to wait for response (milliseconds)                   | `{ timeout: 5000 }`         |
-| `headers`          | `object`  | Extra headers to send                                          | `{ headers: {...} }`        |
-| `params`           | `object`  | URL query parameters                                           | `{ params: { page: 1 } }`   |
-| `responseType`     | `string`  | Expected response format: "json", "blob", "arraybuffer", etc.  | `{ responseType: "blob" }`  |
+| Option             | Type      | What it does                                                  | Example                     |
+| ------------------ | --------- | ------------------------------------------------------------- | --------------------------- |
+| `skipAuth`         | `boolean` | Don't add auth token to this request                          | `{ skipAuth: true }`        |
+| `skipAuthRetry`    | `boolean` | Don't auto-retry with refreshed token on 401                  | `{ skipAuthRetry: true }`   |
+| `skipAuthRedirect` | `boolean` | Don't redirect to login if auth fails                         | `{ skipAuthRedirect: true}` |
+| `absoluteUrl`      | `boolean` | Use full URL (for external APIs)                              | `{ absoluteUrl: true }`     |
+| `customBaseURL`    | `string`  | Override the base URL for this request                        | `{ customBaseURL: "..." }`  |
+| `silent`           | `boolean` | Don't log errors to console                                   | `{ silent: true }`          |
+| `timeout`          | `number`  | Max time to wait for response (milliseconds)                  | `{ timeout: 5000 }`         |
+| `headers`          | `object`  | Extra headers to send                                         | `{ headers: {...} }`        |
+| `params`           | `object`  | URL query parameters                                          | `{ params: { page: 1 } }`   |
+| `responseType`     | `string`  | Expected response format: "json", "blob", "arraybuffer", etc. | `{ responseType: "blob" }`  |
 
 ## Environment Setup
 
@@ -433,6 +437,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8000
 ```
 
 For production:
+
 ```bash
 EXPO_PUBLIC_API_URL=https://api.yourdomain.com
 ```
@@ -454,6 +459,7 @@ Or in `app.json`:
 ## What Happens Automatically
 
 ### Token Refresh Flow
+
 1. You make a request → `api.get("/users/me")`
 2. Token is expired → Backend returns 401
 3. Client pauses your request
@@ -463,14 +469,18 @@ Or in `app.json`:
 7. You get your data (never knew there was a problem!)
 
 ### Request Queuing
+
 If multiple requests fail at once (all expired tokens):
+
 1. First request triggers token refresh
 2. Other requests wait in a queue
 3. Once token refreshed, all queued requests retry
 4. No requests lost, no duplicate refreshes
 
 ### Session Expiry
+
 When refresh token expires (can't refresh anymore):
+
 1. Shows alert: "Session Expired. Please login again."
 2. Clears all stored tokens
 3. Redirects to login screen
@@ -484,23 +494,23 @@ Check out [services/auth.service.ts](./services/auth.service.ts) and [services/e
 
 ```typescript
 // Regular authenticated requests
-await api.get("/path")
-await api.post("/path", data)
-await api.put("/path", data)
-await api.patch("/path", data)
-await api.delete("/path")
+await api.get("/path");
+await api.post("/path", data);
+await api.put("/path", data);
+await api.patch("/path", data);
+await api.delete("/path");
 
 // Public (no auth)
-await api.public.get("/path")
-await api.public.post("/path", data)
+await api.public.get("/path");
+await api.public.post("/path", data);
 
 // External APIs
-await api.external.get("https://api.example.com/data")
+await api.external.get("https://api.example.com/data");
 
 // With options
 await api.get("/path", {
   params: { page: 1 },
   timeout: 5000,
   silent: true,
-})
+});
 ```

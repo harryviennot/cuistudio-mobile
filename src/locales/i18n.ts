@@ -22,9 +22,7 @@ const getDeviceLanguage = () => {
   const languageCode = locale?.languageCode || "en";
 
   // Check if we support this language, otherwise fallback to English
-  return resources[languageCode as keyof typeof resources]
-    ? languageCode
-    : "en";
+  return resources[languageCode as keyof typeof resources] ? languageCode : "en";
 };
 
 // Initialize i18n with async storage detection
@@ -39,6 +37,7 @@ const initI18n = async () => {
 
   const initialLanguage = savedLanguage || getDeviceLanguage();
 
+  // eslint-disable-next-line import/no-named-as-default-member
   await i18n.use(initReactI18next).init({
     compatibilityJSON: "v4",
     resources,

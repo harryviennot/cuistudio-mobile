@@ -24,9 +24,7 @@ export const exampleService = {
    * Example 3: External API call (absolute URL)
    */
   getExternalData: async () => {
-    const response = await api.external.get<{ data: string }>(
-      "https://api.example.com/data",
-    );
+    const response = await api.external.get<{ data: string }>("https://api.example.com/data");
     return response.data;
   },
 
@@ -49,7 +47,7 @@ export const exampleService = {
         silent: true,
       });
       return response.data;
-    } catch (error) {
+    } catch {
       // Handle error manually
       return null;
     }
@@ -104,15 +102,12 @@ export const exampleService = {
    * Example 10: Paginated request with query params
    */
   getPagedData: async (page: number, limit: number) => {
-    const response = await api.get<{ items: unknown[]; total: number }>(
-      "/items",
-      {
-        params: {
-          page,
-          limit,
-        },
+    const response = await api.get<{ items: unknown[]; total: number }>("/items", {
+      params: {
+        page,
+        limit,
       },
-    );
+    });
     return response.data;
   },
 
@@ -129,7 +124,7 @@ export const exampleService = {
         },
       );
       return response.data;
-    } catch (error) {
+    } catch {
       return { authenticated: false };
     }
   },

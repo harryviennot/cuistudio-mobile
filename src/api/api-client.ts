@@ -2,17 +2,12 @@
  * Mobile-optimized Axios API client with token management
  * Supports flexible configuration for any API routes
  */
-import axios, {
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-  AxiosError,
-} from "axios";
-import { router } from "expo-router";
-import Constants from "expo-constants";
-import { tokenManager } from "./token-manager";
 import type { AuthResponse } from "@/types/auth";
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import Constants from "expo-constants";
+import { router } from "expo-router";
 import { Alert } from "react-native";
+import { tokenManager } from "./token-manager";
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -78,7 +73,7 @@ export class ApiError extends Error {
     status?: number,
     code?: string,
     details?: unknown,
-    response?: AxiosResponse,
+    response?: AxiosResponse
   ) {
     super(message);
     this.name = "ApiError";
@@ -95,9 +90,7 @@ export class ApiError extends Error {
 
 // Get API URL from environment or use default
 const API_URL =
-  Constants.expoConfig?.extra?.apiUrl ||
-  process.env.EXPO_PUBLIC_API_URL ||
-  "http://localhost:8000";
+  Constants.expoConfig?.extra?.apiUrl || process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
 
 // Default base path (can be overridden per request)
 const DEFAULT_BASE_PATH = "/api/v1";
@@ -124,10 +117,10 @@ const apiClient: AxiosInstance = axios.create({
 
 // Track ongoing refresh requests to prevent multiple simultaneous refreshes
 let isRefreshing = false;
-let failedQueue: Array<{
+let failedQueue: {
   resolve: (value: unknown) => void;
   reject: (error: unknown) => void;
-}> = [];
+}[] = [];
 
 const processQueue = (error: AxiosError | null) => {
   failedQueue.forEach(({ resolve, reject }) => {
@@ -187,7 +180,7 @@ apiClient.interceptors.request.use(
   (error) => {
     console.error("❌ Request Error:", error);
     return Promise.reject(error);
-  },
+  }
 );
 
 // ============================================================================
@@ -220,9 +213,7 @@ apiClient.interceptors.response.use(
     // Handle 401 errors with token refresh
     // Skip if: already retried, skipAuthRetry is set, or it's an auth endpoint
     const shouldAttemptRefresh =
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.skipAuthRetry;
+      error.response?.status === 401 && !originalRequest._retry && !originalRequest.skipAuthRetry;
 
     if (shouldAttemptRefresh) {
       if (isRefreshing) {
@@ -255,7 +246,7 @@ apiClient.interceptors.response.use(
           },
           {
             skipAuthRetry: true,
-          } as ApiRequestConfig,
+          } as ApiRequestConfig
         );
 
         const { access_token, refresh_token, expires_in } = response.data;
@@ -358,7 +349,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(apiError);
-  },
+  }
 );
 
 // ============================================================================
@@ -372,15 +363,11 @@ async function handleAuthFailure(): Promise<void> {
   await tokenManager.clearTokens();
 
   // Show alert on mobile
-  Alert.alert(
-    "Session Expired",
-    "Your session has expired. Please login again.",
-    [{ text: "OK" }],
-  );
+  Alert.alert("Session Expired", "Your session has expired. Please login again.", [{ text: "OK" }]);
 
   // Navigate to login screen
   try {
-    router.replace("/(auth)/login");
+    router.replace("/");
   } catch (error) {
     console.error("Navigation error:", error);
   }
@@ -397,17 +384,13 @@ export const api = {
   /**
    * GET request
    */
-  get: <T = unknown>(url: string, config?: ApiRequestConfig) =>
-    apiClient.get<T>(url, config),
+  get: <T = unknown>(url: string, config?: ApiRequestConfig) => apiClient.get<T>(url, config),
 
   /**
    * POST request
    */
-  post: <T = unknown>(
-    url: string,
-    data?: unknown,
-    config?: ApiRequestConfig,
-  ) => apiClient.post<T>(url, data, config),
+  post: <T = unknown>(url: string, data?: unknown, config?: ApiRequestConfig) =>
+    apiClient.post<T>(url, data, config),
 
   /**
    * PUT request
@@ -418,23 +401,18 @@ export const api = {
   /**
    * PATCH request
    */
-  patch: <T = unknown>(
-    url: string,
-    data?: unknown,
-    config?: ApiRequestConfig,
-  ) => apiClient.patch<T>(url, data, config),
+  patch: <T = unknown>(url: string, data?: unknown, config?: ApiRequestConfig) =>
+    apiClient.patch<T>(url, data, config),
 
   /**
    * DELETE request
    */
-  delete: <T = unknown>(url: string, config?: ApiRequestConfig) =>
-    apiClient.delete<T>(url, config),
+  delete: <T = unknown>(url: string, config?: ApiRequestConfig) => apiClient.delete<T>(url, config),
 
   /**
    * HEAD request
    */
-  head: <T = unknown>(url: string, config?: ApiRequestConfig) =>
-    apiClient.head<T>(url, config),
+  head: <T = unknown>(url: string, config?: ApiRequestConfig) => apiClient.head<T>(url, config),
 
   /**
    * OPTIONS request
@@ -449,23 +427,14 @@ export const api = {
     get: <T = unknown>(url: string, config?: ApiRequestConfig) =>
       apiClient.get<T>(url, { ...config, absoluteUrl: true } as ApiRequestConfig),
 
-    post: <T = unknown>(
-      url: string,
-      data?: unknown,
-      config?: ApiRequestConfig,
-    ) => apiClient.post<T>(url, data, { ...config, absoluteUrl: true } as ApiRequestConfig),
+    post: <T = unknown>(url: string, data?: unknown, config?: ApiRequestConfig) =>
+      apiClient.post<T>(url, data, { ...config, absoluteUrl: true } as ApiRequestConfig),
 
-    put: <T = unknown>(
-      url: string,
-      data?: unknown,
-      config?: ApiRequestConfig,
-    ) => apiClient.put<T>(url, data, { ...config, absoluteUrl: true } as ApiRequestConfig),
+    put: <T = unknown>(url: string, data?: unknown, config?: ApiRequestConfig) =>
+      apiClient.put<T>(url, data, { ...config, absoluteUrl: true } as ApiRequestConfig),
 
-    patch: <T = unknown>(
-      url: string,
-      data?: unknown,
-      config?: ApiRequestConfig,
-    ) => apiClient.patch<T>(url, data, { ...config, absoluteUrl: true } as ApiRequestConfig),
+    patch: <T = unknown>(url: string, data?: unknown, config?: ApiRequestConfig) =>
+      apiClient.patch<T>(url, data, { ...config, absoluteUrl: true } as ApiRequestConfig),
 
     delete: <T = unknown>(url: string, config?: ApiRequestConfig) =>
       apiClient.delete<T>(url, { ...config, absoluteUrl: true } as ApiRequestConfig),
@@ -478,23 +447,14 @@ export const api = {
     get: <T = unknown>(url: string, config?: ApiRequestConfig) =>
       apiClient.get<T>(url, { ...config, skipAuth: true } as ApiRequestConfig),
 
-    post: <T = unknown>(
-      url: string,
-      data?: unknown,
-      config?: ApiRequestConfig,
-    ) => apiClient.post<T>(url, data, { ...config, skipAuth: true } as ApiRequestConfig),
+    post: <T = unknown>(url: string, data?: unknown, config?: ApiRequestConfig) =>
+      apiClient.post<T>(url, data, { ...config, skipAuth: true } as ApiRequestConfig),
 
-    put: <T = unknown>(
-      url: string,
-      data?: unknown,
-      config?: ApiRequestConfig,
-    ) => apiClient.put<T>(url, data, { ...config, skipAuth: true } as ApiRequestConfig),
+    put: <T = unknown>(url: string, data?: unknown, config?: ApiRequestConfig) =>
+      apiClient.put<T>(url, data, { ...config, skipAuth: true } as ApiRequestConfig),
 
-    patch: <T = unknown>(
-      url: string,
-      data?: unknown,
-      config?: ApiRequestConfig,
-    ) => apiClient.patch<T>(url, data, { ...config, skipAuth: true } as ApiRequestConfig),
+    patch: <T = unknown>(url: string, data?: unknown, config?: ApiRequestConfig) =>
+      apiClient.patch<T>(url, data, { ...config, skipAuth: true } as ApiRequestConfig),
 
     delete: <T = unknown>(url: string, config?: ApiRequestConfig) =>
       apiClient.delete<T>(url, { ...config, skipAuth: true } as ApiRequestConfig),

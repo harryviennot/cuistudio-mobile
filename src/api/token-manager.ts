@@ -100,11 +100,7 @@ export const tokenManager = {
   /**
    * Store both tokens
    */
-  async setTokens(
-    accessToken: string,
-    refreshToken: string,
-    expiresIn: number,
-  ): Promise<void> {
+  async setTokens(accessToken: string, refreshToken: string, expiresIn: number): Promise<void> {
     await this.setAccessToken(accessToken, expiresIn);
     await this.setRefreshToken(refreshToken);
   },
