@@ -2,6 +2,8 @@ import "@/global.css";
 import "@/locales/i18n";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { StatusBar } from "react-native";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,9 +17,12 @@ const queryClient = new QueryClient({
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
+      <AuthProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
+      </AuthProvider>
+      <StatusBar barStyle="dark-content" />
     </QueryClientProvider>
   );
 }
