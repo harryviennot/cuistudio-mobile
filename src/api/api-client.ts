@@ -1,5 +1,6 @@
 /**
  * Mobile-optimized Axios API client with token management
+ * Supports flexible configuration for any API routes
  */
 import axios, {
   AxiosInstance,
@@ -13,24 +14,84 @@ import { tokenManager } from "./token-manager";
 import type { AuthResponse } from "@/types/auth";
 import { Alert } from "react-native";
 
+// ============================================================================
+// TYPES & INTERFACES
+// ============================================================================
+
+/**
+ * Extended Axios request config with custom options
+ */
+export interface ApiRequestConfig extends AxiosRequestConfig {
+  /**
+   * Skip adding authentication token to this request
+   * Useful for public endpoints
+   */
+  skipAuth?: boolean;
+
+  /**
+   * Skip automatic token refresh retry on 401
+   * Useful for login/refresh endpoints
+   */
+  skipAuthRetry?: boolean;
+
+  /**
+   * Skip automatic redirect to login on auth failure
+   * Useful when you want to handle auth errors manually
+   */
+  skipAuthRedirect?: boolean;
+
+  /**
+   * Use absolute URL instead of baseURL
+   * Set to true when making requests to external APIs
+   */
+  absoluteUrl?: boolean;
+
+  /**
+   * Custom base URL for this specific request
+   * Overrides the default baseURL
+   */
+  customBaseURL?: string;
+
+  /**
+   * Disable error alerts for this request
+   */
+  silent?: boolean;
+
+  /**
+   * Internal flag to track retry attempts
+   * @internal
+   */
+  _retry?: boolean;
+}
+
+/**
+ * Custom API Error class with detailed error information
+ */
 export class ApiError extends Error {
   status?: number;
   code?: string;
   details?: unknown;
+  response?: AxiosResponse;
 
   constructor(
     message: string,
     status?: number,
     code?: string,
     details?: unknown,
+    response?: AxiosResponse,
   ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.code = code;
     this.details = details;
+    this.response = response;
   }
 }
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
 
 // Get API URL from environment or use default
 const API_URL =
@@ -38,14 +99,28 @@ const API_URL =
   process.env.EXPO_PUBLIC_API_URL ||
   "http://localhost:8000";
 
-// Create axios instance with base configuration
+// Default base path (can be overridden per request)
+const DEFAULT_BASE_PATH = "/api/v1";
+
+/**
+ * Create axios instance with base configuration
+ * This instance is used for all API requests
+ */
 const apiClient: AxiosInstance = axios.create({
-  baseURL: `${API_URL}/api/v1`,
+  baseURL: `${API_URL}${DEFAULT_BASE_PATH}`,
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
   },
+  // Enable automatic following of redirects
+  maxRedirects: 5,
+  // Validate status codes (2xx and 3xx are considered success)
+  validateStatus: (status) => status >= 200 && status < 400,
 });
+
+// ============================================================================
+// TOKEN REFRESH QUEUE
+// ============================================================================
 
 // Track ongoing refresh requests to prevent multiple simultaneous refreshes
 let isRefreshing = false;
@@ -66,22 +141,44 @@ const processQueue = (error: AxiosError | null) => {
   failedQueue = [];
 };
 
-// Request interceptor for authentication
+// ============================================================================
+// REQUEST INTERCEPTOR
+// ============================================================================
+
+/**
+ * Request interceptor for authentication and configuration
+ */
 apiClient.interceptors.request.use(
   async (config) => {
-    // Add auth token if available
-    const token = await tokenManager.getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const customConfig = config as ApiRequestConfig;
+
+    // Handle custom base URL
+    if (customConfig.customBaseURL) {
+      config.baseURL = customConfig.customBaseURL;
+    }
+
+    // Handle absolute URLs (external APIs)
+    if (customConfig.absoluteUrl) {
+      config.baseURL = "";
+    }
+
+    // Add auth token if available and not skipped
+    if (!customConfig.skipAuth) {
+      const token = await tokenManager.getAccessToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     // Log request in development
     if (__DEV__) {
       console.log("🚀 API Request:", {
         method: config.method?.toUpperCase(),
-        url: config.url,
+        url: config.baseURL ? `${config.baseURL}${config.url}` : config.url,
         data: config.data,
-        hasToken: !!token,
+        hasToken: !!config.headers?.Authorization,
+        skipAuth: customConfig.skipAuth,
+        absoluteUrl: customConfig.absoluteUrl,
       });
     }
 
@@ -93,7 +190,13 @@ apiClient.interceptors.request.use(
   },
 );
 
-// Response interceptor for handling responses and errors
+// ============================================================================
+// RESPONSE INTERCEPTOR
+// ============================================================================
+
+/**
+ * Response interceptor for handling responses and errors
+ */
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     // Log response in development
@@ -108,24 +211,20 @@ apiClient.interceptors.response.use(
     return response;
   },
   async (error: AxiosError) => {
-    const originalRequest = error.config as AxiosRequestConfig & {
-      _retry?: boolean;
-    };
+    const originalRequest = error.config as ApiRequestConfig;
 
-    // Handle 401 errors with token refresh (but skip if this is a refresh call itself)
-    // Also skip for login and refresh endpoints
-    const isAuthEndpoint =
-      originalRequest.url?.includes("/auth/login") ||
-      originalRequest.url?.includes("/auth/signup") ||
-      originalRequest.url?.includes("/auth/refresh");
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
 
-    if (
+    // Handle 401 errors with token refresh
+    // Skip if: already retried, skipAuthRetry is set, or it's an auth endpoint
+    const shouldAttemptRefresh =
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !isAuthEndpoint &&
-      !(originalRequest as AxiosRequestConfig & { skipAuthRetry?: boolean })
-        .skipAuthRetry
-    ) {
+      !originalRequest.skipAuthRetry;
+
+    if (shouldAttemptRefresh) {
       if (isRefreshing) {
         // If already refreshing, queue this request
         return new Promise((resolve, reject) => {
@@ -156,7 +255,7 @@ apiClient.interceptors.response.use(
           },
           {
             skipAuthRetry: true,
-          } as AxiosRequestConfig & { skipAuthRetry?: boolean },
+          } as ApiRequestConfig,
         );
 
         const { access_token, refresh_token, expires_in } = response.data;
@@ -179,7 +278,10 @@ apiClient.interceptors.response.use(
         }
       } catch (refreshError) {
         processQueue(refreshError as AxiosError);
-        await handleAuthFailure();
+        // Only redirect if not explicitly skipped
+        if (!originalRequest.skipAuthRedirect) {
+          await handleAuthFailure();
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -248,14 +350,24 @@ apiClient.interceptors.response.use(
       message = "Network error - Please check your connection";
     }
 
-    const apiError = new ApiError(message, status, code, details);
+    const apiError = new ApiError(message, status, code, details, error.response);
 
-    console.error("❌ API Error:", apiError);
+    // Log error if not silent
+    if (!originalRequest.silent) {
+      console.error("❌ API Error:", apiError);
+    }
+
     return Promise.reject(apiError);
   },
 );
 
-// Handle authentication failure (redirect to login)
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Handle authentication failure (redirect to login)
+ */
 async function handleAuthFailure(): Promise<void> {
   await tokenManager.clearTokens();
 
@@ -274,31 +386,119 @@ async function handleAuthFailure(): Promise<void> {
   }
 }
 
-// Helper functions for different HTTP methods
+// ============================================================================
+// API HELPERS
+// ============================================================================
+
+/**
+ * Convenient API helper functions with type support
+ */
 export const api = {
-  get: <T = unknown>(url: string, config?: AxiosRequestConfig) =>
+  /**
+   * GET request
+   */
+  get: <T = unknown>(url: string, config?: ApiRequestConfig) =>
     apiClient.get<T>(url, config),
 
+  /**
+   * POST request
+   */
   post: <T = unknown>(
     url: string,
     data?: unknown,
-    config?: AxiosRequestConfig,
+    config?: ApiRequestConfig,
   ) => apiClient.post<T>(url, data, config),
 
-  put: <T = unknown>(
-    url: string,
-    data?: unknown,
-    config?: AxiosRequestConfig,
-  ) => apiClient.put<T>(url, data, config),
+  /**
+   * PUT request
+   */
+  put: <T = unknown>(url: string, data?: unknown, config?: ApiRequestConfig) =>
+    apiClient.put<T>(url, data, config),
 
+  /**
+   * PATCH request
+   */
   patch: <T = unknown>(
     url: string,
     data?: unknown,
-    config?: AxiosRequestConfig,
+    config?: ApiRequestConfig,
   ) => apiClient.patch<T>(url, data, config),
 
-  delete: <T = unknown>(url: string, config?: AxiosRequestConfig) =>
+  /**
+   * DELETE request
+   */
+  delete: <T = unknown>(url: string, config?: ApiRequestConfig) =>
     apiClient.delete<T>(url, config),
+
+  /**
+   * HEAD request
+   */
+  head: <T = unknown>(url: string, config?: ApiRequestConfig) =>
+    apiClient.head<T>(url, config),
+
+  /**
+   * OPTIONS request
+   */
+  options: <T = unknown>(url: string, config?: ApiRequestConfig) =>
+    apiClient.options<T>(url, config),
+
+  /**
+   * Make a request to an external API (absolute URL)
+   */
+  external: {
+    get: <T = unknown>(url: string, config?: ApiRequestConfig) =>
+      apiClient.get<T>(url, { ...config, absoluteUrl: true } as ApiRequestConfig),
+
+    post: <T = unknown>(
+      url: string,
+      data?: unknown,
+      config?: ApiRequestConfig,
+    ) => apiClient.post<T>(url, data, { ...config, absoluteUrl: true } as ApiRequestConfig),
+
+    put: <T = unknown>(
+      url: string,
+      data?: unknown,
+      config?: ApiRequestConfig,
+    ) => apiClient.put<T>(url, data, { ...config, absoluteUrl: true } as ApiRequestConfig),
+
+    patch: <T = unknown>(
+      url: string,
+      data?: unknown,
+      config?: ApiRequestConfig,
+    ) => apiClient.patch<T>(url, data, { ...config, absoluteUrl: true } as ApiRequestConfig),
+
+    delete: <T = unknown>(url: string, config?: ApiRequestConfig) =>
+      apiClient.delete<T>(url, { ...config, absoluteUrl: true } as ApiRequestConfig),
+  },
+
+  /**
+   * Make a public request (no authentication)
+   */
+  public: {
+    get: <T = unknown>(url: string, config?: ApiRequestConfig) =>
+      apiClient.get<T>(url, { ...config, skipAuth: true } as ApiRequestConfig),
+
+    post: <T = unknown>(
+      url: string,
+      data?: unknown,
+      config?: ApiRequestConfig,
+    ) => apiClient.post<T>(url, data, { ...config, skipAuth: true } as ApiRequestConfig),
+
+    put: <T = unknown>(
+      url: string,
+      data?: unknown,
+      config?: ApiRequestConfig,
+    ) => apiClient.put<T>(url, data, { ...config, skipAuth: true } as ApiRequestConfig),
+
+    patch: <T = unknown>(
+      url: string,
+      data?: unknown,
+      config?: ApiRequestConfig,
+    ) => apiClient.patch<T>(url, data, { ...config, skipAuth: true } as ApiRequestConfig),
+
+    delete: <T = unknown>(url: string, config?: ApiRequestConfig) =>
+      apiClient.delete<T>(url, { ...config, skipAuth: true } as ApiRequestConfig),
+  },
 };
 
 export default apiClient;
