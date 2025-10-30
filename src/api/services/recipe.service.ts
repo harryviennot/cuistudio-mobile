@@ -22,6 +22,16 @@ export const recipeService = {
   },
 
   /**
+   * Get paginated recipes for the current user
+   */
+  getRecipesPaginated: async (limit: number = 20, offset: number = 0): Promise<Recipe[]> => {
+    const response = await api.get<Recipe[]>(`/recipes/user/my-recipes`, {
+      params: { limit, offset },
+    });
+    return response.data;
+  },
+
+  /**
    * Create a new recipe
    */
   createRecipe: async (recipe: Partial<Recipe>): Promise<Recipe> => {
