@@ -35,7 +35,7 @@ export function ImageConfirmationView({
   const canAddMore = images.length < maxItems && !isUploading;
 
   return (
-    <View className="max-h-[80vh] bg-surface-elevated px-6 pt-4">
+    <View className="bg-surface-elevated px-6 pt-4">
       {/* Header */}
       <View className="mb-4 flex-row items-center justify-between">
         {!isUploading && (

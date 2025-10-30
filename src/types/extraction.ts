@@ -11,7 +11,7 @@ export enum SourceType {
 
 export enum ExtractionStatus {
   PENDING = "pending",
-  IN_PROGRESS = "in_progress",
+  PROCESSING = "processing", // Fixed: backend uses "processing" not "in_progress"
   COMPLETED = "completed",
   FAILED = "failed",
 }
@@ -34,13 +34,4 @@ export interface ImageExtractionResponse {
   job_id: string;
   message: string;
   image_count: number;
-}
-
-export interface ExtractionSubmitRequest {
-  source_type: SourceType;
-  source_url?: string;
-  source_urls?: string[];
-  text_content?: string;
-  file_url?: string;
-  file_urls?: string[];
 }

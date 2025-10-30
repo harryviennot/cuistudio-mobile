@@ -1,5 +1,6 @@
 /**
  * Polling hook for periodic API requests
+ * Features retry logic and resilience to temporary errors
  */
 import { useEffect, useRef, useState } from "react";
 
@@ -33,6 +34,17 @@ interface UsePollingOptions<T> {
    * Callback on error
    */
   onError?: (error: Error) => void;
+
+  /**
+   * Maximum number of consecutive errors before stopping (default: 5)
+   * Set to 0 to never stop on errors
+   */
+  maxConsecutiveErrors?: number;
+
+  /**
+   * Delay after error before retrying (default: same as interval)
+   */
+  errorRetryDelay?: number;
 }
 
 export function usePolling<T>({
@@ -42,16 +54,21 @@ export function usePolling<T>({
   enabled = true,
   onComplete,
   onError,
+  maxConsecutiveErrors = 5,
+  errorRetryDelay,
 }: UsePollingOptions<T>) {
   const [data, setData] = useState<T | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const consecutiveErrorsRef = useRef<number>(0);
 
   const poll = async () => {
     try {
       const result = await fn();
       setData(result);
+      setError(null);
+      consecutiveErrorsRef.current = 0; // Reset error counter on success
 
       if (shouldStopPolling(result)) {
         setIsPolling(false);
@@ -62,15 +79,30 @@ export function usePolling<T>({
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
+      consecutiveErrorsRef.current += 1;
+
+      // Log error but continue polling (unless max errors reached)
+      console.warn(`Polling error (attempt ${consecutiveErrorsRef.current}/${maxConsecutiveErrors || '∞'}):`, error.message);
       setError(error);
-      setIsPolling(false);
       onError?.(error);
+
+      // Check if we should stop due to too many consecutive errors
+      if (maxConsecutiveErrors > 0 && consecutiveErrorsRef.current >= maxConsecutiveErrors) {
+        console.error(`Polling stopped after ${maxConsecutiveErrors} consecutive errors`);
+        setIsPolling(false);
+        return;
+      }
+
+      // Continue polling with retry delay
+      const retryDelay = errorRetryDelay ?? interval;
+      timeoutRef.current = setTimeout(poll, retryDelay);
     }
   };
 
   const startPolling = () => {
     setIsPolling(true);
     setError(null);
+    consecutiveErrorsRef.current = 0; // Reset error counter when manually starting
     poll();
   };
 

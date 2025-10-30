@@ -1,16 +1,19 @@
 /**
- * Recipe preview screen - shows extracted recipe with save/discard options
+ * Recipe detail screen - shows a saved recipe by ID
+ * This is for viewing already-extracted recipes (not the extraction flow)
+ * For extraction flow, see /recipe/preview/index.tsx
  */
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, Pressable, ActivityIndicator, Alert } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeIn, SlideInDown } from "react-native-reanimated";
 import { CheckCircle, X } from "phosphor-react-native";
 import { recipeService } from "@/api/services/recipe.service";
+import { RecipePreviewContent } from "@/components/recipe/RecipePreviewContent";
 import type { Recipe } from "@/types/recipe";
 
-export default function RecipePreviewScreen() {
+export default function RecipeDetailScreen() {
   const { recipeId } = useLocalSearchParams<{ recipeId: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -121,98 +124,8 @@ export default function RecipePreviewScreen() {
         </Text>
       </Animated.View>
 
-      {/* Recipe content */}
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <Animated.View entering={SlideInDown} className="px-6 py-6">
-          {/* Title */}
-          <Text className="mb-4 text-3xl font-bold text-foreground-heading">{recipe.title}</Text>
-
-          {/* Description */}
-          {recipe.description && (
-            <Text className="mb-6 text-base leading-relaxed text-foreground">
-              {recipe.description}
-            </Text>
-          )}
-
-          {/* Meta info */}
-          <View className="mb-6 flex-row flex-wrap gap-3">
-            {recipe.timings?.prep_time_minutes && (
-              <View className="rounded-full bg-primary/10 px-4 py-2">
-                <Text className="text-sm font-medium text-primary">
-                  Prep: {recipe.timings.prep_time_minutes} min
-                </Text>
-              </View>
-            )}
-            {recipe.timings?.cook_time_minutes && (
-              <View className="rounded-full bg-primary/10 px-4 py-2">
-                <Text className="text-sm font-medium text-primary">
-                  Cook: {recipe.timings.cook_time_minutes} min
-                </Text>
-              </View>
-            )}
-            {recipe.servings && (
-              <View className="rounded-full bg-primary/10 px-4 py-2">
-                <Text className="text-sm font-medium text-primary">
-                  Servings: {recipe.servings}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          {/* Ingredients */}
-          {recipe.ingredients && recipe.ingredients.length > 0 && (
-            <View className="mb-8">
-              <Text className="mb-4 text-2xl font-bold text-foreground-heading">Ingredients</Text>
-              <View className="gap-3">
-                {recipe.ingredients.map((ingredient, index) => (
-                  <View
-                    key={index}
-                    className="flex-row items-start gap-3 rounded-xl bg-surface-elevated p-4"
-                  >
-                    <View className="mt-1 h-2 w-2 rounded-full bg-primary" />
-                    <Text className="flex-1 text-base text-foreground-heading">
-                      {ingredient.quantity && ingredient.unit
-                        ? `${ingredient.quantity} ${ingredient.unit} `
-                        : ingredient.quantity
-                          ? `${ingredient.quantity} `
-                          : ""}
-                      {ingredient.item}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Instructions */}
-          {recipe.instructions && recipe.instructions.length > 0 && (
-            <View className="mb-8">
-              <Text className="mb-4 text-2xl font-bold text-foreground-heading">Instructions</Text>
-              <View className="gap-4">
-                {recipe.instructions.map((instruction, index) => (
-                  <View key={index} className="flex-row gap-4">
-                    <View className="h-8 w-8 items-center justify-center rounded-full bg-primary">
-                      <Text className="font-bold text-white">
-                        {instruction.step_number || index + 1}
-                      </Text>
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-base leading-relaxed text-foreground-heading">
-                        {instruction.text}
-                      </Text>
-                      {instruction.timer_minutes && (
-                        <Text className="mt-1 text-sm text-foreground-secondary">
-                          ⏱️ {instruction.timer_minutes} minutes
-                        </Text>
-                      )}
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-        </Animated.View>
-      </ScrollView>
+      {/* Recipe content using shared component */}
+      <RecipePreviewContent recipe={recipe} showScrollView={true} />
 
       {/* Action buttons */}
       <Animated.View

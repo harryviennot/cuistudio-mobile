@@ -22,9 +22,9 @@ export function ImageUploadCard({ image, uploadState, onRemove }: ImageUploadCar
   const isError = uploadState === "error";
 
   return (
-    <View className="relative overflow-hidden rounded-2xl bg-surface-elevated shadow-sm">
+    <View className="relative aspect-square overflow-hidden rounded-2xl bg-surface-elevated shadow-sm">
       {/* Image */}
-      <Image source={{ uri: image.uri }} className="h-32 w-full" resizeMode="cover" />
+      <Image source={{ uri: image.uri }} className="h-full w-full" resizeMode="cover" />
 
       {/* Upload overlay */}
       {showOverlay && (

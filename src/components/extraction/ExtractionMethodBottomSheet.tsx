@@ -205,15 +205,17 @@ export const ExtractionMethodBottomSheet = forwardRef<
           </BottomSheetView>
         ) : (
           /* CONFIRMATION VIEW */
-          renderConfirmation?.({
-            items: selectedItems,
-            uploadStates: uploadingStates,
-            onRemove: handleRemoveItem,
-            onAddMore: handleAddMoreInternal,
-            onConfirm: handleConfirmInternal,
-            onBack: handleBackToMethod,
-            isUploading,
-          })
+          <BottomSheetView style={{ paddingBottom: bottom }}>
+            {renderConfirmation?.({
+              items: selectedItems,
+              uploadStates: uploadingStates,
+              onRemove: handleRemoveItem,
+              onAddMore: handleAddMoreInternal,
+              onConfirm: handleConfirmInternal,
+              onBack: handleBackToMethod,
+              isUploading,
+            })}
+          </BottomSheetView>
         )}
       </BottomSheetModal>
     );

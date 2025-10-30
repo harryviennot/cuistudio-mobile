@@ -24,7 +24,7 @@ export default function RootLayout() {
           <AuthProvider>
             <Stack>
               <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="extraction/[jobId]" options={{ headerShown: false }} />
+              <Stack.Screen name="recipe/preview/index" options={{ headerShown: false }} />
               <Stack.Screen name="recipe/preview/[recipeId]" options={{ headerShown: false }} />
             </Stack>
           </AuthProvider>

@@ -45,10 +45,10 @@ export function useImageExtractionFlow(maxImages: number = 3): UseImageExtractio
     console.log("Extraction response:", response);
 
     if (response) {
-      console.log("Navigating to extraction screen with job_id:", response.job_id);
-      // Navigate to extraction progress screen
+      console.log("Navigating to unified preview screen with job_id:", response.job_id);
+      // Navigate to unified recipe preview screen (handles extraction + preview)
       router.push({
-        pathname: "/extraction/[jobId]",
+        pathname: "/recipe/preview",
         params: { jobId: response.job_id },
       });
       // Reset selection after successful submission
