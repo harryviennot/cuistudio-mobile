@@ -4,6 +4,7 @@
  */
 import React from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import { Check, ArrowLeft, Camera } from "phosphor-react-native";
 import { ImageUploadCard } from "../ImageUploadCard";
 import { AddContentCard } from "../AddContentCard";
@@ -52,22 +53,32 @@ export function ImageConfirmationView({
       {/* Image Grid - 3 columns, responsive */}
       <View className="mb-4 flex-row flex-wrap justify-center gap-3">
         {images.map((image, index) => (
-          <View key={`${image.uri}-${index}`} style={{ width: "31%" }}>
+          <Animated.View
+            key={`${image.uri}-${index}`}
+            style={{ width: "31%" }}
+            entering={FadeIn.duration(200)}
+            exiting={FadeOut.duration(150)}
+            layout={LinearTransition.duration(200)}
+          >
             <ImageUploadCard
               image={image}
               uploadState={uploadStates[index]}
               onRemove={isUploading ? undefined : () => onRemoveImage(index)}
             />
-          </View>
+          </Animated.View>
         ))}
         {canAddMore && (
-          <View style={{ width: "31%" }}>
+          <Animated.View
+            style={{ width: "31%" }}
+            entering={FadeIn.duration(200)}
+            layout={LinearTransition.duration(200)}
+          >
             <AddContentCard
               onPress={onAddMore}
               icon={<Camera size={24} color="#334d43" weight="duotone" />}
               label="Add Photo"
             />
-          </View>
+          </Animated.View>
         )}
       </View>
 
