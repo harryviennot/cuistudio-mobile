@@ -20,9 +20,11 @@ export enum DifficultyLevel {
 }
 
 export interface Ingredient {
-  item: string;
+  name: string;
   quantity?: string;
   unit?: string;
+  notes?: string;
+  group?: string;
 }
 
 export interface Instruction {
@@ -30,6 +32,7 @@ export interface Instruction {
   text: string;
   timer_minutes?: number;
   image_url?: string;
+  group?: string;
 }
 
 export interface Timings {
