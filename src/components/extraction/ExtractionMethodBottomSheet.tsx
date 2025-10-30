@@ -7,6 +7,7 @@ import { View, Text, Pressable, ActionSheetIOS, Platform, Alert } from "react-na
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import type { ExtractionMethodConfig, ExtractionSourceType } from "@/config/extractionMethods";
 
 export interface ExtractionMethodBottomSheetRef<T = any> {
@@ -39,9 +40,10 @@ export const ExtractionMethodBottomSheet = forwardRef<
   ExtractionMethodBottomSheetProps
 >(
   (
-    { methods, title = "Add Recipe", onSelectMethod, onConfirm, onAddMore, renderConfirmation },
+    { methods, title, onSelectMethod, onConfirm, onAddMore, renderConfirmation },
     ref
   ) => {
+    const { t } = useTranslation();
     const bottomSheetRef = React.useRef<BottomSheetModal>(null);
     const [view, setView] = useState<"method" | "confirmation">("method");
     const [selectedItems, setSelectedItems] = useState<any[]>([]);
@@ -50,6 +52,9 @@ export const ExtractionMethodBottomSheet = forwardRef<
     >({});
 
     const { bottom } = useSafeAreaInsets();
+
+    // Use translated title if not provided
+    const displayTitle = title || t("extraction.addRecipe");
 
     // Expose methods to parent via ref
     useImperativeHandle(ref, () => ({
@@ -119,7 +124,7 @@ export const ExtractionMethodBottomSheet = forwardRef<
 
       // Show native action sheet
       if (Platform.OS === "ios") {
-        const options = ["Cancel", ...addMoreMethods.map((m) => m.label)];
+        const options = [t("common.cancel"), ...addMoreMethods.map((m) => m.label)];
         ActionSheetIOS.showActionSheetWithOptions(
           {
             options,
@@ -138,10 +143,10 @@ export const ExtractionMethodBottomSheet = forwardRef<
       } else {
         // Android - show alert dialog
         Alert.alert(
-          "Add More",
-          "Choose an option",
+          t("extraction.addMore"),
+          t("extraction.chooseOption"),
           [
-            { text: "Cancel", style: "cancel" },
+            { text: t("common.cancel"), style: "cancel" },
             ...addMoreMethods.map((method) => ({
               text: method.label,
               onPress: async () => {
@@ -179,7 +184,7 @@ export const ExtractionMethodBottomSheet = forwardRef<
             style={{ paddingBottom: bottom + 16 }}
           >
             <Text className="mb-6 text-center text-xl font-semibold text-foreground-heading">
-              {title}
+              {displayTitle}
             </Text>
 
             <View className="gap-4">

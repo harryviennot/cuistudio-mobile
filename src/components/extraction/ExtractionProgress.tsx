@@ -17,6 +17,7 @@ import Animated, {
   runOnJS,
   interpolate,
 } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 import { ShimmeringTextRotator } from "../loading";
 
 interface ExtractionProgressProps {
@@ -25,6 +26,8 @@ interface ExtractionProgressProps {
 }
 
 export function ExtractionProgress({ progress, currentStep }: ExtractionProgressProps) {
+  const { t } = useTranslation();
+
   // Interpolated progress for smooth animation between polling updates
   const interpolatedProgress = useSharedValue(0);
   const lastRealProgress = useRef(0);
@@ -109,7 +112,7 @@ export function ExtractionProgress({ progress, currentStep }: ExtractionProgress
             style={shimmerStyle}
             className="text-base font-semibold text-foreground-heading"
           >
-            Extracting your recipe
+            {t("extraction.extractingRecipe")}
           </Animated.Text>
           <View className="rounded-full bg-primary/10 px-3 py-1">
             <Text className="text-sm font-bold text-primary">{displayProgress}%</Text>

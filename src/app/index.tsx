@@ -55,9 +55,10 @@ export default function Index() {
     bottomSheetRef.current?.dismiss();
   };
 
-  // Add icons to methods
+  // Add icons and translated labels to methods
   const methodsWithIcons = IMAGE_EXTRACTION_METHODS.map((method) => ({
     ...method,
+    label: method.id === "camera" ? t("extraction.methods.takePhotos") : t("extraction.methods.chooseGallery"),
     icon:
       method.id === "camera" ? (
         <Camera size={32} color="#334d43" weight="duotone" />
@@ -151,7 +152,7 @@ export default function Index() {
       <ExtractionMethodBottomSheet
         ref={bottomSheetRef}
         methods={methodsWithIcons}
-        title="Add Recipe from Image"
+        title={t("extraction.addRecipeFromImage")}
         onSelectMethod={handleMethodSelect}
         onConfirm={handleConfirmImages}
         onAddMore={handleAddMore}

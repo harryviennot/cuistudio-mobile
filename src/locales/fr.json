@@ -10,7 +10,10 @@
     "search": "Rechercher",
     "loading": "Chargement...",
     "error": "Erreur",
-    "success": "Succès"
+    "success": "Succès",
+    "ok": "OK",
+    "retry": "Réessayer",
+    "tryAgain": "Réessayer"
   },
   "app": {
     "title": "CuiStudio",
@@ -21,5 +24,76 @@
     "current": "Langue actuelle",
     "english": "English",
     "french": "Français"
+  },
+  "extraction": {
+    "addRecipe": "Ajouter une recette",
+    "addRecipeFromImage": "Ajouter une recette depuis une image",
+    "addPhoto": "Ajouter une photo",
+    "addMore": "Ajouter plus",
+    "chooseOption": "Choisissez une option",
+    "confirmExtract": "Confirmer et extraire la recette",
+    "uploadingImages": "Téléchargement des images...",
+    "extractingRecipe": "Extraction de votre recette",
+    "selectedCount_one": "{{count}} image sélectionnée",
+    "selectedCount_other": "{{count}} images sélectionnées",
+    "methods": {
+      "takePhotos": "Prendre des photos",
+      "chooseGallery": "Choisir dans la galerie"
+    },
+    "funMessages": {
+      "0": "Lecture des notes secrètes de grand-mère...",
+      "1": "Traduction des murmures du chef...",
+      "2": "Décodage de la magie culinaire...",
+      "3": "Mesure des pincées et des touches...",
+      "4": "Consultation du conseil des épices...",
+      "5": "Analyse des combinaisons de saveurs...",
+      "6": "Extraction des secrets umami...",
+      "7": "Analyse de la sagesse culinaire...",
+      "8": "Numérisation de la déliciosité...",
+      "9": "Harmonisation des ingrédients...",
+      "10": "Calcul du timing parfait...",
+      "11": "Équilibrage des saveurs...",
+      "12": "Canalisation des esprits culinaires...",
+      "13": "Traduction du langage gastronomique...",
+      "14": "Capture de la magie de la cuisine...",
+      "15": "Déchiffrage des parchemins de recettes...",
+      "16": "Invocation des souvenirs de goût...",
+      "17": "Création de votre chef-d'œuvre..."
+    }
+  },
+  "recipe": {
+    "ingredients": "Ingrédients",
+    "instructions": "Instructions",
+    "servings": "Portions",
+    "prep": "Préparation",
+    "cook": "Cuisson",
+    "minutes": "min",
+    "saveRecipe": "Enregistrer la recette",
+    "discard": "Supprimer",
+    "discardRecipe": "Supprimer la recette",
+    "discardConfirm": "Êtes-vous sûr de vouloir supprimer cette recette ? Cette action ne peut pas être annulée.",
+    "saved": "Recette enregistrée avec succès !",
+    "failedToSave": "Échec de l'enregistrement de la recette",
+    "failedToLoad": "Échec du chargement de la recette. Veuillez réessayer.",
+    "failedToDiscard": "Échec de la suppression de la recette",
+    "invalidJob": "Tâche d'extraction invalide"
+  },
+  "errors": {
+    "extractionFailed": "Échec de l'extraction",
+    "extractionError": "Une erreur s'est produite lors de l'extraction de la recette",
+    "connectionIssue": "Problème de connexion",
+    "connectionMessage": "Impossible de se connecter au serveur après plusieurs tentatives. Veuillez vérifier votre connexion Internet et réessayer."
+  },
+  "auth": {
+    "status": "Statut",
+    "authenticated": "Authentifié",
+    "anonymous": "Anonyme",
+    "notAuthenticated": "Non authentifié",
+    "userId": "ID utilisateur",
+    "email": "Email",
+    "phone": "Téléphone",
+    "createdAt": "Créé le",
+    "metadata": "Métadonnées",
+    "authenticationStatus": "Statut d'authentification"
   }
 }

@@ -9,6 +9,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeIn, FadeOut, SlideInDown } from "react-native-reanimated";
 import { CheckCircle, X, ArrowCounterClockwise } from "phosphor-react-native";
+import { useTranslation } from "react-i18next";
 import { extractionService } from "@/api/services/extraction.service";
 import { recipeService } from "@/api/services/recipe.service";
 import { usePolling } from "@/hooks/usePolling";
@@ -18,6 +19,7 @@ import { ExtractionStatus } from "@/types/extraction";
 import type { Recipe } from "@/types/recipe";
 
 export default function UnifiedRecipePreviewScreen() {
+  const { t } = useTranslation();
   const { jobId } = useLocalSearchParams<{ jobId: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -59,7 +61,7 @@ export default function UnifiedRecipePreviewScreen() {
       setRecipe(data);
     } catch (error) {
       console.error("Error loading recipe:", error);
-      Alert.alert("Error", "Failed to load recipe. Please try again.");
+      Alert.alert(t("common.error"), t("recipe.failedToLoad"));
     }
   };
 
@@ -74,15 +76,15 @@ export default function UnifiedRecipePreviewScreen() {
     try {
       setIsSaving(true);
       // Recipe is already saved in the backend after extraction
-      Alert.alert("Success", "Recipe saved successfully!", [
+      Alert.alert(t("common.success"), t("recipe.saved"), [
         {
-          text: "OK",
+          text: t("common.ok"),
           onPress: () => router.replace("/"),
         },
       ]);
     } catch (error) {
       console.error("Error saving recipe:", error);
-      Alert.alert("Error", "Failed to save recipe");
+      Alert.alert(t("common.error"), t("recipe.failedToSave"));
     } finally {
       setIsSaving(false);
     }
@@ -90,12 +92,12 @@ export default function UnifiedRecipePreviewScreen() {
 
   const handleDiscard = () => {
     Alert.alert(
-      "Discard Recipe",
-      "Are you sure you want to discard this recipe? This action cannot be undone.",
+      t("recipe.discardRecipe"),
+      t("recipe.discardConfirm"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Discard",
+          text: t("recipe.discard"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -105,7 +107,7 @@ export default function UnifiedRecipePreviewScreen() {
               router.replace("/");
             } catch (error) {
               console.error("Error discarding recipe:", error);
-              Alert.alert("Error", "Failed to discard recipe");
+              Alert.alert(t("common.error"), t("recipe.failedToDiscard"));
             }
           },
         },
@@ -117,7 +119,7 @@ export default function UnifiedRecipePreviewScreen() {
   if (!jobId) {
     return (
       <View className="flex-1 items-center justify-center bg-surface">
-        <Text className="text-red-600">Invalid extraction job</Text>
+        <Text className="text-red-600">{t("recipe.invalidJob")}</Text>
       </View>
     );
   }
@@ -132,17 +134,17 @@ export default function UnifiedRecipePreviewScreen() {
               <X size={32} color="#ef4444" weight="bold" />
             </View>
             <Text className="mb-2 text-center text-xl font-semibold text-state-error">
-              Extraction Failed
+              {t("errors.extractionFailed")}
             </Text>
             <Text className="mb-6 text-center text-foreground-secondary">
-              {job.error_message || "An error occurred while extracting the recipe"}
+              {job.error_message || t("errors.extractionError")}
             </Text>
             <Pressable
               onPress={handleRetry}
               className="flex-row items-center gap-2 rounded-xl bg-primary px-6 py-3 active:bg-primary-hover"
             >
               <ArrowCounterClockwise size={20} color="#FFFFFF" weight="bold" />
-              <Text className="text-base font-semibold text-white">Try Again</Text>
+              <Text className="text-base font-semibold text-white">{t("common.tryAgain")}</Text>
             </Pressable>
           </Animated.View>
         </View>
@@ -160,18 +162,17 @@ export default function UnifiedRecipePreviewScreen() {
               <X size={32} color="#f59e0b" weight="bold" />
             </View>
             <Text className="mb-2 text-center text-xl font-semibold text-state-warning">
-              Connection Issue
+              {t("errors.connectionIssue")}
             </Text>
             <Text className="mb-6 text-center text-foreground-secondary">
-              Unable to connect to the server after multiple attempts. Please check your internet
-              connection and try again.
+              {t("errors.connectionMessage")}
             </Text>
             <Pressable
               onPress={handleRetry}
               className="flex-row items-center gap-2 rounded-xl bg-primary px-6 py-3 active:bg-primary-hover"
             >
               <ArrowCounterClockwise size={20} color="#FFFFFF" weight="bold" />
-              <Text className="text-base font-semibold text-white">Retry</Text>
+              <Text className="text-base font-semibold text-white">{t("common.retry")}</Text>
             </Pressable>
           </Animated.View>
         </View>
@@ -199,7 +200,7 @@ export default function UnifiedRecipePreviewScreen() {
               className="flex-1 flex-row items-center justify-center gap-2 rounded-xl border-2 border-border bg-surface-elevated py-4 active:bg-surface-overlay"
             >
               <X size={24} color="#6b5d4a" weight="bold" />
-              <Text className="text-base font-semibold text-foreground">Discard</Text>
+              <Text className="text-base font-semibold text-foreground">{t("recipe.discard")}</Text>
             </Pressable>
 
             <Pressable
@@ -212,7 +213,7 @@ export default function UnifiedRecipePreviewScreen() {
               ) : (
                 <>
                   <CheckCircle size={24} color="#FFFFFF" weight="bold" />
-                  <Text className="text-base font-semibold text-white">Save Recipe</Text>
+                  <Text className="text-base font-semibold text-white">{t("recipe.saveRecipe")}</Text>
                 </>
               )}
             </Pressable>

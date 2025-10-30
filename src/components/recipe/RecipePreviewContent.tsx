@@ -4,6 +4,7 @@
  */
 import { View, Text, ScrollView } from "react-native";
 import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 import type { Recipe, Ingredient, Instruction } from "@/types/recipe";
 
 interface RecipePreviewContentProps {
@@ -27,6 +28,8 @@ function groupByField<T extends { group?: string }>(items: T[]): Map<string, T[]
 }
 
 export function RecipePreviewContent({ recipe, showScrollView = false }: RecipePreviewContentProps) {
+  const { t } = useTranslation();
+
   const content = (
     <Animated.View entering={FadeIn.duration(400)} className="px-6 py-6">
       {/* Title */}
@@ -48,20 +51,20 @@ export function RecipePreviewContent({ recipe, showScrollView = false }: RecipeP
         {recipe.timings?.prep_time_minutes && (
           <View className="rounded-full bg-primary/10 px-4 py-2">
             <Text className="text-sm font-medium text-primary">
-              Prep: {recipe.timings.prep_time_minutes} min
+              {t("recipe.prep")}: {recipe.timings.prep_time_minutes} {t("recipe.minutes")}
             </Text>
           </View>
         )}
         {recipe.timings?.cook_time_minutes && (
           <View className="rounded-full bg-primary/10 px-4 py-2">
             <Text className="text-sm font-medium text-primary">
-              Cook: {recipe.timings.cook_time_minutes} min
+              {t("recipe.cook")}: {recipe.timings.cook_time_minutes} {t("recipe.minutes")}
             </Text>
           </View>
         )}
         {recipe.servings && (
           <View className="rounded-full bg-primary/10 px-4 py-2">
-            <Text className="text-sm font-medium text-primary">Servings: {recipe.servings}</Text>
+            <Text className="text-sm font-medium text-primary">{t("recipe.servings")}: {recipe.servings}</Text>
           </View>
         )}
       </Animated.View>
@@ -69,7 +72,7 @@ export function RecipePreviewContent({ recipe, showScrollView = false }: RecipeP
       {/* Ingredients */}
       {recipe.ingredients && recipe.ingredients.length > 0 && (
         <Animated.View entering={FadeInDown.delay(250).duration(400)} className="mb-8">
-          <Text className="mb-4 text-2xl font-bold text-foreground-heading">Ingredients</Text>
+          <Text className="mb-4 text-2xl font-bold text-foreground-heading">{t("recipe.ingredients")}</Text>
           <View className="gap-6">
             {(() => {
               const grouped = groupByField(recipe.ingredients);
@@ -122,7 +125,7 @@ export function RecipePreviewContent({ recipe, showScrollView = false }: RecipeP
       {/* Instructions */}
       {recipe.instructions && recipe.instructions.length > 0 && (
         <Animated.View entering={FadeInDown.delay(350).duration(400)} className="mb-8">
-          <Text className="mb-4 text-2xl font-bold text-foreground-heading">Instructions</Text>
+          <Text className="mb-4 text-2xl font-bold text-foreground-heading">{t("recipe.instructions")}</Text>
           <View className="gap-6">
             {(() => {
               const grouped = groupByField(recipe.instructions);

@@ -14,26 +14,7 @@ import Animated, {
 } from "react-native-reanimated";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
-
-const FUN_SENTENCES = [
-  "Reading grandma's secret notes...",
-  "Translating chef whispers...",
-  "Decoding culinary magic...",
-  "Measuring a pinch of this, a dash of that...",
-  "Consulting the flavor wizards...",
-  "Separating the yolks from the folks...",
-  "Preheating the AI oven...",
-  "Taste-testing with algorithms...",
-  "Whisking up something special...",
-  "Sprinkling in some digital seasoning...",
-  "Folding in the secret ingredients...",
-  "Letting the flavors marry...",
-  "Caramelizing the details...",
-  "Reducing the complexity...",
-  "Simmering down the instructions...",
-  "Garnishing with precision...",
-  "Plating your masterpiece...",
-];
+import { useTranslation } from "react-i18next";
 
 interface ShimmeringTextRotatorProps {
   /** Rotation interval in milliseconds (default: 3000) */
@@ -46,7 +27,11 @@ export function ShimmeringTextRotator({
   interval = 3000,
   textSize = "text-lg",
 }: ShimmeringTextRotatorProps) {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Get fun messages from translations - 18 messages (0-17)
+  const FUN_SENTENCES = Array.from({ length: 18 }, (_, i) => t(`extraction.funMessages.${i}`));
 
   // Shimmer animation - moves from left to right continuously
   const shimmerPosition = useSharedValue(-1);
@@ -68,7 +53,7 @@ export function ShimmeringTextRotator({
     }, interval);
 
     return () => clearInterval(timer);
-  }, [interval]);
+  }, [interval, FUN_SENTENCES.length]);
 
   // Animated gradient positions for shimmer
   const animatedGradientStyle = useAnimatedStyle(() => {

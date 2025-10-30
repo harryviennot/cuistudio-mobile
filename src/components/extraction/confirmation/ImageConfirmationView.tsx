@@ -6,6 +6,7 @@ import React from "react";
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import { Check, ArrowLeft, Camera } from "phosphor-react-native";
+import { useTranslation } from "react-i18next";
 import { ImageUploadCard } from "../ImageUploadCard";
 import { AddContentCard } from "../AddContentCard";
 import type { PickedImage } from "@/hooks/useImagePicker";
@@ -33,6 +34,7 @@ export function ImageConfirmationView({
   onBack,
   isUploading,
 }: ImageConfirmationViewProps) {
+  const { t } = useTranslation();
   const canAddMore = images.length < maxItems && !isUploading;
 
   return (
@@ -45,7 +47,7 @@ export function ImageConfirmationView({
           </Pressable>
         )}
         <Text className="flex-1 text-center text-base font-medium text-foreground-secondary">
-          {images.length} {images.length === 1 ? "image" : "images"} selected
+          {t("extraction.selectedCount", { count: images.length })}
         </Text>
         <View style={{ width: 24 }} />
       </View>
@@ -76,7 +78,7 @@ export function ImageConfirmationView({
             <AddContentCard
               onPress={onAddMore}
               icon={<Camera size={24} color="#334d43" weight="duotone" />}
-              label="Add Photo"
+              label={t("extraction.addPhoto")}
             />
           </Animated.View>
         )}
@@ -88,7 +90,7 @@ export function ImageConfirmationView({
           <View className="flex-row items-center justify-center gap-3 rounded-2xl bg-primary px-6 py-4">
             <ActivityIndicator color="#fefdfb" />
             <Text className="text-base font-semibold text-surface-elevated">
-              Uploading images...
+              {t("extraction.uploadingImages")}
             </Text>
           </View>
         ) : (
@@ -103,7 +105,7 @@ export function ImageConfirmationView({
           >
             <Check size={20} color="#fefdfb" weight="bold" />
             <Text className="text-base font-semibold text-surface-elevated">
-              Confirm & Extract Recipe
+              {t("extraction.confirmExtract")}
             </Text>
           </Pressable>
         )}
