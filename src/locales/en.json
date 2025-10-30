@@ -10,7 +10,10 @@
     "search": "Search",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "ok": "OK",
+    "retry": "Retry",
+    "tryAgain": "Try Again"
   },
   "app": {
     "title": "CuiStudio",
@@ -21,5 +24,76 @@
     "current": "Current language",
     "english": "English",
     "french": "Français"
+  },
+  "extraction": {
+    "addRecipe": "Add Recipe",
+    "addRecipeFromImage": "Add Recipe from Image",
+    "addPhoto": "Add Photo",
+    "addMore": "Add More",
+    "chooseOption": "Choose an option",
+    "confirmExtract": "Confirm & Extract Recipe",
+    "uploadingImages": "Uploading images...",
+    "extractingRecipe": "Extracting your recipe",
+    "selectedCount_one": "{{count}} image selected",
+    "selectedCount_other": "{{count}} images selected",
+    "methods": {
+      "takePhotos": "Take Photos",
+      "chooseGallery": "Choose from Gallery"
+    },
+    "funMessages": {
+      "0": "Reading grandma's secret notes...",
+      "1": "Translating chef whispers...",
+      "2": "Decoding culinary magic...",
+      "3": "Measuring pinches and dashes...",
+      "4": "Consulting the spice council...",
+      "5": "Analyzing flavor combinations...",
+      "6": "Extracting umami secrets...",
+      "7": "Parsing kitchen wisdom...",
+      "8": "Digitizing deliciousness...",
+      "9": "Harmonizing ingredients...",
+      "10": "Calculating perfect timing...",
+      "11": "Balancing flavors...",
+      "12": "Channeling culinary spirits...",
+      "13": "Translating food language...",
+      "14": "Capturing kitchen magic...",
+      "15": "Deciphering recipe scrolls...",
+      "16": "Summoning taste memories...",
+      "17": "Crafting your masterpiece..."
+    }
+  },
+  "recipe": {
+    "ingredients": "Ingredients",
+    "instructions": "Instructions",
+    "servings": "Servings",
+    "prep": "Prep",
+    "cook": "Cook",
+    "minutes": "min",
+    "saveRecipe": "Save Recipe",
+    "discard": "Discard",
+    "discardRecipe": "Discard Recipe",
+    "discardConfirm": "Are you sure you want to discard this recipe? This action cannot be undone.",
+    "saved": "Recipe saved successfully!",
+    "failedToSave": "Failed to save recipe",
+    "failedToLoad": "Failed to load recipe. Please try again.",
+    "failedToDiscard": "Failed to discard recipe",
+    "invalidJob": "Invalid extraction job"
+  },
+  "errors": {
+    "extractionFailed": "Extraction Failed",
+    "extractionError": "An error occurred while extracting the recipe",
+    "connectionIssue": "Connection Issue",
+    "connectionMessage": "Unable to connect to the server after multiple attempts. Please check your internet connection and try again."
+  },
+  "auth": {
+    "status": "Status",
+    "authenticated": "Authenticated",
+    "anonymous": "Anonymous",
+    "notAuthenticated": "Not authenticated",
+    "userId": "User ID",
+    "email": "Email",
+    "phone": "Phone",
+    "createdAt": "Created At",
+    "metadata": "Metadata",
+    "authenticationStatus": "Authentication Status"
   }
 }

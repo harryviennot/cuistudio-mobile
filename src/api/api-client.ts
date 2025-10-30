@@ -89,7 +89,7 @@ export class ApiError extends Error {
 // ============================================================================
 
 // Get API URL from environment or use default
-const API_URL =
+export const API_URL =
   Constants.expoConfig?.extra?.apiUrl || process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
 
 // Default base path (can be overridden per request)
@@ -101,7 +101,7 @@ const DEFAULT_BASE_PATH = "/api/v1";
  */
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${API_URL}${DEFAULT_BASE_PATH}`,
-  timeout: 30000,
+  timeout: 60000, // 60 seconds - increased for long-running operations like extraction
   headers: {
     "Content-Type": "application/json",
   },
