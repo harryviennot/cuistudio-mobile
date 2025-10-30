@@ -13,7 +13,6 @@ import { extractionService } from "@/api/services/extraction.service";
 import { recipeService } from "@/api/services/recipe.service";
 import { usePolling } from "@/hooks/usePolling";
 import { ExtractionProgress } from "@/components/extraction/ExtractionProgress";
-import { RecipeLoadingSkeleton } from "@/components/extraction/RecipeLoadingSkeleton";
 import { RecipePreviewContent } from "@/components/recipe/RecipePreviewContent";
 import { ExtractionStatus } from "@/types/extraction";
 import type { Recipe } from "@/types/recipe";
@@ -26,7 +25,11 @@ export default function UnifiedRecipePreviewScreen() {
   const [isSaving, setIsSaving] = useState(false);
 
   // Poll extraction job status with resilient error handling
-  const { data: job, error: pollingError, startPolling } = usePolling({
+  const {
+    data: job,
+    error: pollingError,
+    startPolling,
+  } = usePolling({
     fn: async () => {
       if (!jobId) throw new Error("Job ID is required");
       return await extractionService.getJob(jobId);
@@ -123,15 +126,6 @@ export default function UnifiedRecipePreviewScreen() {
   if (job?.status === ExtractionStatus.FAILED) {
     return (
       <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
-        <Animated.View
-          entering={FadeIn}
-          className="border-b border-border bg-surface-elevated px-6 py-4"
-        >
-          <Text className="text-center text-lg font-semibold text-foreground-heading">
-            Recipe Preview
-          </Text>
-        </Animated.View>
-
         <View className="flex-1 items-center justify-center px-6">
           <Animated.View entering={FadeIn.delay(200)} className="items-center">
             <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-state-error/10">
@@ -160,15 +154,6 @@ export default function UnifiedRecipePreviewScreen() {
   if (pollingError && !job) {
     return (
       <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
-        <Animated.View
-          entering={FadeIn}
-          className="border-b border-border bg-surface-elevated px-6 py-4"
-        >
-          <Text className="text-center text-lg font-semibold text-foreground-heading">
-            Recipe Preview
-          </Text>
-        </Animated.View>
-
         <View className="flex-1 items-center justify-center px-6">
           <Animated.View entering={FadeIn.delay(200)} className="items-center">
             <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-state-warning/10">
@@ -198,16 +183,6 @@ export default function UnifiedRecipePreviewScreen() {
   if (recipe) {
     return (
       <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
-        {/* Header */}
-        <Animated.View
-          entering={FadeIn}
-          className="border-b border-border bg-surface-elevated px-6 py-4"
-        >
-          <Text className="text-center text-lg font-semibold text-foreground-heading">
-            Recipe Preview
-          </Text>
-        </Animated.View>
-
         {/* Recipe content with scroll */}
         <RecipePreviewContent recipe={recipe} showScrollView={true} />
 
@@ -247,33 +222,18 @@ export default function UnifiedRecipePreviewScreen() {
     );
   }
 
-  // Loading state - show progress and skeleton
+  // Loading state - show progress only
   return (
     <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
-      {/* Header */}
-      <Animated.View
-        entering={FadeIn}
-        className="border-b border-border bg-surface-elevated px-6 py-4"
-      >
-        <Text className="text-center text-lg font-semibold text-foreground-heading">
-          Recipe Preview
-        </Text>
-      </Animated.View>
-
-      {/* Progress indicator */}
+      {/* Progress indicator with animation */}
       {job && (
-        <Animated.View entering={FadeIn} exiting={FadeOut}>
+        <Animated.View entering={FadeIn} exiting={FadeOut} className="flex-1">
           <ExtractionProgress
             progress={job.progress_percentage ?? 0}
             currentStep={job.current_step}
           />
         </Animated.View>
       )}
-
-      {/* Loading skeleton */}
-      <View className="flex-1 py-6">
-        <RecipeLoadingSkeleton />
-      </View>
 
       {/* Debug info (optional - only in dev mode) */}
       {__DEV__ && job && (
