@@ -1,28 +1,35 @@
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, View, ActivityIndicator, Alert } from "react-native";
+import { ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRef, useState } from "react";
-import { useRouter } from "expo-router";
+import { useRef } from "react";
+import { Camera, Image as ImageIcon } from "phosphor-react-native";
 import { FAB } from "@/components/extraction/FAB";
 import {
   ExtractionMethodBottomSheet,
   type ExtractionMethodBottomSheetRef,
 } from "@/components/extraction/ExtractionMethodBottomSheet";
-import { ImagePreviewGrid } from "@/components/extraction/ImagePreviewGrid";
-import { useImagePicker, type PickedImage } from "@/hooks/useImagePicker";
-import { useImageExtraction } from "@/hooks/useImageExtraction";
+import { ImageConfirmationView } from "@/components/extraction/confirmation/ImageConfirmationView";
+import { useImageExtractionFlow } from "@/hooks/useImageExtractionFlow";
+import {
+  IMAGE_EXTRACTION_METHODS,
+  IMAGE_EXTRACTION_CONFIG,
+  type ExtractionSourceType,
+} from "@/config/extractionMethods";
 
 export default function Index() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { user, isLoading, isAnonymous } = useAuth();
-  const router = useRouter();
   const bottomSheetRef = useRef<ExtractionMethodBottomSheetRef>(null);
-  const [selectedImages, setSelectedImages] = useState<PickedImage[]>([]);
-  const { pickImages, isPickingImage } = useImagePicker();
-  const { submitImages, isSubmitting } = useImageExtraction();
+
+  // Use the image extraction flow hook
+  const {
+    handleSelectMethod,
+    handleConfirm,
+    handleAddMore,
+  } = useImageExtractionFlow(IMAGE_EXTRACTION_CONFIG.maxItems);
 
   const handleFABPress = () => {
     console.log("FAB pressed!");
@@ -41,50 +48,30 @@ export default function Index() {
     }
   };
 
-  const handleSelectMethod = async (method: "camera" | "gallery") => {
-    // Pick images from camera or gallery
-    const images = await pickImages(method, {
-      maxImages: 3,
-      allowsMultipleSelection: true,
-    });
-
+  const handleMethodSelect = async (method: ExtractionSourceType) => {
+    const images = await handleSelectMethod(method);
     if (images && images.length > 0) {
-      setSelectedImages(images);
       // Show confirmation view in bottom sheet
       bottomSheetRef.current?.showConfirmation(images);
     }
   };
 
-  const handleConfirmImages = async (images: PickedImage[]) => {
-    console.log("Submitting images for extraction...", images.length);
-    const response = await submitImages(images);
-    console.log("Extraction response:", response);
-
-    if (response) {
-      console.log("Navigating to extraction screen with job_id:", response.job_id);
-      // Dismiss bottom sheet and navigate to extraction progress screen
-      bottomSheetRef.current?.dismiss();
-      router.push({
-        pathname: "/extraction/[jobId]",
-        params: { jobId: response.job_id },
-      });
-    } else {
-      console.error("No response from submit images");
-      Alert.alert("Error", "Failed to submit images for extraction. Please try again.");
-    }
+  const handleConfirmImages = async (images: any[]) => {
+    await handleConfirm(images);
+    // Dismiss bottom sheet after successful submission
+    bottomSheetRef.current?.dismiss();
   };
 
-  const handleAddMoreImages = async (method: "camera" | "gallery"): Promise<PickedImage[] | null> => {
-    // Calculate how many more images can be added (max 3 total)
-    const remainingSlots = 3 - selectedImages.length;
-
-    const images = await pickImages(method, {
-      maxImages: remainingSlots,
-      allowsMultipleSelection: true,
-    });
-
-    return images;
-  };
+  // Add icons to methods
+  const methodsWithIcons = IMAGE_EXTRACTION_METHODS.map((method) => ({
+    ...method,
+    icon:
+      method.id === "camera" ? (
+        <Camera size={32} color="#334d43" weight="duotone" />
+      ) : (
+        <ImageIcon size={32} color="#334d43" weight="duotone" />
+      ),
+  }));
 
   return (
     <View className="flex-1 bg-surface">
@@ -170,9 +157,23 @@ export default function Index() {
       {/* Bottom sheet for extraction method selection */}
       <ExtractionMethodBottomSheet
         ref={bottomSheetRef}
-        onSelectMethod={handleSelectMethod}
-        onConfirmImages={handleConfirmImages}
-        onAddMoreImages={handleAddMoreImages}
+        methods={methodsWithIcons}
+        title="Add Recipe from Image"
+        onSelectMethod={handleMethodSelect}
+        onConfirm={handleConfirmImages}
+        onAddMore={handleAddMore}
+        renderConfirmation={(props) => (
+          <ImageConfirmationView
+            images={props.items}
+            uploadStates={props.uploadStates}
+            maxItems={IMAGE_EXTRACTION_CONFIG.maxItems}
+            onRemoveImage={props.onRemove}
+            onAddMore={props.onAddMore}
+            onConfirm={props.onConfirm}
+            onBack={props.onBack}
+            isUploading={props.isUploading}
+          />
+        )}
       />
     </View>
   );

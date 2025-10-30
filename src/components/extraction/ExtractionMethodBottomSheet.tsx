@@ -1,73 +1,65 @@
 /**
- * Bottom sheet for selecting extraction method and confirming images
+ * Bottom sheet for selecting extraction method and confirming content
+ * Generic component that supports multiple extraction types (image, video, URL, etc.)
  */
 import React, { forwardRef, useCallback, useImperativeHandle, useState } from "react";
-import { View, Text, Pressable, ActivityIndicator, ActionSheetIOS, Platform, Alert } from "react-native";
+import { View, Text, Pressable, ActionSheetIOS, Platform, Alert } from "react-native";
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
-import { Camera, Image as ImageIcon, Check, ArrowLeft } from "phosphor-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ImageUploadCard } from "./ImageUploadCard";
-import { AddPhotoCard } from "./AddPhotoCard";
-import type { PickedImage } from "@/hooks/useImagePicker";
+import type { ExtractionMethodConfig, ExtractionSourceType } from "@/config/extractionMethods";
 
-export interface ExtractionMethod {
-  id: "camera" | "gallery";
-  label: string;
-  icon: React.ReactNode;
-}
-
-export interface ExtractionMethodBottomSheetRef {
+export interface ExtractionMethodBottomSheetRef<T = any> {
   present: () => void;
   dismiss: () => void;
-  showConfirmation: (images: PickedImage[]) => void;
+  showConfirmation: (items: T[]) => void;
 }
 
-interface ExtractionMethodBottomSheetProps {
-  onSelectMethod: (method: "camera" | "gallery") => void;
-  onConfirmImages: (images: PickedImage[]) => void;
-  onAddMoreImages: (method: "camera" | "gallery") => Promise<PickedImage[] | null>;
+interface ExtractionMethodBottomSheetProps<T = any> {
+  methods: ExtractionMethodConfig[];
+  title?: string;
+  onSelectMethod: (method: ExtractionSourceType) => void;
+  onConfirm: (items: T[]) => void;
+  onAddMore?: (method: ExtractionSourceType) => Promise<T[] | null>;
+  renderConfirmation?: (props: ConfirmationRenderProps<T>) => React.ReactNode;
+}
+
+export interface ConfirmationRenderProps<T> {
+  items: T[];
+  uploadStates: Record<number, "uploading" | "completed" | "error">;
+  onRemove: (index: number) => void;
+  onAddMore: () => void;
+  onConfirm: () => void;
+  onBack: () => void;
+  isUploading: boolean;
 }
 
 export const ExtractionMethodBottomSheet = forwardRef<
   ExtractionMethodBottomSheetRef,
   ExtractionMethodBottomSheetProps
->(({ onSelectMethod, onConfirmImages, onAddMoreImages }, ref) => {
+>(({ methods, title = "Add Recipe", onSelectMethod, onConfirm, onAddMore, renderConfirmation }, ref) => {
   const bottomSheetRef = React.useRef<BottomSheetModal>(null);
   const [view, setView] = useState<"method" | "confirmation">("method");
-  const [selectedImages, setSelectedImages] = useState<PickedImage[]>([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [uploadingStates, setUploadingStates] = useState<
     Record<number, "uploading" | "completed" | "error">
   >({});
 
   const { bottom } = useSafeAreaInsets();
 
-  const methods: ExtractionMethod[] = [
-    {
-      id: "camera",
-      label: "Take Photos",
-      icon: <Camera size={32} color="#334d43" weight="duotone" />,
-    },
-    {
-      id: "gallery",
-      label: "Choose from Gallery",
-      icon: <ImageIcon size={32} color="#334d43" weight="duotone" />,
-    },
-  ];
-
   // Expose methods to parent via ref
   useImperativeHandle(ref, () => ({
     present: () => {
       setView("method");
-      setSelectedImages([]);
+      setSelectedItems([]);
       setUploadingStates({});
       bottomSheetRef.current?.present();
     },
     dismiss: () => {
       bottomSheetRef.current?.dismiss();
     },
-    showConfirmation: (images: PickedImage[]) => {
-      setSelectedImages(images);
+    showConfirmation: (items: any[]) => {
+      setSelectedItems(items);
       setView("confirmation");
       setUploadingStates({});
     },
@@ -75,7 +67,12 @@ export const ExtractionMethodBottomSheet = forwardRef<
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.5} />
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.5}
+      />
     ),
     []
   );
@@ -85,57 +82,57 @@ export const ExtractionMethodBottomSheet = forwardRef<
     if (index === -1) {
       // Reset when dismissed
       setView("method");
-      setSelectedImages([]);
+      setSelectedItems([]);
       setUploadingStates({});
     }
   }, []);
 
-  const handleRemoveImage = (index: number) => {
-    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveItem = (index: number) => {
+    setSelectedItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleConfirm = () => {
-    if (selectedImages.length === 0) return;
+  const handleConfirmInternal = () => {
+    if (selectedItems.length === 0) return;
 
-    // Set all images to uploading state
+    // Set all items to uploading state
     const initialStates: Record<number, "uploading"> = {};
-    selectedImages.forEach((_, index) => {
+    selectedItems.forEach((_, index) => {
       initialStates[index] = "uploading";
     });
     setUploadingStates(initialStates);
 
     // Call parent callback to handle upload
-    onConfirmImages(selectedImages);
+    onConfirm(selectedItems);
   };
 
   const handleBackToMethod = () => {
     setView("method");
-    setSelectedImages([]);
+    setSelectedItems([]);
     setUploadingStates({});
   };
 
-  const handleAddMorePhotos = () => {
-    if (isUploading) return;
+  const handleAddMoreInternal = () => {
+    if (isUploading || !onAddMore) return;
+
+    // Determine which methods support adding more
+    const addMoreMethods = methods.filter((m) => m.id === "camera" || m.id === "gallery");
+
+    if (addMoreMethods.length === 0) return;
 
     // Show native action sheet
     if (Platform.OS === "ios") {
+      const options = ["Cancel", ...addMoreMethods.map((m) => m.label)];
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ["Cancel", "Take Photo", "Choose from Library"],
+          options,
           cancelButtonIndex: 0,
         },
         async (buttonIndex) => {
-          if (buttonIndex === 1) {
-            // Take Photo
-            const newImages = await onAddMoreImages("camera");
-            if (newImages && newImages.length > 0) {
-              setSelectedImages((prev) => [...prev, ...newImages].slice(0, 3));
-            }
-          } else if (buttonIndex === 2) {
-            // Choose from Library
-            const newImages = await onAddMoreImages("gallery");
-            if (newImages && newImages.length > 0) {
-              setSelectedImages((prev) => [...prev, ...newImages].slice(0, 3));
+          if (buttonIndex > 0 && onAddMore) {
+            const selectedMethod = addMoreMethods[buttonIndex - 1];
+            const newItems = await onAddMore(selectedMethod.id);
+            if (newItems && newItems.length > 0) {
+              setSelectedItems((prev) => [...prev, ...newItems]);
             }
           }
         }
@@ -143,28 +140,21 @@ export const ExtractionMethodBottomSheet = forwardRef<
     } else {
       // Android - show alert dialog
       Alert.alert(
-        "Add Photo",
+        "Add More",
         "Choose an option",
         [
           { text: "Cancel", style: "cancel" },
-          {
-            text: "Take Photo",
+          ...addMoreMethods.map((method) => ({
+            text: method.label,
             onPress: async () => {
-              const newImages = await onAddMoreImages("camera");
-              if (newImages && newImages.length > 0) {
-                setSelectedImages((prev) => [...prev, ...newImages].slice(0, 3));
+              if (onAddMore) {
+                const newItems = await onAddMore(method.id);
+                if (newItems && newItems.length > 0) {
+                  setSelectedItems((prev) => [...prev, ...newItems]);
+                }
               }
             },
-          },
-          {
-            text: "Choose from Library",
-            onPress: async () => {
-              const newImages = await onAddMoreImages("gallery");
-              if (newImages && newImages.length > 0) {
-                setSelectedImages((prev) => [...prev, ...newImages].slice(0, 3));
-              }
-            },
-          },
+          })),
         ],
         { cancelable: true }
       );
@@ -172,7 +162,6 @@ export const ExtractionMethodBottomSheet = forwardRef<
   };
 
   const isUploading = Object.keys(uploadingStates).length > 0;
-  const canAddMore = selectedImages.length < 3 && !isUploading;
 
   return (
     <BottomSheetModal
@@ -187,12 +176,9 @@ export const ExtractionMethodBottomSheet = forwardRef<
     >
       {view === "method" ? (
         /* METHOD SELECTION VIEW */
-        <BottomSheetView
-          className="flex-1 bg-surface-elevated px-6 pt-4"
-          style={{ paddingBottom: bottom + 16 }}
-        >
+        <BottomSheetView className="flex-1 bg-surface-elevated px-6 pt-4" style={{ paddingBottom: bottom + 16 }}>
           <Text className="mb-6 text-center text-xl font-semibold text-foreground-heading">
-            Add Recipe from Image
+            {title}
           </Text>
 
           <View className="gap-4">
@@ -217,68 +203,15 @@ export const ExtractionMethodBottomSheet = forwardRef<
         </BottomSheetView>
       ) : (
         /* CONFIRMATION VIEW */
-        <BottomSheetView
-          className="max-h-[80vh] bg-surface-elevated px-6 pt-4"
-          style={{ paddingBottom: bottom + 16 }}
-        >
-          {/* Header */}
-          <View className="mb-4 flex-row items-center justify-between">
-            {!isUploading && (
-              <Pressable onPress={handleBackToMethod} className="p-1">
-                <ArrowLeft size={24} color="#6b5d4a" weight="regular" />
-              </Pressable>
-            )}
-            <Text className="flex-1 text-center text-base font-medium text-foreground-secondary">
-              {selectedImages.length} {selectedImages.length === 1 ? "image" : "images"} selected
-            </Text>
-            <View style={{ width: 24 }} />
-          </View>
-
-          {/* Image Grid - 3 columns, responsive */}
-          <View className="mb-4 flex-row flex-wrap justify-center gap-3">
-            {selectedImages.map((image, index) => (
-              <View key={`${image.uri}-${index}`} style={{ width: "31%" }}>
-                <ImageUploadCard
-                  image={image}
-                  uploadState={uploadingStates[index]}
-                  onRemove={isUploading ? undefined : () => handleRemoveImage(index)}
-                />
-              </View>
-            ))}
-            {canAddMore && (
-              <View style={{ width: "31%" }}>
-                <AddPhotoCard onPress={handleAddMorePhotos} />
-              </View>
-            )}
-          </View>
-
-          {/* Confirm Button */}
-          <View className="pb-4 pt-4">
-            {isUploading ? (
-              <View className="flex-row items-center justify-center gap-3 rounded-2xl bg-primary px-6 py-4">
-                <ActivityIndicator color="#fefdfb" />
-                <Text className="text-base font-semibold text-surface-elevated">
-                  Uploading images...
-                </Text>
-              </View>
-            ) : (
-              <Pressable
-                onPress={handleConfirm}
-                disabled={selectedImages.length === 0}
-                className={`flex-row items-center justify-center gap-2 rounded-2xl px-6 py-4 ${
-                  selectedImages.length === 0
-                    ? "bg-interactive-muted opacity-50"
-                    : "bg-primary active:bg-primary-dark"
-                }`}
-              >
-                <Check size={20} color="#fefdfb" weight="bold" />
-                <Text className="text-base font-semibold text-surface-elevated">
-                  Confirm & Extract Recipe
-                </Text>
-              </Pressable>
-            )}
-          </View>
-        </BottomSheetView>
+        renderConfirmation?.({
+          items: selectedItems,
+          uploadStates: uploadingStates,
+          onRemove: handleRemoveItem,
+          onAddMore: handleAddMoreInternal,
+          onConfirm: handleConfirmInternal,
+          onBack: handleBackToMethod,
+          isUploading,
+        })
       )}
     </BottomSheetModal>
   );
