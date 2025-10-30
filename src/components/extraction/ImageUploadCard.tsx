@@ -15,11 +15,7 @@ interface ImageUploadCardProps {
   onRemove?: () => void;
 }
 
-export function ImageUploadCard({
-  image,
-  uploadState,
-  onRemove,
-}: ImageUploadCardProps) {
+export function ImageUploadCard({ image, uploadState, onRemove }: ImageUploadCardProps) {
   const showOverlay = uploadState !== undefined;
   const isUploading = uploadState === "uploading";
   const isCompleted = uploadState === "completed";
@@ -28,21 +24,13 @@ export function ImageUploadCard({
   return (
     <View className="relative overflow-hidden rounded-2xl bg-surface-elevated shadow-sm">
       {/* Image */}
-      <Image
-        source={{ uri: image.uri }}
-        className="h-32 w-full"
-        resizeMode="cover"
-      />
+      <Image source={{ uri: image.uri }} className="h-32 w-full" resizeMode="cover" />
 
       {/* Upload overlay */}
       {showOverlay && (
         <View
           className={`absolute inset-0 items-center justify-center ${
-            isUploading
-              ? "bg-black/40"
-              : isCompleted
-                ? "bg-forest-500/20"
-                : "bg-red-500/20"
+            isUploading ? "bg-black/40" : isCompleted ? "bg-forest-500/20" : "bg-red-500/20"
           }`}
         >
           {isUploading && (

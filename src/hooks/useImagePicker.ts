@@ -3,7 +3,7 @@
  */
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { Alert, Platform } from "react-native";
+import { Alert } from "react-native";
 
 export type ImagePickerSource = "camera" | "gallery";
 

@@ -25,11 +25,9 @@ export default function Index() {
   const bottomSheetRef = useRef<ExtractionMethodBottomSheetRef>(null);
 
   // Use the image extraction flow hook
-  const {
-    handleSelectMethod,
-    handleConfirm,
-    handleAddMore,
-  } = useImageExtractionFlow(IMAGE_EXTRACTION_CONFIG.maxItems);
+  const { handleSelectMethod, handleConfirm, handleAddMore } = useImageExtractionFlow(
+    IMAGE_EXTRACTION_CONFIG.maxItems
+  );
 
   const handleFABPress = () => {
     console.log("FAB pressed!");
