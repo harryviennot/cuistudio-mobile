@@ -91,28 +91,24 @@ export default function UnifiedRecipePreviewScreen() {
   };
 
   const handleDiscard = () => {
-    Alert.alert(
-      t("recipe.discardRecipe"),
-      t("recipe.discardConfirm"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("recipe.discard"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              if (job?.recipe_id) {
-                await recipeService.deleteRecipe(job.recipe_id);
-              }
-              router.replace("/");
-            } catch (error) {
-              console.error("Error discarding recipe:", error);
-              Alert.alert(t("common.error"), t("recipe.failedToDiscard"));
+    Alert.alert(t("recipe.discardRecipe"), t("recipe.discardConfirm"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("recipe.discard"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            if (job?.recipe_id) {
+              await recipeService.deleteRecipe(job.recipe_id);
             }
-          },
+            router.replace("/");
+          } catch (error) {
+            console.error("Error discarding recipe:", error);
+            Alert.alert(t("common.error"), t("recipe.failedToDiscard"));
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   // Validate jobId
@@ -213,7 +209,9 @@ export default function UnifiedRecipePreviewScreen() {
               ) : (
                 <>
                   <CheckCircle size={24} color="#FFFFFF" weight="bold" />
-                  <Text className="text-base font-semibold text-white">{t("recipe.saveRecipe")}</Text>
+                  <Text className="text-base font-semibold text-white">
+                    {t("recipe.saveRecipe")}
+                  </Text>
                 </>
               )}
             </Pressable>

@@ -27,7 +27,10 @@ function groupByField<T extends { group?: string }>(items: T[]): Map<string, T[]
   return grouped;
 }
 
-export function RecipePreviewContent({ recipe, showScrollView = false }: RecipePreviewContentProps) {
+export function RecipePreviewContent({
+  recipe,
+  showScrollView = false,
+}: RecipePreviewContentProps) {
   const { t } = useTranslation();
 
   const content = (
@@ -47,7 +50,10 @@ export function RecipePreviewContent({ recipe, showScrollView = false }: RecipeP
       )}
 
       {/* Meta info */}
-      <Animated.View entering={FadeInDown.delay(200).duration(400)} className="mb-6 flex-row flex-wrap gap-3">
+      <Animated.View
+        entering={FadeInDown.delay(200).duration(400)}
+        className="mb-6 flex-row flex-wrap gap-3"
+      >
         {recipe.timings?.prep_time_minutes && (
           <View className="rounded-full bg-primary/10 px-4 py-2">
             <Text className="text-sm font-medium text-primary">
@@ -64,7 +70,9 @@ export function RecipePreviewContent({ recipe, showScrollView = false }: RecipeP
         )}
         {recipe.servings && (
           <View className="rounded-full bg-primary/10 px-4 py-2">
-            <Text className="text-sm font-medium text-primary">{t("recipe.servings")}: {recipe.servings}</Text>
+            <Text className="text-sm font-medium text-primary">
+              {t("recipe.servings")}: {recipe.servings}
+            </Text>
           </View>
         )}
       </Animated.View>
@@ -72,7 +80,9 @@ export function RecipePreviewContent({ recipe, showScrollView = false }: RecipeP
       {/* Ingredients */}
       {recipe.ingredients && recipe.ingredients.length > 0 && (
         <Animated.View entering={FadeInDown.delay(250).duration(400)} className="mb-8">
-          <Text className="mb-4 text-2xl font-bold text-foreground-heading">{t("recipe.ingredients")}</Text>
+          <Text className="mb-4 text-2xl font-bold text-foreground-heading">
+            {t("recipe.ingredients")}
+          </Text>
           <View className="gap-6">
             {(() => {
               const grouped = groupByField(recipe.ingredients);
@@ -125,7 +135,9 @@ export function RecipePreviewContent({ recipe, showScrollView = false }: RecipeP
       {/* Instructions */}
       {recipe.instructions && recipe.instructions.length > 0 && (
         <Animated.View entering={FadeInDown.delay(350).duration(400)} className="mb-8">
-          <Text className="mb-4 text-2xl font-bold text-foreground-heading">{t("recipe.instructions")}</Text>
+          <Text className="mb-4 text-2xl font-bold text-foreground-heading">
+            {t("recipe.instructions")}
+          </Text>
           <View className="gap-6">
             {(() => {
               const grouped = groupByField(recipe.instructions);

@@ -82,7 +82,10 @@ export function usePolling<T>({
       consecutiveErrorsRef.current += 1;
 
       // Log error but continue polling (unless max errors reached)
-      console.warn(`Polling error (attempt ${consecutiveErrorsRef.current}/${maxConsecutiveErrors || '∞'}):`, error.message);
+      console.warn(
+        `Polling error (attempt ${consecutiveErrorsRef.current}/${maxConsecutiveErrors || "∞"}):`,
+        error.message
+      );
       setError(error);
       onError?.(error);
 

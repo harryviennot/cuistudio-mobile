@@ -58,7 +58,10 @@ export default function Index() {
   // Add icons and translated labels to methods
   const methodsWithIcons = IMAGE_EXTRACTION_METHODS.map((method) => ({
     ...method,
-    label: method.id === "camera" ? t("extraction.methods.takePhotos") : t("extraction.methods.chooseGallery"),
+    label:
+      method.id === "camera"
+        ? t("extraction.methods.takePhotos")
+        : t("extraction.methods.chooseGallery"),
     icon:
       method.id === "camera" ? (
         <Camera size={32} color="#334d43" weight="duotone" />

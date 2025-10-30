@@ -57,11 +57,7 @@ export function ShimmeringTextRotator({
 
   // Animated gradient positions for shimmer
   const animatedGradientStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(
-      shimmerPosition.value,
-      [-1, 1],
-      [-300, 300]
-    );
+    const translateX = interpolate(shimmerPosition.value, [-1, 1], [-300, 300]);
 
     return {
       transform: [{ translateX }],
@@ -101,12 +97,14 @@ export function ShimmeringTextRotator({
         }
       >
         {/* Base color layer - terracotta orange with reduced opacity */}
-        <View style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingVertical: 10,
-        }}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingVertical: 10,
+          }}
+        >
           <Animated.Text
             className={`${textSize} font-semibold text-center`}
             style={{
