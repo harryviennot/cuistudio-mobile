@@ -89,7 +89,7 @@ export class ApiError extends Error {
 // ============================================================================
 
 // Get API URL from environment or use default
-const API_URL =
+export const API_URL =
   Constants.expoConfig?.extra?.apiUrl || process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
 
 // Default base path (can be overridden per request)

@@ -49,6 +49,7 @@ export function ExtractionProgress({ progress, currentStep }: ExtractionProgress
       -1,
       false
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const shimmerStyle = useAnimatedStyle(() => {
@@ -96,6 +97,7 @@ export function ExtractionProgress({ progress, currentStep }: ExtractionProgress
         );
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress]); // Trigger on every poll
 
   const progressBarStyle = useAnimatedStyle(() => ({

@@ -10,9 +10,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeIn, FadeOut, SlideInDown } from "react-native-reanimated";
 import { CheckCircle, X, ArrowCounterClockwise } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
-import { extractionService } from "@/api/services/extraction.service";
 import { recipeService } from "@/api/services/recipe.service";
-import { usePolling } from "@/hooks/usePolling";
+import { useExtractionJob } from "@/hooks/useExtractionJob";
 import { ExtractionProgress } from "@/components/extraction/ExtractionProgress";
 import { RecipePreviewContent } from "@/components/recipe/RecipePreviewContent";
 import { ExtractionStatus } from "@/types/extraction";
@@ -26,23 +25,13 @@ export default function UnifiedRecipePreviewScreen() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Poll extraction job status with resilient error handling
+  // Monitor extraction job with SSE and polling fallback
   const {
-    data: job,
-    error: pollingError,
-    startPolling,
-  } = usePolling({
-    fn: async () => {
-      if (!jobId) throw new Error("Job ID is required");
-      return await extractionService.getJob(jobId);
-    },
-    shouldStopPolling: (job) => {
-      return job.status === ExtractionStatus.COMPLETED || job.status === ExtractionStatus.FAILED;
-    },
-    interval: 2000,
-    enabled: !!jobId,
-    maxConsecutiveErrors: 10, // Allow up to 10 consecutive errors before giving up
-    errorRetryDelay: 3000, // Wait 3 seconds before retrying after an error
+    job,
+    error: jobError,
+    retry: retryConnection,
+  } = useExtractionJob({
+    jobId: jobId || "",
     onComplete: async (job) => {
       if (job.status === ExtractionStatus.COMPLETED && job.recipe_id) {
         // Fetch the recipe
@@ -51,8 +40,9 @@ export default function UnifiedRecipePreviewScreen() {
     },
     onError: (error) => {
       // Log error but don't alert user for temporary network issues
-      console.warn("Temporary polling error (will retry):", error.message);
+      console.warn("Connection error (will retry):", error.message);
     },
+    enableSSE: true, // Re-enabled with fixes - test carefully
   });
 
   const loadRecipe = async (recipeId: string) => {
@@ -67,7 +57,7 @@ export default function UnifiedRecipePreviewScreen() {
 
   const handleRetry = () => {
     setRecipe(null);
-    startPolling();
+    retryConnection();
   };
 
   const handleSave = async () => {
@@ -148,8 +138,8 @@ export default function UnifiedRecipePreviewScreen() {
     );
   }
 
-  // Polling error state (only shown after multiple consecutive failures)
-  if (pollingError && !job) {
+  // Connection error state (only shown after multiple consecutive failures)
+  if (jobError && !job) {
     return (
       <View className="flex-1 bg-surface" style={{ paddingTop: insets.top }}>
         <View className="flex-1 items-center justify-center px-6">

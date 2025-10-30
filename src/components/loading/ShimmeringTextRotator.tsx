@@ -31,7 +31,9 @@ export function ShimmeringTextRotator({
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Get fun messages from translations - 18 messages (0-17)
-  const FUN_SENTENCES = Array.from({ length: 18 }, (_, i) => t(`extraction.funMessages.${i}`));
+  const FUN_SENTENCES = Array.from({ length: 18 }, (_, i) =>
+    t(`extraction.funMessages.${i}` as any)
+  );
 
   // Shimmer animation - moves from left to right continuously
   const shimmerPosition = useSharedValue(-1);
@@ -64,7 +66,7 @@ export function ShimmeringTextRotator({
     };
   });
 
-  const currentText = FUN_SENTENCES[currentIndex];
+  const currentText = FUN_SENTENCES[currentIndex] as string;
 
   return (
     <View className="px-8 w-full">

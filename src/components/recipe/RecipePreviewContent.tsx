@@ -5,7 +5,7 @@
 import { View, Text, ScrollView } from "react-native";
 import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
-import type { Recipe, Ingredient, Instruction } from "@/types/recipe";
+import type { Recipe } from "@/types/recipe";
 
 interface RecipePreviewContentProps {
   recipe: Recipe;
