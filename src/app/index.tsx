@@ -44,7 +44,7 @@ export default function Index() {
   const handleSelectMethod = async (method: "camera" | "gallery") => {
     // Pick images from camera or gallery
     const images = await pickImages(method, {
-      maxImages: 5,
+      maxImages: 3,
       allowsMultipleSelection: true,
     });
 
@@ -72,6 +72,18 @@ export default function Index() {
       console.error("No response from submit images");
       Alert.alert("Error", "Failed to submit images for extraction. Please try again.");
     }
+  };
+
+  const handleAddMoreImages = async (method: "camera" | "gallery"): Promise<PickedImage[] | null> => {
+    // Calculate how many more images can be added (max 3 total)
+    const remainingSlots = 3 - selectedImages.length;
+
+    const images = await pickImages(method, {
+      maxImages: remainingSlots,
+      allowsMultipleSelection: true,
+    });
+
+    return images;
   };
 
   return (
@@ -160,6 +172,7 @@ export default function Index() {
         ref={bottomSheetRef}
         onSelectMethod={handleSelectMethod}
         onConfirmImages={handleConfirmImages}
+        onAddMoreImages={handleAddMoreImages}
       />
     </View>
   );

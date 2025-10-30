@@ -2,13 +2,14 @@
  * Bottom sheet for selecting extraction method and confirming images
  */
 import React, { forwardRef, useCallback, useImperativeHandle, useState } from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, ActionSheetIOS, Platform, Alert } from "react-native";
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
 import type { BottomSheetBackdropProps } from "@gorhom/bottom-sheet";
 import { Camera, Image as ImageIcon, Check, ArrowLeft } from "phosphor-react-native";
-import { ImageUploadCard } from "./ImageUploadCard";
-import type { PickedImage } from "@/hooks/useImagePicker";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ImageUploadCard } from "./ImageUploadCard";
+import { AddPhotoCard } from "./AddPhotoCard";
+import type { PickedImage } from "@/hooks/useImagePicker";
 
 export interface ExtractionMethod {
   id: "camera" | "gallery";
@@ -25,12 +26,13 @@ export interface ExtractionMethodBottomSheetRef {
 interface ExtractionMethodBottomSheetProps {
   onSelectMethod: (method: "camera" | "gallery") => void;
   onConfirmImages: (images: PickedImage[]) => void;
+  onAddMoreImages: (method: "camera" | "gallery") => Promise<PickedImage[] | null>;
 }
 
 export const ExtractionMethodBottomSheet = forwardRef<
   ExtractionMethodBottomSheetRef,
   ExtractionMethodBottomSheetProps
->(({ onSelectMethod, onConfirmImages }, ref) => {
+>(({ onSelectMethod, onConfirmImages, onAddMoreImages }, ref) => {
   const bottomSheetRef = React.useRef<BottomSheetModal>(null);
   const [view, setView] = useState<"method" | "confirmation">("method");
   const [selectedImages, setSelectedImages] = useState<PickedImage[]>([]);
@@ -112,7 +114,65 @@ export const ExtractionMethodBottomSheet = forwardRef<
     setUploadingStates({});
   };
 
+  const handleAddMorePhotos = () => {
+    if (isUploading) return;
+
+    // Show native action sheet
+    if (Platform.OS === "ios") {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ["Cancel", "Take Photo", "Choose from Library"],
+          cancelButtonIndex: 0,
+        },
+        async (buttonIndex) => {
+          if (buttonIndex === 1) {
+            // Take Photo
+            const newImages = await onAddMoreImages("camera");
+            if (newImages && newImages.length > 0) {
+              setSelectedImages((prev) => [...prev, ...newImages].slice(0, 3));
+            }
+          } else if (buttonIndex === 2) {
+            // Choose from Library
+            const newImages = await onAddMoreImages("gallery");
+            if (newImages && newImages.length > 0) {
+              setSelectedImages((prev) => [...prev, ...newImages].slice(0, 3));
+            }
+          }
+        }
+      );
+    } else {
+      // Android - show alert dialog
+      Alert.alert(
+        "Add Photo",
+        "Choose an option",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Take Photo",
+            onPress: async () => {
+              const newImages = await onAddMoreImages("camera");
+              if (newImages && newImages.length > 0) {
+                setSelectedImages((prev) => [...prev, ...newImages].slice(0, 3));
+              }
+            },
+          },
+          {
+            text: "Choose from Library",
+            onPress: async () => {
+              const newImages = await onAddMoreImages("gallery");
+              if (newImages && newImages.length > 0) {
+                setSelectedImages((prev) => [...prev, ...newImages].slice(0, 3));
+              }
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    }
+  };
+
   const isUploading = Object.keys(uploadingStates).length > 0;
+  const canAddMore = selectedImages.length < 3 && !isUploading;
 
   return (
     <BottomSheetModal
@@ -185,6 +245,11 @@ export const ExtractionMethodBottomSheet = forwardRef<
                 />
               </View>
             ))}
+            {canAddMore && (
+              <View style={{ width: "31%" }}>
+                <AddPhotoCard onPress={handleAddMorePhotos} />
+              </View>
+            )}
           </View>
 
           {/* Confirm Button */}
