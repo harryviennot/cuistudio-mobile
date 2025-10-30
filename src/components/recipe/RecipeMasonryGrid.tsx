@@ -5,11 +5,13 @@
 import { useCallback, useMemo } from "react";
 import { View, ScrollView, RefreshControl, ActivityIndicator, Text, Pressable } from "react-native";
 import { Plus, Warning } from "phosphor-react-native";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRecipes } from "@/hooks/useRecipes";
 import { RecipeCard } from "./RecipeCard";
 import type { Recipe } from "@/types/recipe";
 
 export function RecipeMasonryGrid() {
+  const queryClient = useQueryClient();
   const {
     data,
     isLoading,
@@ -20,6 +22,20 @@ export function RecipeMasonryGrid() {
     refetch,
     isRefetching,
   } = useRecipes();
+
+  // Handle pull-to-refresh: reset to first page only
+  const handleRefresh = useCallback(async () => {
+    // Clear cached pages and refetch only first page
+    queryClient.setQueryData(["recipes"], (oldData: any) => {
+      if (!oldData) return oldData;
+      // Keep only the first page
+      return {
+        pages: oldData.pages.slice(0, 1),
+        pageParams: oldData.pageParams.slice(0, 1),
+      };
+    });
+    await refetch();
+  }, [refetch, queryClient]);
 
   // Flatten all pages into a single array
   const recipes = data?.pages.flatMap((page) => page) ?? [];
@@ -56,9 +72,17 @@ export function RecipeMasonryGrid() {
     return { leftColumn, rightColumn };
   }, [recipes]);
 
-  const handleRetry = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  const handleRetry = useCallback(async () => {
+    // On error retry, reset to first page only
+    queryClient.setQueryData(["recipes"], (oldData: any) => {
+      if (!oldData) return oldData;
+      return {
+        pages: oldData.pages.slice(0, 1),
+        pageParams: oldData.pageParams.slice(0, 1),
+      };
+    });
+    await refetch();
+  }, [refetch, queryClient]);
 
   // Loading state (initial load)
   if (isLoading) {
@@ -126,7 +150,7 @@ export function RecipeMasonryGrid() {
       refreshControl={
         <RefreshControl
           refreshing={isRefetching}
-          onRefresh={refetch}
+          onRefresh={handleRefresh}
           tintColor="#334d43"
           colors={["#334d43"]}
         />

@@ -1,5 +1,6 @@
 /**
  * Custom hook for fetching recipes with infinite scroll pagination
+ * Optimized to reduce unnecessary refetches and improve performance
  */
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { recipeService } from "@/api/services/recipe.service";
@@ -24,5 +25,11 @@ export function useRecipes() {
       return nextOffset;
     },
     initialPageParam: 0,
+    // Performance optimizations
+    staleTime: 5 * 60 * 1000, // 5 minutes - data stays fresh
+    gcTime: 10 * 60 * 1000, // 10 minutes cache (formerly cacheTime)
+    refetchOnMount: false, // Don't refetch on mount if data is fresh
+    refetchOnWindowFocus: false, // Don't refetch when app comes to foreground
+    refetchOnReconnect: false, // Don't refetch when network reconnects (manual refresh available)
   });
 }
