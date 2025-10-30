@@ -77,7 +77,6 @@ export const ExtractionMethodBottomSheet = forwardRef<
     );
 
     const handleSheetChanges = useCallback((index: number) => {
-      console.log("Bottom sheet index changed to:", index);
       if (index === -1) {
         // Reset when dismissed
         setView("method");
@@ -188,7 +187,6 @@ export const ExtractionMethodBottomSheet = forwardRef<
                 <Pressable
                   key={method.id}
                   onPress={() => {
-                    console.log("Method selected:", method.id);
                     onSelectMethod(method.id);
                   }}
                   className="flex-row items-center gap-4 rounded-2xl border-2 border-border bg-surface-elevated p-6 active:bg-surface"

@@ -30,14 +30,9 @@ export default function Index() {
   );
 
   const handleFABPress = () => {
-    console.log("FAB pressed!");
-    console.log("bottomSheetRef.current:", bottomSheetRef.current);
-
     if (bottomSheetRef.current) {
-      console.log("Calling present() on bottom sheet...");
       try {
         bottomSheetRef.current.present();
-        console.log("present() called successfully");
       } catch (error) {
         console.error("Error calling present():", error);
       }
