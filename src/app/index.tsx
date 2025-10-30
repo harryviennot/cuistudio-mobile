@@ -5,9 +5,11 @@ import { ScrollView, Text, View, ActivityIndicator, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRef, useState } from "react";
 import { useRouter } from "expo-router";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { FAB } from "@/components/extraction/FAB";
-import { ExtractionMethodBottomSheet } from "@/components/extraction/ExtractionMethodBottomSheet";
+import {
+  ExtractionMethodBottomSheet,
+  type ExtractionMethodBottomSheetRef,
+} from "@/components/extraction/ExtractionMethodBottomSheet";
 import { ImagePreviewGrid } from "@/components/extraction/ImagePreviewGrid";
 import { useImagePicker, type PickedImage } from "@/hooks/useImagePicker";
 import { useImageExtraction } from "@/hooks/useImageExtraction";
@@ -17,7 +19,7 @@ export default function Index() {
   const insets = useSafeAreaInsets();
   const { user, isLoading, isAnonymous } = useAuth();
   const router = useRouter();
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const bottomSheetRef = useRef<ExtractionMethodBottomSheetRef>(null);
   const [selectedImages, setSelectedImages] = useState<PickedImage[]>([]);
   const { pickImages, isPickingImage } = useImagePicker();
   const { submitImages, isSubmitting } = useImageExtraction();
@@ -40,8 +42,7 @@ export default function Index() {
   };
 
   const handleSelectMethod = async (method: "camera" | "gallery") => {
-    bottomSheetRef.current?.dismiss();
-
+    // Pick images from camera or gallery
     const images = await pickImages(method, {
       maxImages: 5,
       allowsMultipleSelection: true,
@@ -49,18 +50,20 @@ export default function Index() {
 
     if (images && images.length > 0) {
       setSelectedImages(images);
-      handleSubmitExtraction(images);
+      // Show confirmation view in bottom sheet
+      bottomSheetRef.current?.showConfirmation(images);
     }
   };
 
-  const handleSubmitExtraction = async (images: PickedImage[]) => {
+  const handleConfirmImages = async (images: PickedImage[]) => {
     console.log("Submitting images for extraction...", images.length);
     const response = await submitImages(images);
     console.log("Extraction response:", response);
 
     if (response) {
       console.log("Navigating to extraction screen with job_id:", response.job_id);
-      // Navigate to extraction progress screen
+      // Dismiss bottom sheet and navigate to extraction progress screen
+      bottomSheetRef.current?.dismiss();
       router.push({
         pathname: "/extraction/[jobId]",
         params: { jobId: response.job_id },
@@ -153,7 +156,11 @@ export default function Index() {
       <FAB onPress={handleFABPress} />
 
       {/* Bottom sheet for extraction method selection */}
-      <ExtractionMethodBottomSheet ref={bottomSheetRef} onSelectMethod={handleSelectMethod} />
+      <ExtractionMethodBottomSheet
+        ref={bottomSheetRef}
+        onSelectMethod={handleSelectMethod}
+        onConfirmImages={handleConfirmImages}
+      />
     </View>
   );
 }

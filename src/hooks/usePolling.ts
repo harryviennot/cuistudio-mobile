@@ -1,38 +1,38 @@
 /**
  * Polling hook for periodic API requests
  */
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 
 interface UsePollingOptions<T> {
   /**
    * Function to call on each poll
    */
-  fn: () => Promise<T>
+  fn: () => Promise<T>;
 
   /**
    * Condition to determine when to stop polling
    */
-  shouldStopPolling: (data: T) => boolean
+  shouldStopPolling: (data: T) => boolean;
 
   /**
    * Interval in milliseconds (default: 2000ms)
    */
-  interval?: number
+  interval?: number;
 
   /**
    * Whether polling is enabled (default: true)
    */
-  enabled?: boolean
+  enabled?: boolean;
 
   /**
    * Callback when polling completes
    */
-  onComplete?: (data: T) => void
+  onComplete?: (data: T) => void;
 
   /**
    * Callback on error
    */
-  onError?: (error: Error) => void
+  onError?: (error: Error) => void;
 }
 
 export function usePolling<T>({
@@ -43,54 +43,54 @@ export function usePolling<T>({
   onComplete,
   onError,
 }: UsePollingOptions<T>) {
-  const [data, setData] = useState<T | null>(null)
-  const [isPolling, setIsPolling] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const [data, setData] = useState<T | null>(null);
+  const [isPolling, setIsPolling] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const poll = async () => {
     try {
-      const result = await fn()
-      setData(result)
+      const result = await fn();
+      setData(result);
 
       if (shouldStopPolling(result)) {
-        setIsPolling(false)
-        onComplete?.(result)
+        setIsPolling(false);
+        onComplete?.(result);
       } else {
         // Schedule next poll
-        timeoutRef.current = setTimeout(poll, interval)
+        timeoutRef.current = setTimeout(poll, interval);
       }
     } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err))
-      setError(error)
-      setIsPolling(false)
-      onError?.(error)
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error);
+      setIsPolling(false);
+      onError?.(error);
     }
-  }
+  };
 
   const startPolling = () => {
-    setIsPolling(true)
-    setError(null)
-    poll()
-  }
+    setIsPolling(true);
+    setError(null);
+    poll();
+  };
 
   const stopPolling = () => {
     if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
+      clearTimeout(timeoutRef.current);
     }
-    setIsPolling(false)
-  }
+    setIsPolling(false);
+  };
 
   useEffect(() => {
     if (enabled) {
-      startPolling()
+      startPolling();
     }
 
     return () => {
-      stopPolling()
-    }
+      stopPolling();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled])
+  }, [enabled]);
 
   return {
     data,
@@ -98,5 +98,5 @@ export function usePolling<T>({
     error,
     startPolling,
     stopPolling,
-  }
+  };
 }

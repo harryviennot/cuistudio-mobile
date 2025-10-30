@@ -1,15 +1,15 @@
 /**
  * Grid preview of selected images
  */
-import React from "react"
-import { View, Image, Pressable, Text, ScrollView } from "react-native"
-import { X } from "phosphor-react-native"
-import type { PickedImage } from "@/hooks/useImagePicker"
+import React from "react";
+import { View, Image, Pressable, Text, ScrollView } from "react-native";
+import { X } from "phosphor-react-native";
+import type { PickedImage } from "@/hooks/useImagePicker";
 
 interface ImagePreviewGridProps {
-  images: PickedImage[]
-  onRemoveImage?: (index: number) => void
-  editable?: boolean
+  images: PickedImage[];
+  onRemoveImage?: (index: number) => void;
+  editable?: boolean;
 }
 
 export function ImagePreviewGrid({
@@ -18,7 +18,7 @@ export function ImagePreviewGrid({
   editable = true,
 }: ImagePreviewGridProps) {
   if (images.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -51,5 +51,5 @@ export function ImagePreviewGrid({
         ))}
       </ScrollView>
     </View>
-  )
+  );
 }

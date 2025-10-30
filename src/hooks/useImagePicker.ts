@@ -1,71 +1,65 @@
 /**
  * Image picker hook with camera and gallery support
  */
-import { useState } from "react"
-import * as ImagePicker from "expo-image-picker"
-import { Alert, Platform } from "react-native"
+import { useState } from "react";
+import * as ImagePicker from "expo-image-picker";
+import { Alert, Platform } from "react-native";
 
-export type ImagePickerSource = "camera" | "gallery"
+export type ImagePickerSource = "camera" | "gallery";
 
 export interface PickedImage {
-  uri: string
-  type: string
-  name: string
-  size?: number
+  uri: string;
+  type: string;
+  name: string;
+  size?: number;
 }
 
 export function useImagePicker() {
-  const [isPickingImage, setIsPickingImage] = useState(false)
+  const [isPickingImage, setIsPickingImage] = useState(false);
 
-  const requestPermissions = async (
-    source: ImagePickerSource
-  ): Promise<boolean> => {
+  const requestPermissions = async (source: ImagePickerSource): Promise<boolean> => {
     if (source === "camera") {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync()
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(
-          "Permission Required",
-          "Camera permission is required to take photos."
-        )
-        return false
+        Alert.alert("Permission Required", "Camera permission is required to take photos.");
+        return false;
       }
     } else {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync()
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
         Alert.alert(
           "Permission Required",
           "Photo library permission is required to select images."
-        )
-        return false
+        );
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   const pickImages = async (
     source: ImagePickerSource,
     options?: {
-      maxImages?: number
-      allowsMultipleSelection?: boolean
+      maxImages?: number;
+      allowsMultipleSelection?: boolean;
     }
   ): Promise<PickedImage[] | null> => {
-    setIsPickingImage(true)
+    setIsPickingImage(true);
 
     try {
-      const hasPermission = await requestPermissions(source)
+      const hasPermission = await requestPermissions(source);
       if (!hasPermission) {
-        return null
+        return null;
       }
 
-      let result: ImagePicker.ImagePickerResult
+      let result: ImagePicker.ImagePickerResult;
 
       if (source === "camera") {
         result = await ImagePicker.launchCameraAsync({
           mediaTypes: ["images"],
           allowsEditing: false,
           quality: 0.8,
-        })
+        });
       } else {
         result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ["images"],
@@ -73,49 +67,47 @@ export function useImagePicker() {
           allowsMultipleSelection: options?.allowsMultipleSelection ?? true,
           quality: 0.8,
           selectionLimit: options?.maxImages ?? 5,
-        })
+        });
       }
 
       if (result.canceled) {
-        return null
+        return null;
       }
 
       const images: PickedImage[] = result.assets.map((asset, index) => {
-        const filename = asset.uri.split("/").pop() || `image-${index}.jpg`
-        const match = /\.(\w+)$/.exec(filename)
-        const type = match ? `image/${match[1]}` : "image/jpeg"
+        const filename = asset.uri.split("/").pop() || `image-${index}.jpg`;
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : "image/jpeg";
 
         return {
           uri: asset.uri,
           type,
           name: filename,
           size: asset.fileSize,
-        }
-      })
+        };
+      });
 
-      return images
+      return images;
     } catch (error) {
-      console.error("Error picking images:", error)
-      Alert.alert("Error", "Failed to pick images. Please try again.")
-      return null
+      console.error("Error picking images:", error);
+      Alert.alert("Error", "Failed to pick images. Please try again.");
+      return null;
     } finally {
-      setIsPickingImage(false)
+      setIsPickingImage(false);
     }
-  }
+  };
 
-  const pickSingleImage = async (
-    source: ImagePickerSource
-  ): Promise<PickedImage | null> => {
+  const pickSingleImage = async (source: ImagePickerSource): Promise<PickedImage | null> => {
     const images = await pickImages(source, {
       maxImages: 1,
       allowsMultipleSelection: false,
-    })
-    return images?.[0] ?? null
-  }
+    });
+    return images?.[0] ?? null;
+  };
 
   return {
     pickImages,
     pickSingleImage,
     isPickingImage,
-  }
+  };
 }
