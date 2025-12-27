@@ -80,15 +80,48 @@ const weights = new Map<IconWeight, React.ReactElement>([
   [
     "fill",
     <>
-      {/* Filled plate with food */}
-      <Path d="M128 128c-28.72 0-88 17.91-88 48 0 30.93 59.28 40 88 40s88-9.07 88-40c0-30.09-59.28-48-88-48Z" />
-      {/* Filled food mound */}
-      <Path d="M128 112c-28 0-48 20-48 40h96c0-20-20-40-48-40Z" />
-      {/* Decorative elements */}
-      <Circle cx="96" cy="120" r="16" />
-      <Circle cx="160" cy="120" r="16" />
-      {/* Steam */}
-      <Path d="M104 88V72a8 8 0 0 1 16 0v16a8 8 0 0 1-16 0Zm32-24v8a8 8 0 0 1 16 0v-8c0-8-8-16-8-24a8 8 0 0 0-16 0c0 8-8 16-8 24v8a8 8 0 0 0 16 0v-8Z" />
+      {/* Plate - filled */}
+      <Path
+        fill="currentColor"
+        d="M128 128c-48.6 0-88 20.35-88 48s39.4 48 88 48 88-20.35 88-48-39.4-48-88-48Z"
+      />
+      {/* Food mound - filled */}
+      <Path
+        fill="currentColor"
+        d="M128 104c-32 0-56 24-56 48h112c0-24-24-48-56-48Z"
+      />
+      {/* Decorative vegetables - outline for contrast */}
+      <Circle
+        cx="96"
+        cy="112"
+        r="12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={16}
+      />
+      <Circle
+        cx="160"
+        cy="112"
+        r="12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={16}
+      />
+      {/* Steam - outline */}
+      <Path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={16}
+        strokeLinecap="round"
+        d="M112 80V64c0-8 8-8 8-16"
+      />
+      <Path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={16}
+        strokeLinecap="round"
+        d="M144 80V64c0-8 8-8 8-16"
+      />
     </>,
   ],
 ]);

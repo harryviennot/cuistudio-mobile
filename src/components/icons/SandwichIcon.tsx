@@ -61,10 +61,24 @@ const weights = new Map<IconWeight, React.ReactElement>([
   [
     "fill",
     <>
-      {/* Filled sandwich */}
-      <Path d="M128 40c-52.94 0-96 28.65-96 64a24 24 0 0 0 8 17.87V128h176v-6.13A24 24 0 0 0 224 104c0-35.35-43.06-64-96-64Z" />
-      <Path d="M48 144v16a8 8 0 0 0 8 8h144a8 8 0 0 0 8-8v-16Z" />
-      <Path d="M208 184H48a16 16 0 0 0-16 16v8a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-8a16 16 0 0 0-16-16Z" />
+      {/* Top bread - filled */}
+      <Path
+        fill="currentColor"
+        d="M128 40c-52.94 0-96 28.65-96 64a24 24 0 0 0 8 17.87V128h176v-6.13A24 24 0 0 0 224 104c0-35.35-43.06-64-96-64Z"
+      />
+      {/* Middle filling - outline for contrast */}
+      <Path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={16}
+        strokeLinecap="round"
+        d="M56 144h144"
+      />
+      {/* Bottom bread - filled */}
+      <Path
+        fill="currentColor"
+        d="M208 176H48a16 16 0 0 0-16 16v8a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-8a16 16 0 0 0-16-16Z"
+      />
     </>,
   ],
 ]);
