@@ -6,44 +6,51 @@ import { Text } from "react-native";
 import * as Haptics from "expo-haptics";
 import type { Icon } from "phosphor-react-native";
 import {
-  SquaresFour,
-  ForkKnife,
-  Leaf,
-  Hamburger,
-  Wine,
-  Cookie,
-  Bread,
-  Coffee,
-  Martini,
-  Egg,
-  BowlFood,
-  Drop,
-  Fire,
-  Popcorn,
+  SquaresFourIcon,
+  ForkKnifeIcon,
+  BowlSteamIcon,
+  ShrimpIcon,
+  CheeseIcon,
+  IceCreamIcon,
+  BreadIcon,
+  MartiniIcon,
+  PopcornIcon,
+  GrainsIcon,
+  PintGlassIcon
 } from "phosphor-react-native";
 import { ShadowItem } from "../ShadowedSection";
 import type { TabComponentProps } from "../ui/HorizontalTabBar";
+import {
+  SaladIcon,
+  SandwichIcon,
+  BeverageIcon,
+  BreakfastIcon,
+  SidesIcon,
+  SauceDipIcon,
+  GrillIcon,
+  PastaIcon,
+} from "../icons";
 
-// Map category slugs to Phosphor icons
+// Map category slugs to icons (Phosphor + custom)
 const CATEGORY_ICONS: Record<string, Icon> = {
-  all: SquaresFour,
-  "main-dishes": ForkKnife,
-  soups: BowlFood,
-  salads: Leaf,
-  "pasta-noodles": ForkKnife,
-  sandwiches: Hamburger,
-  appetizers: Wine,
-  apero: Wine,
-  desserts: Cookie,
-  "baked-goods": Bread,
-  beverages: Coffee,
-  cocktails: Martini,
-  breakfast: Egg,
-  sides: BowlFood,
-  "sauces-dips": Drop,
-  snacks: Popcorn,
-  grilled: Fire,
-  "bowls-grains": BowlFood,
+  all: SquaresFourIcon,
+  "main-dishes": ForkKnifeIcon,
+  soups: BowlSteamIcon,
+  salads: SaladIcon,
+  "pasta-noodles": PastaIcon,
+  sandwiches: SandwichIcon,
+  appetizers: ShrimpIcon,
+  apero: CheeseIcon,
+  desserts: IceCreamIcon,
+  "baked-goods": BreadIcon,
+  beverages: PintGlassIcon,
+  cocktails: MartiniIcon,
+  breakfast: BreakfastIcon,
+  sides: SidesIcon,
+  "sauces-dips": SauceDipIcon,
+  snacks: PopcornIcon,
+  grilled: GrillIcon,
+  "bowls-grains": GrainsIcon,
 };
 
 interface CategoryChipProps {
@@ -58,7 +65,7 @@ interface CategoryChipProps {
 }
 
 export function CategoryChip({ slug, label, isSelected, onPress }: CategoryChipProps) {
-  const IconComponent = CATEGORY_ICONS[slug] || ForkKnife;
+  const IconComponent = CATEGORY_ICONS[slug] || ForkKnifeIcon;
 
   const handlePress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -95,7 +102,7 @@ export function CategoryChip({ slug, label, isSelected, onPress }: CategoryChipP
  */
 export function CategoryTabChip({ tab, isActive, onPress }: TabComponentProps) {
   const slug = tab.value?.slug || tab.id;
-  const IconComponent = CATEGORY_ICONS[slug] || ForkKnife;
+  const IconComponent = CATEGORY_ICONS[slug] || ForkKnifeIcon;
 
   return (
     <ShadowItem
