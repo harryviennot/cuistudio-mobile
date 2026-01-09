@@ -57,14 +57,37 @@ const HorizontalTabBar: React.FC<HorizontalTabBarProps> = ({
   const indicatorWidth = useRef(new Animated.Value(0)).current;
   const screenWidth = Dimensions.get("window").width;
 
-  // Find initial active index
+  // Track if the last change was from internal selection (to avoid duplicate scroll)
+  const isInternalChangeRef = useRef(false);
+
+  // Find initial active index and scroll to it when activeTabId changes externally
   useEffect(() => {
     if (activeTabId) {
       const index = tabs.findIndex((tab) => tab.id === activeTabId);
+
       if (index !== -1 && index !== activeIndex) {
         setActiveIndex(index);
+
+        // Only scroll if this is an external change (not from selectTab)
+        if (!isInternalChangeRef.current) {
+          // Use setTimeout to ensure refs are measured after render
+          setTimeout(() => {
+            const selected = itemsRef.current[index];
+            if (selected) {
+              selected.measure((x) => {
+                scrollRef.current?.scrollTo({
+                  x: Math.max(0, x - 16),
+                  animated: true,
+                });
+              });
+            }
+          }, 50);
+        }
       }
     }
+
+    // Reset the internal change flag
+    isInternalChangeRef.current = false;
   }, [activeTabId, tabs]);
 
   // Measure content width and determine if scrolling is needed
@@ -127,6 +150,8 @@ const HorizontalTabBar: React.FC<HorizontalTabBarProps> = ({
     (index: number) => {
       if (index === activeIndex) return; // Prevent unnecessary updates
 
+      // Mark this as an internal change so the effect doesn't duplicate the scroll
+      isInternalChangeRef.current = true;
       setActiveIndex(index);
       const selected = itemsRef.current[index];
       selected?.measure((x, y, width) => {
