@@ -16,15 +16,14 @@ import {
   MartiniIcon,
   PopcornIcon,
   GrainsIcon,
-  PintGlassIcon
+  PintGlassIcon,
+  HamburgerIcon,
 } from "phosphor-react-native";
 import { ShadowItem } from "../ShadowedSection";
 import type { TabComponentProps } from "../ui/HorizontalTabBar";
 import {
   SaladIcon,
-  SandwichIcon,
-  BeverageIcon,
-  BreakfastIcon,
+  CroissantIcon,
   SidesIcon,
   SauceDipIcon,
   GrillIcon,
@@ -38,14 +37,14 @@ const CATEGORY_ICONS: Record<string, Icon> = {
   soups: BowlSteamIcon,
   salads: SaladIcon,
   "pasta-noodles": PastaIcon,
-  sandwiches: SandwichIcon,
+  sandwiches: HamburgerIcon,
   appetizers: ShrimpIcon,
   apero: CheeseIcon,
   desserts: IceCreamIcon,
   "baked-goods": BreadIcon,
   beverages: PintGlassIcon,
   cocktails: MartiniIcon,
-  breakfast: BreakfastIcon,
+  breakfast: CroissantIcon,
   sides: SidesIcon,
   "sauces-dips": SauceDipIcon,
   snacks: PopcornIcon,
@@ -80,11 +79,11 @@ export function CategoryChip({ slug, label, isSelected, onPress }: CategoryChipP
         opacity: pressed ? 0.7 : 1,
       })}
     >
-      <IconComponent
+      {/* <IconComponent
         size={16}
         color={isSelected ? "#334d43" : "#8a8177"}
         weight={isSelected ? "fill" : "regular"}
-      />
+      /> */}
       <Text
         className={`text-sm font-semibold ${isSelected ? "text-primary" : "text-foreground-secondary"
           }`}
@@ -115,10 +114,10 @@ export function CategoryTabChip({ tab, isActive, onPress }: TabComponentProps) {
       <IconComponent
         size={16}
         color={isActive ? "#334d43" : "#8a8177"}
-        weight={isActive ? "fill" : "regular"}
+        weight={isActive ? "fill" : "bold"}
       />
       <Text
-        className={`text-sm font-semibold ${isActive ? "text-primary" : "text-foreground-secondary"}`}
+        className={`text-sm font-semibold  ${isActive ? "text-primary" : "text-foreground-secondary"}`}
         numberOfLines={1}
       >
         {tab.label}

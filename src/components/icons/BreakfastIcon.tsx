@@ -84,6 +84,81 @@ const weights = new Map<IconWeight, React.ReactElement>([
     </>,
   ],
   [
+    "bold",
+    <>
+      {/* Plate */}
+      <Ellipse
+        cx="128"
+        cy="200"
+        rx="96"
+        ry="24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Bottom pancake */}
+      <Ellipse
+        cx="128"
+        cy="168"
+        rx="72"
+        ry="20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Middle pancake */}
+      <Ellipse
+        cx="128"
+        cy="128"
+        rx="64"
+        ry="18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Top pancake */}
+      <Ellipse
+        cx="128"
+        cy="92"
+        rx="56"
+        ry="16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Butter pat */}
+      <Rect
+        x="112"
+        y="56"
+        width="32"
+        height="20"
+        rx="4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Syrup drip */}
+      <Path
+        d="M168 92c8 4 16 16 16 32"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </>,
+  ],
+  [
     "fill",
     <>
       {/* Plate - outline for contrast */}

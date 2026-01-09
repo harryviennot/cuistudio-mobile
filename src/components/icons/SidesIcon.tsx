@@ -1,74 +1,34 @@
 /**
- * SidesIcon - Small plate with portion of food
+ * SidesIcon - Avocado
  * Custom icon matching Phosphor style for the sides category
  */
 import React from "react";
-import { Path, Ellipse, Circle } from "react-native-svg";
+import { Circle, Path } from "react-native-svg";
 import type { Icon, IconProps, IconWeight } from "phosphor-react-native";
 import { IconBase } from "./IconBase";
+
+// From avocado.svg (already 256x256 viewBox)
+const bodyPath =
+  "M82.73,48a48,48,0,0,1,90.9,1l29.82,84.28a80,80,0,1,1-150.26-1.74Z";
 
 const weights = new Map<IconWeight, React.ReactElement>([
   [
     "regular",
     <>
-      {/* Small plate/bowl */}
-      <Path
-        d="M48 160c0 24 36 48 80 48s80-24 80-48"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={16}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Plate rim */}
-      <Ellipse
+      {/* Avocado pit */}
+      <Circle
         cx="128"
         cy="160"
-        rx="80"
-        ry="24"
+        r="40"
         fill="none"
         stroke="currentColor"
         strokeWidth={16}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Food portion - rice/grains mound */}
+      {/* Avocado body */}
       <Path
-        d="M88 160c0-16 16-40 40-40s40 24 40 40"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={16}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Decorative vegetable pieces */}
-      <Circle
-        cx="96"
-        cy="128"
-        r="8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={16}
-      />
-      <Circle
-        cx="160"
-        cy="128"
-        r="8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={16}
-      />
-      {/* Steam lines */}
-      <Path
-        d="M112 96v-16c0-8 8-8 8-16"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={16}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M144 96v-16c0-8 8-8 8-16"
+        d={bodyPath}
         fill="none"
         stroke="currentColor"
         strokeWidth={16}
@@ -78,49 +38,40 @@ const weights = new Map<IconWeight, React.ReactElement>([
     </>,
   ],
   [
+    "bold",
+    <>
+      {/* Avocado pit */}
+      <Circle
+        cx="128"
+        cy="160"
+        r="40"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={28}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Avocado body */}
+      <Path
+        d={bodyPath}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={
+          28
+        }
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </>,
+  ],
+  [
     "fill",
     <>
-      {/* Plate - filled */}
+      {/* Avocado body with pit cutout - using fill-rule evenodd */}
       <Path
+        d={`${bodyPath} M128,120 a40,40 0 1,0 0,80 a40,40 0 1,0 0,-80 Z`}
         fill="currentColor"
-        d="M128 128c-48.6 0-88 20.35-88 48s39.4 48 88 48 88-20.35 88-48-39.4-48-88-48Z"
-      />
-      {/* Food mound - filled */}
-      <Path
-        fill="currentColor"
-        d="M128 104c-32 0-56 24-56 48h112c0-24-24-48-56-48Z"
-      />
-      {/* Decorative vegetables - outline for contrast */}
-      <Circle
-        cx="96"
-        cy="112"
-        r="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={16}
-      />
-      <Circle
-        cx="160"
-        cy="112"
-        r="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={16}
-      />
-      {/* Steam - outline */}
-      <Path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={16}
-        strokeLinecap="round"
-        d="M112 80V64c0-8 8-8 8-16"
-      />
-      <Path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={16}
-        strokeLinecap="round"
-        d="M144 80V64c0-8 8-8 8-16"
+        fillRule="evenodd"
       />
     </>,
   ],

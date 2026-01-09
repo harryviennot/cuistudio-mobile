@@ -50,6 +50,47 @@ const weights = new Map<IconWeight, React.ReactElement>([
     </>,
   ],
   [
+    "bold",
+    <>
+      {/* Bowl */}
+      <Path
+        d="M224 120a96 96 0 0 1-56 87.3v8.7a8 8 0 0 1-8 8H96a8 8 0 0 1-8-8v-8.7A96 96 0 0 1 32 120h192Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Left lettuce leaf */}
+      <Path
+        d="M80 120c0-24 8-40 24-52s20-32 8-48"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Center lettuce leaf */}
+      <Path
+        d="M128 120c0-28 0-48 0-72s8-28 0-28"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Right lettuce leaf */}
+      <Path
+        d="M176 120c0-24-8-40-24-52s-20-32-8-48"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </>,
+  ],
+  [
     "fill",
     <>
       {/* Bowl filled */}

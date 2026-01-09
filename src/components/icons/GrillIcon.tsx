@@ -74,6 +74,71 @@ const weights = new Map<IconWeight, React.ReactElement>([
     </>,
   ],
   [
+    "bold",
+    <>
+      {/* Grill body - round kettle style */}
+      <Path
+        d="M48 128a80 80 0 0 0 160 0"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Grill rim */}
+      <Path
+        d="M40 128h176"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Legs */}
+      <Path
+        d="M80 192v32"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M176 192v32"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Steam/smoke */}
+      <Path
+        d="M96 96V72c0-8 8-8 8-16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M128 96V64c0-8 8-8 8-16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M160 96V72c0-8 8-8 8-16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={24}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </>,
+  ],
+  [
     "fill",
     <>
       {/* Grill body - filled */}
