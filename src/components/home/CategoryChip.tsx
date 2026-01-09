@@ -31,7 +31,7 @@ import {
 } from "../icons";
 
 // Map category slugs to icons (Phosphor + custom)
-const CATEGORY_ICONS: Record<string, Icon> = {
+export const CATEGORY_ICONS: Record<string, Icon> = {
   all: SquaresFourIcon,
   "main-dishes": ForkKnifeIcon,
   soups: BowlSteamIcon,
@@ -52,47 +52,24 @@ const CATEGORY_ICONS: Record<string, Icon> = {
   "bowls-grains": GrainsIcon,
 };
 
-interface CategoryChipProps {
-  /** Category slug for icon lookup */
+/**
+ * CategoryIcon - Renders the icon for a category based on its slug
+ */
+interface CategoryIconProps {
   slug: string;
-  /** Display label (translated) */
-  label: string;
-  /** Whether this chip is currently selected */
-  isSelected: boolean;
-  /** Callback when chip is pressed */
-  onPress: () => void;
+  size?: number;
+  color?: string;
+  weight?: "regular" | "bold" | "fill";
 }
 
-export function CategoryChip({ slug, label, isSelected, onPress }: CategoryChipProps) {
+export function CategoryIcon({
+  slug,
+  size = 16,
+  color = "#334d43",
+  weight = "bold",
+}: CategoryIconProps) {
   const IconComponent = CATEGORY_ICONS[slug] || ForkKnifeIcon;
-
-  const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onPress();
-  }, [onPress]);
-
-  return (
-    <ShadowItem
-      onPress={handlePress}
-      className={`flex-row gap-2 py-2.5 px-4 rounded-full ${isSelected && "border-primary bg-primary/10"}`}
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.7 : 1,
-      })}
-    >
-      {/* <IconComponent
-        size={16}
-        color={isSelected ? "#334d43" : "#8a8177"}
-        weight={isSelected ? "fill" : "regular"}
-      /> */}
-      <Text
-        className={`text-sm font-semibold ${isSelected ? "text-primary" : "text-foreground-secondary"
-          }`}
-        numberOfLines={1}
-      >
-        {label}
-      </Text>
-    </ShadowItem>
-  );
+  return <IconComponent size={size} color={color} weight={weight} />;
 }
 
 /**
@@ -121,6 +98,40 @@ export function CategoryTabChip({ tab, isActive, onPress }: TabComponentProps) {
         numberOfLines={1}
       >
         {tab.label}
+      </Text>
+    </ShadowItem>
+  );
+}
+
+/**
+ * RecipeCategoryBadge - Category badge for recipe detail header
+ * Styled like an inactive CategoryTabChip but standalone
+ */
+interface RecipeCategoryBadgeProps {
+  slug: string;
+  label: string;
+  onPress?: () => void;
+}
+
+export function RecipeCategoryBadge({ slug, label, onPress }: RecipeCategoryBadgeProps) {
+  const IconComponent = CATEGORY_ICONS[slug] || ForkKnifeIcon;
+
+  const handlePress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress?.();
+  }, [onPress]);
+
+  return (
+    <ShadowItem
+      onPress={handlePress}
+      className="flex-row gap-2 py-2.5 px-4 rounded-full"
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.7 : 1,
+      })}
+    >
+      <IconComponent size={16} color="#8a8177" weight="bold" />
+      <Text className="text-sm font-semibold text-foreground-secondary" numberOfLines={1}>
+        {label}
       </Text>
     </ShadowItem>
   );

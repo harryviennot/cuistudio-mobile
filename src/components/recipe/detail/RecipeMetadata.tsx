@@ -71,8 +71,8 @@ export const RecipeMetadata = memo(function RecipeMetadata({
         source_url={recipe?.source_url}
       />
 
-      {/* Tags */}
-      <RecipeTags category={recipe.category} tags={recipe.tags} />
+      {/* Tags (Category is now displayed in RecipeHeader) */}
+      <RecipeTags tags={recipe.tags} />
     </>
   );
 });

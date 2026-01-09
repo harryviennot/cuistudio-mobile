@@ -12,7 +12,8 @@ import { View, Text, ActivityIndicator, Pressable, TouchableOpacity } from "reac
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useMemo, useRef, useEffect } from "react";
 import { WarningIcon, MagnifyingGlassIcon, ChefHatIcon, Faders } from "phosphor-react-native";
-import { router } from "expo-router";
+import { router, useGlobalSearchParams } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
 import { useAnimatedScrollHandler, useSharedValue, useDerivedValue } from "react-native-reanimated";
 
 import { MasonryGrid, type MasonryGridRef } from "@/components/home/MasonryGrid";
@@ -36,6 +37,7 @@ import HorizontalTabBar from "@/components/ui/HorizontalTabBar";
 export default function Index() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { categoryId } = useGlobalSearchParams<{ categoryId?: string }>();
 
   // Header padding calculation
   const headerTopPadding = insets.top + 28;
@@ -51,6 +53,19 @@ export default function Index() {
   // Category filtering
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   const categoryFilter = useCategoryFilter();
+
+  // Track if screen is focused
+  const isFocused = useIsFocused();
+
+  // Handle category from URL params (e.g., from recipe detail page)
+  // Runs when screen comes into focus with a categoryId param
+  useEffect(() => {
+    console.log("[HomeScreen] Focus effect - isFocused:", isFocused, "categoryId:", categoryId);
+    if (isFocused && categoryId) {
+      console.log("[HomeScreen] Selecting category from URL param:", categoryId);
+      categoryFilter.selectCategory(categoryId);
+    }
+  }, [isFocused, categoryId, categoryFilter.selectCategory]);
 
   // Ref to the masonry grid for scroll control
   const gridRef = useRef<MasonryGridRef>(null);
