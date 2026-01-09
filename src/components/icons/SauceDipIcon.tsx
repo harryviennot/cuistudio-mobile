@@ -30,7 +30,7 @@ const filledPath5 =
 const weights = new Map<IconWeight, React.ReactElement>([
   [
     "regular",
-    <G transform="translate(14, 14) scale(1.7)">
+    <G key="regular" transform="translate(14, 14) scale(1.7)">
       <Path
         d={outlinePath}
         stroke="currentColor"
@@ -42,7 +42,7 @@ const weights = new Map<IconWeight, React.ReactElement>([
   ],
   [
     "bold",
-    <G transform="translate(14, 14) scale(1.7)">
+    <G key="bold" transform="translate(14, 14) scale(1.7)">
       <Path
         d={outlinePath}
         stroke="currentColor"
@@ -54,7 +54,7 @@ const weights = new Map<IconWeight, React.ReactElement>([
   ],
   [
     "fill",
-    <G transform="translate(14, 14) scale(1.7)">
+    <G key="fill" transform="translate(14, 14) scale(1.7)">
       <Path d={filledPath1} fill="currentColor" />
       <Path d={filledPath2} fill="currentColor" />
       <Path d={filledPath3} fill="currentColor" />

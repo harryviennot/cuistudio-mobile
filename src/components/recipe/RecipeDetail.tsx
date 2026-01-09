@@ -3,7 +3,7 @@
  * Uses split components for better maintainability and performance
  */
 import React, { useState, useEffect, memo, useCallback } from "react";
-import { View, Alert, TouchableOpacity } from "react-native";
+import { View, Alert, TouchableOpacity, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   useAnimatedScrollHandler,
@@ -27,7 +27,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useDeleteRecipe } from "@/hooks/useRecipes";
 import { useToggleFavorite } from "@/hooks/useCollections";
 
-import type { Recipe } from "@/types/recipe";
+import type { Recipe, Category } from "@/types/recipe";
 import { UnifiedStickyHeader } from "@/components/ui/UnifiedStickyHeader";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -46,8 +46,6 @@ import {
 import { t } from "i18next";
 import { router } from "expo-router";
 import { RecipeCategoryBadge } from "@/components/home/CategoryChip";
-import type { Category } from "@/types/recipe";
-import { useWindowDimensions } from "react-native";
 
 /**
  * Floating Category Badge - sits above the ScrollView to receive touch events
@@ -194,6 +192,23 @@ export const RecipeDetail = memo<RecipeDetailProps>(function RecipeDetail({
     }
   }, [isTabletLandscape, scrollY]);
 
+  // Handle category badge press - navigate to home with category filter
+  // Must be defined before early returns to follow rules of hooks
+  const handleCategoryPress = useCallback(() => {
+    console.log("[RecipeDetail] Category badge pressed");
+    console.log("[RecipeDetail] Category:", recipe?.category);
+    if (recipe?.category?.id) {
+      console.log("[RecipeDetail] Navigating to home with categoryId:", recipe.category.id);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      router.dismissTo({
+        pathname: "/(protected)/(tabs)",
+        params: { categoryId: recipe.category.id },
+      });
+    } else {
+      console.log("[RecipeDetail] No category id found, not navigating");
+    }
+  }, [recipe?.category]);
+
   // Handle error state
   if (error) {
     return (
@@ -263,22 +278,6 @@ export const RecipeDetail = memo<RecipeDetailProps>(function RecipeDetail({
       },
     ]);
   };
-
-  // Handle category badge press - navigate to home with category filter
-  const handleCategoryPress = useCallback(() => {
-    console.log("[RecipeDetail] Category badge pressed");
-    console.log("[RecipeDetail] Category:", displayRecipe.category);
-    if (displayRecipe.category?.id) {
-      console.log("[RecipeDetail] Navigating to home with categoryId:", displayRecipe.category.id);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      router.dismissTo({
-        pathname: "/(protected)/(tabs)",
-        params: { categoryId: displayRecipe.category.id },
-      });
-    } else {
-      console.log("[RecipeDetail] No category id found, not navigating");
-    }
-  }, [displayRecipe.category]);
 
   // Calculate scroll thresholds for header animation
   const titleAbsoluteY = imageHeight - insets.top - 12;

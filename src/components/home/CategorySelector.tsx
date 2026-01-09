@@ -5,7 +5,6 @@
  * Includes an "All" option at the beginning (default selected).
  */
 import React, { useMemo } from "react";
-import { View, ActivityIndicator } from "react-native";
 import { useTranslation } from "react-i18next";
 import { CategoryTabChip } from "./CategoryChip";
 import HorizontalTabBar, { type TabItem } from "../ui/HorizontalTabBar";
@@ -18,26 +17,14 @@ interface CategorySelectorProps {
   selectedCategoryId: string | null;
   /** Callback when a category is selected */
   onSelectCategory: (categoryId: string | null) => void;
-  /** Whether categories are still loading */
-  isLoading?: boolean;
 }
 
 export function CategorySelector({
   categories,
   selectedCategoryId,
   onSelectCategory,
-  isLoading = false,
 }: CategorySelectorProps) {
   const { t } = useTranslation();
-
-  // Render loading state
-  if (isLoading) {
-    return (
-      <View className="h-12 justify-center px-6">
-        <ActivityIndicator size="small" color="#334d43" />
-      </View>
-    );
-  }
 
   // Sort categories by display_order and convert to TabItem format
   const tabs: TabItem[] = useMemo(() => {

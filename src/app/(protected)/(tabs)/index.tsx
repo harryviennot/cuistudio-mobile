@@ -32,7 +32,6 @@ import {
 } from "@/components/home";
 import { DISCOVERY_CONSTANTS } from "@/types/discovery";
 import { useTranslation } from "react-i18next";
-import HorizontalTabBar from "@/components/ui/HorizontalTabBar";
 
 export default function Index() {
   const { t } = useTranslation();
@@ -51,7 +50,7 @@ export default function Index() {
     useDiscovery();
 
   // Category filtering
-  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: categories = [] } = useCategories();
   const categoryFilter = useCategoryFilter();
 
   // Track if screen is focused
@@ -65,6 +64,7 @@ export default function Index() {
       console.log("[HomeScreen] Selecting category from URL param:", categoryId);
       categoryFilter.selectCategory(categoryId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, categoryId, categoryFilter.selectCategory]);
 
   // Ref to the masonry grid for scroll control
@@ -156,7 +156,6 @@ export default function Index() {
             categories={categories}
             selectedCategoryId={categoryFilter.selectedCategoryId}
             onSelectCategory={categoryFilter.selectCategory}
-            isLoading={categoriesLoading}
           />
         </View>
 
@@ -212,12 +211,44 @@ export default function Index() {
       headerRightElement,
       t,
       categories,
-      categoriesLoading,
       categoryFilter.selectedCategoryId,
       categoryFilter.selectCategory,
       categoryFilter.isFiltering,
     ]
   );
+
+  // Empty state component for filtered results - must be before early returns
+  const FilteredEmptyComponent = useMemo(() => {
+    if (categoryFilter.isFiltering && !categoryFilter.isLoading && gridRecipes.length === 0) {
+      return (
+        <View className="items-center justify-center py-16 px-6">
+          <Faders size={56} color="#8a8177" weight="duotone" />
+          <Text className="text-foreground-secondary text-center mt-4 text-base font-medium">
+            {t("discovery.categoryEmpty.message")}
+          </Text>
+          <Pressable
+            onPress={() => categoryFilter.clearFilter()}
+            className="mt-6 bg-primary/10 px-6 py-3 rounded-full active:opacity-70"
+          >
+            <Text className="text-primary font-semibold">
+              {t("discovery.categoryEmpty.showAll")}
+            </Text>
+          </Pressable>
+        </View>
+      );
+    }
+    // Default empty state for discovery feed
+    if (!gridLoading && hasAnySectionData && gridRecipes.length === 0) {
+      return (
+        <View className="py-8 items-center">
+          <Text className="text-foreground-tertiary text-center">
+            {t("discovery.noRecipes.message")}
+          </Text>
+        </View>
+      );
+    }
+    return undefined;
+  }, [categoryFilter, gridRecipes.length, gridLoading, hasAnySectionData, t]);
 
   // Loading state (initial load)
   if (isInitialLoading && recent.data.length === 0) {
@@ -279,39 +310,6 @@ export default function Index() {
       </View>
     );
   }
-
-  // Empty state component for filtered results
-  const FilteredEmptyComponent = useMemo(() => {
-    if (categoryFilter.isFiltering && !categoryFilter.isLoading && gridRecipes.length === 0) {
-      return (
-        <View className="items-center justify-center py-16 px-6">
-          <Faders size={56} color="#8a8177" weight="duotone" />
-          <Text className="text-foreground-secondary text-center mt-4 text-base font-medium">
-            {t("discovery.categoryEmpty.message")}
-          </Text>
-          <Pressable
-            onPress={() => categoryFilter.clearFilter()}
-            className="mt-6 bg-primary/10 px-6 py-3 rounded-full active:opacity-70"
-          >
-            <Text className="text-primary font-semibold">
-              {t("discovery.categoryEmpty.showAll")}
-            </Text>
-          </Pressable>
-        </View>
-      );
-    }
-    // Default empty state for discovery feed
-    if (!gridLoading && hasAnySectionData && gridRecipes.length === 0) {
-      return (
-        <View className="py-8 items-center">
-          <Text className="text-foreground-tertiary text-center">
-            {t("discovery.noRecipes.message")}
-          </Text>
-        </View>
-      );
-    }
-    return undefined;
-  }, [categoryFilter, gridRecipes.length, gridLoading, hasAnySectionData, t]);
 
   return (
     <View className="flex-1 bg-surface">

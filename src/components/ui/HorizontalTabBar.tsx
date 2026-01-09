@@ -51,7 +51,6 @@ const HorizontalTabBar: React.FC<HorizontalTabBarProps> = ({
   const scrollRef = useRef<ScrollView>(null);
   const itemsRef = useRef<(View | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [contentWidth, setContentWidth] = useState(0);
   const [shouldScroll, setShouldScroll] = useState(true);
   const indicatorX = useRef(new Animated.Value(0)).current;
   const indicatorWidth = useRef(new Animated.Value(0)).current;
@@ -88,7 +87,8 @@ const HorizontalTabBar: React.FC<HorizontalTabBarProps> = ({
 
     // Reset the internal change flag
     isInternalChangeRef.current = false;
-  }, [activeTabId, tabs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTabId, tabs]); // activeIndex intentionally excluded - we only want to react to external prop changes
 
   // Measure content width and determine if scrolling is needed
   useEffect(() => {
@@ -113,7 +113,6 @@ const HorizontalTabBar: React.FC<HorizontalTabBarProps> = ({
             }
 
             if (measuredCount === itemsRef.current.length) {
-              setContentWidth(totalWidth);
               setShouldScroll(totalWidth > screenWidth);
             }
           });

@@ -1,5 +1,5 @@
 import { View, ActivityIndicator, Platform, useWindowDimensions } from "react-native";
-import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { FlashList, FlashListRef, ListRenderItem } from "@shopify/flash-list";
 import Animated from "react-native-reanimated";
 import { useMemo, useCallback, forwardRef, useImperativeHandle, useRef, type ReactElement } from "react";
 import { RecipeCard } from "../recipe/RecipeCard";
@@ -59,7 +59,7 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
   progressViewOffset,
 }, ref) {
   const { width } = useWindowDimensions();
-  const listRef = useRef<FlashList<Recipe>>(null);
+  const listRef = useRef<FlashListRef<Recipe>>(null);
 
   // Expose scroll methods via ref
   useImperativeHandle(ref, () => ({
