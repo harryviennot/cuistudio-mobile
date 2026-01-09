@@ -23,6 +23,19 @@ export function RecipeQuickInfo({
 }: RecipeQuickInfoProps) {
   const { t } = useTranslation();
 
+  const getDifficultyLabel = (difficulty?: string) => {
+    switch (difficulty?.toLowerCase()) {
+      case "easy":
+        return t("recipe.difficulty.easy");
+      case "medium":
+        return t("recipe.difficulty.medium");
+      case "hard":
+        return t("recipe.difficulty.hard");
+      default:
+        return null;
+    }
+  };
+
   return (
     <ShadowItem className="flex-row p-4 mb-4  justify-around">
       {/* Time - Editable */}
@@ -38,8 +51,19 @@ export function RecipeQuickInfo({
 
       {/* Difficulty */}
       <View className="items-center flex-1">
-        <ChefHatIcon size={20} color="#6B6456" weight="regular" />
-        <Text className="text-sm text-[#6B6456] mt-1">{difficulty}</Text>
+        <View className="flex-row items-center gap-1">
+          {difficulty === DifficultyLevel.EASY && <ChefHatIcon size={20} color="#6B6456" weight="regular" />}
+          {difficulty === DifficultyLevel.MEDIUM && (<>
+            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ rotate: '-10deg' }] }} />
+            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ rotate: '10deg' }] }} />
+          </>)}
+          {difficulty === DifficultyLevel.HARD && (<>
+            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ rotate: '-15deg' }] }} />
+            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ translateY: -2 }] }} />
+            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ rotate: '15deg' }] }} />
+          </>)}
+        </View>
+        <Text className="text-sm text-[#6B6456] mt-0.5">{getDifficultyLabel(difficulty)}</Text>
       </View>
 
       {/* Servings */}
