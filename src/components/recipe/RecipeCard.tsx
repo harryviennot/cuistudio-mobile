@@ -92,8 +92,10 @@ export const RecipeCard = memo(function RecipeCard({
 
   const imageHeight = fixedImageHeight ?? getImageHeight();
 
-  // Get category or first tag
-  const categoryLabel = recipe.categories?.[0] || recipe.tags?.[0] || t("recipe.card.recipeLabel");
+  // Get category label from i18n translations, fallback to 'Recipe'
+  const categoryLabel = recipe.category?.slug
+    ? t("categories." + recipe.category.slug, { defaultValue: recipe.category.slug })
+    : "RECIPE";
 
   // Get translated difficulty label
   const getDifficultyLabel = (difficulty?: string) => {

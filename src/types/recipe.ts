@@ -2,6 +2,26 @@
  * Recipe types
  */
 
+/**
+ * Category (slug only - frontend handles i18n translation)
+ */
+export interface Category {
+  id: string;
+  slug: string;
+  icon?: string | null;
+  display_order?: number;
+}
+
+/**
+ * Category with recipe count (for category listings)
+ */
+export interface CategoryWithCount extends Category {
+  recipe_count: number;
+}
+
+/**
+ * @deprecated Use Category interface instead. Kept for backwards compatibility.
+ */
 export enum RecipeCategory {
   BREAKFAST = "breakfast",
   LUNCH = "lunch",
@@ -21,7 +41,7 @@ export enum DifficultyLevel {
 
 export interface Ingredient {
   name: string;
-  quantity?: string | null;
+  quantity?: number | null;
   unit?: string | null;
   notes?: string | null;
   group?: string | null;
@@ -78,7 +98,7 @@ export interface Recipe {
   instructions: Instruction[];
   timings?: Timings;
   servings?: number;
-  categories?: string[];
+  category?: Category | null; // Single category object
   difficulty?: DifficultyLevel;
   tags?: string[];
   image_url?: string;
@@ -101,6 +121,24 @@ export interface Recipe {
 
   // User's personal data
   user_data?: UserRecipeData;
+}
+
+/**
+ * Request type for updating a recipe
+ * Uses category_slug instead of category object for API compatibility
+ */
+export interface RecipeUpdateRequest {
+  title?: string;
+  description?: string;
+  image_url?: string;
+  ingredients?: Ingredient[];
+  instructions?: Instruction[];
+  servings?: number;
+  difficulty?: DifficultyLevel;
+  tags?: string[];
+  category_slug?: string; // API accepts slug, returns category object
+  timings?: Timings;
+  is_public?: boolean;
 }
 
 export interface RecipeTimingsUpdateRequest {

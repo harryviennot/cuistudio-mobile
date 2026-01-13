@@ -9,7 +9,7 @@
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "display-p3:0.95686,0.94510,0.90980,1.00000"
+                "solid" : "display-p3:0.95703,0.94531,0.90967,1.00000"
               }
             },
             {
@@ -20,7 +20,7 @@
             }
           ],
           "glass" : false,
-          "hidden" : false,
+          "hidden" : true,
           "image-name" : "Minimalist App Icon Design Dec 2 2025 2.png",
           "name" : "Minimalist App Icon Design Dec 2 2025 2",
           "position" : {
@@ -28,6 +28,33 @@
             "translation-in-points" : [
               -20,
               6
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "fill" : {
+            "solid" : "display-p3:0.95703,0.94531,0.90967,1.00000"
+          },
+          "hidden" : false,
+          "image-name" : "icon-1767875755998.png",
+          "name" : "chef-toque",
+          "position" : {
+            "scale" : 1.1,
+            "translation-in-points" : [
+              0,
+              0
             ]
           }
         }

@@ -309,10 +309,11 @@
       "servings": "Servings",
       "prepTime": "Prep Time",
       "cookTime": "Cook Time",
+      "restingTime": "Resting Time",
       "totalTime": "Total Time",
       "difficulty": "Difficulty",
-      "categoriesAndTags": "Categories & Tags",
-      "categories": "Categories",
+      "categoriesAndTags": "Category & Tags",
+      "category": "Category",
       "tags": "Tags",
       "tagsPlaceholder": "e.g., vegan, gluten-free, quick...",
       "ingredients": "Ingredients",
@@ -481,7 +482,18 @@
       "recent": {
         "title": "Recently Added",
         "subtitle": "Fresh Recipes"
+      },
+      "popular": {
+        "title": "Popular",
+        "subtitle": "Top recipes in this category"
       }
+    },
+    "categories": {
+      "all": "All"
+    },
+    "categoryEmpty": {
+      "message": "No recipes in this category yet",
+      "showAll": "Show All Recipes"
     },
     "stats": {
       "cooked": "{{count}} cooked",
@@ -907,5 +919,24 @@
       "successMessage": "Your account has been deleted."
     },
     "appVersion": "Version {{version}}"
+  },
+  "categories": {
+    "main-dishes": "Main Dishes",
+    "soups": "Soups",
+    "salads": "Salads",
+    "pasta-noodles": "Pasta & Noodles",
+    "sandwiches": "Sandwiches",
+    "appetizers": "Appetizers",
+    "apero": "Apéro",
+    "desserts": "Desserts",
+    "baked-goods": "Baked Goods",
+    "beverages": "Beverages",
+    "cocktails": "Cocktails",
+    "breakfast": "Breakfast",
+    "sides": "Sides",
+    "sauces-dips": "Sauces & Dips",
+    "snacks": "Snacks",
+    "grilled": "Grilled",
+    "bowls-grains": "Bowls & Grains"
   }
 }
