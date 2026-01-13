@@ -11,5 +11,3 @@ export { CroissantIcon } from "./CroissantIcon";
 
 export { GrillIcon } from "./GrillIcon";
 export { PastaIcon } from "./PastaIcon";
-
-

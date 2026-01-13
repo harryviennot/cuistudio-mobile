@@ -35,9 +35,7 @@ export const RecipeIngredients = memo(function RecipeIngredients({
 
   // Format quantity to a clean string (remove trailing .0)
   const formatQuantity = (value: number): string => {
-    return Number.isInteger(value)
-      ? value.toString()
-      : value.toFixed(1).replace(/\.0$/, "");
+    return Number.isInteger(value) ? value.toString() : value.toFixed(1).replace(/\.0$/, "");
   };
 
   // Group ingredients by group field

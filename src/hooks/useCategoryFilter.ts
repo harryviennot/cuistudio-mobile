@@ -30,11 +30,7 @@ export function useCategoryFilter() {
     queryKey: ["discovery", "popular", selectedCategoryId],
     queryFn: async ({ pageParam = 0 }) => {
       const offset = pageParam as number;
-      return discoveryService.getPopularByCategory(
-        selectedCategoryId,
-        RECENT_PAGE_SIZE,
-        offset
-      );
+      return discoveryService.getPopularByCategory(selectedCategoryId, RECENT_PAGE_SIZE, offset);
     },
     getNextPageParam: (lastPage, allPages) => {
       if (lastPage.length < RECENT_PAGE_SIZE) {

@@ -1,7 +1,14 @@
 import { View, ActivityIndicator, Platform, useWindowDimensions } from "react-native";
 import { FlashList, FlashListRef, ListRenderItem } from "@shopify/flash-list";
 import Animated from "react-native-reanimated";
-import { useMemo, useCallback, forwardRef, useImperativeHandle, useRef, type ReactElement } from "react";
+import {
+  useMemo,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  type ReactElement,
+} from "react";
 import { RecipeCard } from "../recipe/RecipeCard";
 import type { Recipe } from "@/types/recipe";
 
@@ -39,37 +46,44 @@ export interface MasonryGridProps {
   progressViewOffset?: number;
 }
 
-export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function MasonryGrid({
-  recipes,
-  loading = false,
-  refreshing = false,
-  onRefresh,
-  onEndReached,
-  onEndReachedThreshold = 0.5,
-  showLoadingFooter = false,
-  onScroll,
-  ListEmptyComponent,
-  ListHeaderComponent,
-  contentContainerStyle,
-  keyExtractor = (recipe) => recipe.id,
-  renderRecipeCard,
-  contentInset,
-  contentOffset,
-  scrollIndicatorInsets,
-  progressViewOffset,
-}, ref) {
+export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function MasonryGrid(
+  {
+    recipes,
+    loading = false,
+    refreshing = false,
+    onRefresh,
+    onEndReached,
+    onEndReachedThreshold = 0.5,
+    showLoadingFooter = false,
+    onScroll,
+    ListEmptyComponent,
+    ListHeaderComponent,
+    contentContainerStyle,
+    keyExtractor = (recipe) => recipe.id,
+    renderRecipeCard,
+    contentInset,
+    contentOffset,
+    scrollIndicatorInsets,
+    progressViewOffset,
+  },
+  ref
+) {
   const { width } = useWindowDimensions();
   const listRef = useRef<FlashListRef<Recipe>>(null);
 
   // Expose scroll methods via ref
-  useImperativeHandle(ref, () => ({
-    scrollToTop: (animated = true) => {
-      listRef.current?.scrollToOffset({ offset: 0, animated });
-    },
-    scrollToOffset: (offset: number, animated = true) => {
-      listRef.current?.scrollToOffset({ offset, animated });
-    },
-  }), []);
+  useImperativeHandle(
+    ref,
+    () => ({
+      scrollToTop: (animated = true) => {
+        listRef.current?.scrollToOffset({ offset: 0, animated });
+      },
+      scrollToOffset: (offset: number, animated = true) => {
+        listRef.current?.scrollToOffset({ offset, animated });
+      },
+    }),
+    []
+  );
 
   // Calculate number of columns based on device type and screen width
   const numColumns = useMemo(() => {

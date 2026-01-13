@@ -76,7 +76,10 @@ export const RecipeHeader = memo(function RecipeHeader({
         }}
         pointerEvents="box-none"
       >
-        <Animated.View style={[{ width: "100%", height: "100%" }, imageAnimatedStyle]} pointerEvents="none">
+        <Animated.View
+          style={[{ width: "100%", height: "100%" }, imageAnimatedStyle]}
+          pointerEvents="none"
+        >
           {recipe?.image_url ? (
             <Image
               source={{ uri: recipe.image_url }}
@@ -103,7 +106,6 @@ export const RecipeHeader = memo(function RecipeHeader({
             </View>
           </Animated.View>
         )}
-
       </View>
     </>
   );

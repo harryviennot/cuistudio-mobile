@@ -87,11 +87,7 @@ export const instructionSchema = z.object({
     .min(1, "Instruction description is required")
     .max(2000, "Description must be less than 2000 characters"),
   timer_minutes: z
-    .union([
-      z.number().min(0, "Timer cannot be negative"),
-      z.null(),
-      z.undefined(),
-    ])
+    .union([z.number().min(0, "Timer cannot be negative"), z.null(), z.undefined()])
     .optional(),
   image_url: z
     .union([z.string().url("Invalid image URL"), z.literal(""), z.null(), z.undefined()])

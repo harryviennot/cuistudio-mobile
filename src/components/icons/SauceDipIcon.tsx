@@ -47,8 +47,8 @@ const weights = new Map<IconWeight, React.ReactElement>([
         d={outlinePath}
         stroke="currentColor"
         strokeWidth={9}
-      // strokeLinecap="round"
-      // strokeLinejoin="round"
+        // strokeLinecap="round"
+        // strokeLinejoin="round"
       />
     </G>,
   ],

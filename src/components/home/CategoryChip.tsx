@@ -21,14 +21,7 @@ import {
 } from "phosphor-react-native";
 import { ShadowItem } from "../ShadowedSection";
 import type { TabComponentProps } from "../ui/HorizontalTabBar";
-import {
-  SaladIcon,
-  CroissantIcon,
-  SidesIcon,
-  SauceDipIcon,
-  GrillIcon,
-  PastaIcon,
-} from "../icons";
+import { SaladIcon, CroissantIcon, SidesIcon, SauceDipIcon, GrillIcon, PastaIcon } from "../icons";
 
 // Map category slugs to icons (Phosphor + custom)
 export const CATEGORY_ICONS: Record<string, Icon> = {

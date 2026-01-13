@@ -141,7 +141,8 @@ const RecipeEditForm = React.forwardRef<RecipeEditRef, RecipeEditProps>(function
         prep_time_minutes: values.prep_time_minutes,
         cook_time_minutes: values.cook_time_minutes,
         resting_time_minutes: values.resting_time_minutes,
-        total_time_minutes: values.prep_time_minutes + values.cook_time_minutes + values.resting_time_minutes,
+        total_time_minutes:
+          values.prep_time_minutes + values.cook_time_minutes + values.resting_time_minutes,
       },
       difficulty: values.difficulty,
       category: values.category_slug ? { id: "", slug: values.category_slug } : null,

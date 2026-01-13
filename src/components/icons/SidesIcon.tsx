@@ -8,8 +8,7 @@ import type { Icon, IconProps, IconWeight } from "phosphor-react-native";
 import { IconBase } from "./IconBase";
 
 // From avocado.svg (already 256x256 viewBox)
-const bodyPath =
-  "M82.73,48a48,48,0,0,1,90.9,1l29.82,84.28a80,80,0,1,1-150.26-1.74Z";
+const bodyPath = "M82.73,48a48,48,0,0,1,90.9,1l29.82,84.28a80,80,0,1,1-150.26-1.74Z";
 
 const weights = new Map<IconWeight, React.ReactElement>([
   [
@@ -56,9 +55,7 @@ const weights = new Map<IconWeight, React.ReactElement>([
         d={bodyPath}
         fill="none"
         stroke="currentColor"
-        strokeWidth={
-          28
-        }
+        strokeWidth={28}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

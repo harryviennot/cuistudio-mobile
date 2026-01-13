@@ -1,13 +1,6 @@
 import * as Haptics from "expo-haptics";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  Dimensions,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Animated, Dimensions, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { cn } from "@/utils/cn";
 
 export interface TabItem {
@@ -169,14 +162,7 @@ const HorizontalTabBar: React.FC<HorizontalTabBarProps> = ({
 
       onTabChange(tabs[index]);
     },
-    [
-      activeIndex,
-      updateIndicator,
-      hapticFeedback,
-      onTabChange,
-      tabs,
-      shouldScroll,
-    ]
+    [activeIndex, updateIndicator, hapticFeedback, onTabChange, tabs, shouldScroll]
   );
 
   useEffect(() => {
@@ -222,9 +208,7 @@ const HorizontalTabBar: React.FC<HorizontalTabBarProps> = ({
                 <Text
                   className={cn(
                     `text-lg font-medium pb-0.5`,
-                    activeIndex === index
-                      ? "text-text-foreground"
-                      : "text-text-muted",
+                    activeIndex === index ? "text-text-foreground" : "text-text-muted",
                     textClassName
                   )}
                 >
@@ -236,10 +220,7 @@ const HorizontalTabBar: React.FC<HorizontalTabBarProps> = ({
         ))}
         {showIndicator && (
           <Animated.View
-            className={cn(
-              "absolute h-0.5 bottom-0 rounded-sm bg-primary",
-              indicatorClassName
-            )}
+            className={cn("absolute h-0.5 bottom-0 rounded-sm bg-primary", indicatorClassName)}
             style={{
               transform: [{ translateX: indicatorX }],
               width: indicatorWidth,

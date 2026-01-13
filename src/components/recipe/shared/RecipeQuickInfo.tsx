@@ -52,16 +52,47 @@ export function RecipeQuickInfo({
       {/* Difficulty */}
       <View className="items-center flex-1">
         <View className="flex-row items-center gap-1">
-          {difficulty === DifficultyLevel.EASY && <ChefHatIcon size={20} color="#6B6456" weight="regular" />}
-          {difficulty === DifficultyLevel.MEDIUM && (<>
-            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ rotate: '-10deg' }] }} />
-            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ rotate: '10deg' }] }} />
-          </>)}
-          {difficulty === DifficultyLevel.HARD && (<>
-            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ rotate: '-15deg' }] }} />
-            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ translateY: -2 }] }} />
-            <ChefHatIcon size={20} color="#6B6456" weight="regular" style={{ transform: [{ rotate: '15deg' }] }} />
-          </>)}
+          {difficulty === DifficultyLevel.EASY && (
+            <ChefHatIcon size={20} color="#6B6456" weight="regular" />
+          )}
+          {difficulty === DifficultyLevel.MEDIUM && (
+            <>
+              <ChefHatIcon
+                size={20}
+                color="#6B6456"
+                weight="regular"
+                style={{ transform: [{ rotate: "-10deg" }] }}
+              />
+              <ChefHatIcon
+                size={20}
+                color="#6B6456"
+                weight="regular"
+                style={{ transform: [{ rotate: "10deg" }] }}
+              />
+            </>
+          )}
+          {difficulty === DifficultyLevel.HARD && (
+            <>
+              <ChefHatIcon
+                size={20}
+                color="#6B6456"
+                weight="regular"
+                style={{ transform: [{ rotate: "-15deg" }] }}
+              />
+              <ChefHatIcon
+                size={20}
+                color="#6B6456"
+                weight="regular"
+                style={{ transform: [{ translateY: -2 }] }}
+              />
+              <ChefHatIcon
+                size={20}
+                color="#6B6456"
+                weight="regular"
+                style={{ transform: [{ rotate: "15deg" }] }}
+              />
+            </>
+          )}
         </View>
         <Text className="text-sm text-[#6B6456] mt-0.5">{getDifficultyLabel(difficulty)}</Text>
       </View>

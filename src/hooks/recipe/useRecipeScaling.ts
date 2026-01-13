@@ -62,9 +62,8 @@ export function useRecipeScaling(baseServings: number, initialServings?: number)
     (ingredients: Ingredient[]): Ingredient[] => {
       return ingredients.map((ingredient) => ({
         ...ingredient,
-        quantity: ingredient.quantity != null
-          ? ingredient.quantity * scalingFactor
-          : ingredient.quantity,
+        quantity:
+          ingredient.quantity != null ? ingredient.quantity * scalingFactor : ingredient.quantity,
       }));
     },
     [scalingFactor]
