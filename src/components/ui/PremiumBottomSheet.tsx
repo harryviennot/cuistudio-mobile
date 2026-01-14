@@ -5,6 +5,7 @@ import {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
   BottomSheetView,
+  BottomSheetScrollView,
   BottomSheetModalProps,
 } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,6 +21,7 @@ interface PremiumBottomSheetProps extends Omit<BottomSheetModalProps, "snapPoint
   keyboardBehavior?: "extend" | "fillParent" | "interactive";
   keyboardBlurBehavior?: "none" | "restore";
   android_keyboardInputMode?: "adjustPan" | "adjustResize";
+  scrollable?: boolean;
 }
 
 export const PremiumBottomSheet = forwardRef<BottomSheetModal, PremiumBottomSheetProps>(
@@ -34,6 +36,7 @@ export const PremiumBottomSheet = forwardRef<BottomSheetModal, PremiumBottomShee
       keyboardBehavior = "interactive",
       keyboardBlurBehavior = "restore",
       android_keyboardInputMode = "adjustResize",
+      scrollable = false,
       ...props
     },
     ref
@@ -73,43 +76,86 @@ export const PremiumBottomSheet = forwardRef<BottomSheetModal, PremiumBottomShee
         }}
         {...props}
       >
-        <BottomSheetView
-          style={[{ paddingBottom: insets.bottom + 20, borderRadius: 32 }, contentStyle]}
-        >
-          {/* Header matching DrawerHeader.tsx */}
-          {(title || onClose) && (
-            <View className="px-6 py-6" style={{ zIndex: 10 }}>
-              <View className="flex-row items-center justify-between">
-                <View className="flex-1">
-                  {title && (
-                    <Text
-                      className="font-playfair-bold text-3xl tracking-tight text-stone-900"
-                      style={{ fontFamily: "PlayfairDisplay_700Bold" }}
+        {scrollable ? (
+          <View style={{ flex: 1 }}>
+            {/* Fixed Header */}
+            {(title || onClose) && (
+              <View className="px-6 py-6" style={{ zIndex: 10 }}>
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-1">
+                    {title && (
+                      <Text
+                        className="font-playfair-bold text-3xl tracking-tight text-stone-900"
+                        style={{ fontFamily: "PlayfairDisplay_700Bold" }}
+                      >
+                        {title}
+                      </Text>
+                    )}
+                    {subtitle && (
+                      <Text className="mt-1.5 text-[10px] font-bold uppercase tracking-widest text-stone-500">
+                        {subtitle}
+                      </Text>
+                    )}
+                  </View>
+                  {onClose && (
+                    <Pressable
+                      onPress={onClose}
+                      className="active:scale-90"
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
-                      {title}
-                    </Text>
-                  )}
-                  {subtitle && (
-                    <Text className="mt-1.5 text-[10px] font-bold uppercase tracking-widest text-stone-500">
-                      {subtitle}
-                    </Text>
+                      <X size={24} color="#57534e" weight="bold" />
+                    </Pressable>
                   )}
                 </View>
-                {onClose && (
-                  <Pressable
-                    onPress={onClose}
-                    className="active:scale-90"
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <X size={24} color="#57534e" weight="bold" />
-                  </Pressable>
-                )}
               </View>
-            </View>
-          )}
-
-          {children}
-        </BottomSheetView>
+            )}
+            {/* Scrollable Content */}
+            <BottomSheetScrollView
+              style={[{ flex: 1 }, contentStyle]}
+              contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
+              showsVerticalScrollIndicator={false}
+            >
+              {children}
+            </BottomSheetScrollView>
+          </View>
+        ) : (
+          <BottomSheetView
+            style={[{ paddingBottom: insets.bottom + 20, borderRadius: 32 }, contentStyle]}
+          >
+            {/* Header matching DrawerHeader.tsx */}
+            {(title || onClose) && (
+              <View className="px-6 py-6" style={{ zIndex: 10 }}>
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-1">
+                    {title && (
+                      <Text
+                        className="font-playfair-bold text-3xl tracking-tight text-stone-900"
+                        style={{ fontFamily: "PlayfairDisplay_700Bold" }}
+                      >
+                        {title}
+                      </Text>
+                    )}
+                    {subtitle && (
+                      <Text className="mt-1.5 text-[10px] font-bold uppercase tracking-widest text-stone-500">
+                        {subtitle}
+                      </Text>
+                    )}
+                  </View>
+                  {onClose && (
+                    <Pressable
+                      onPress={onClose}
+                      className="active:scale-90"
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <X size={24} color="#57534e" weight="bold" />
+                    </Pressable>
+                  )}
+                </View>
+              </View>
+            )}
+            {children}
+          </BottomSheetView>
+        )}
       </BottomSheetModal>
     );
   }

@@ -8,7 +8,7 @@
  */
 import React, { forwardRef, useMemo, useCallback } from "react";
 import { View, Text, Pressable } from "react-native";
-import { BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
@@ -164,11 +164,9 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
         title={t("search.filters.title")}
         subtitle={t("search.filters.subtitle")}
         onClose={handleDismiss}
+        scrollable
+        contentStyle={{ paddingHorizontal: 24, paddingBottom: bottom + 100 }}
       >
-        <BottomSheetScrollView
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: bottom + 100 }}
-          showsVerticalScrollIndicator={false}
-        >
           {/* Cooking Time Section */}
           <View className="mb-8">
             <View className="flex-row items-center gap-2 mb-4">
@@ -301,7 +299,6 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
               })}
             </View>
           </View>
-        </BottomSheetScrollView>
 
         {/* Bottom Action Bar */}
         <View
