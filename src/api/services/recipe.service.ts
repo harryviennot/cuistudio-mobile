@@ -88,6 +88,44 @@ export const recipeService = {
   },
 
   /**
+   * Search recipes with filters and sorting
+   *
+   * @param query - Search query string
+   * @param options - Search options including filters and sorting
+   * @returns Array of matching recipes with applied filters and sort order
+   */
+  searchRecipesFiltered: async (
+    query: string,
+    options: {
+      limit?: number;
+      offset?: number;
+      difficulty?: "easy" | "medium" | "hard";
+      categorySlug?: string;
+      minTime?: number;
+      maxTime?: number;
+      sortBy?: "relevance" | "recent" | "rating" | "cook_count" | "time";
+      libraryOnly?: boolean;
+    } = {}
+  ): Promise<Recipe[]> => {
+    const params: Record<string, any> = {
+      q: query,
+      limit: options.limit ?? 20,
+      offset: options.offset ?? 0,
+    };
+
+    // Add optional filter parameters
+    if (options.difficulty) params.difficulty = options.difficulty;
+    if (options.categorySlug) params.category_slug = options.categorySlug;
+    if (options.minTime !== undefined) params.min_time = options.minTime;
+    if (options.maxTime !== undefined) params.max_time = options.maxTime;
+    if (options.sortBy) params.sort_by = options.sortBy;
+    if (options.libraryOnly) params.library_only = options.libraryOnly;
+
+    const response = await api.get<Recipe[]>("/recipes/search", { params });
+    return response.data;
+  },
+
+  /**
    * Update recipe rating with half-star precision
    * @param recipeId - The recipe ID
    * @param rating - Rating value (must be 0.5, 1.0, 1.5, ..., 5.0)

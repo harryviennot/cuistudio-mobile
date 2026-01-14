@@ -41,7 +41,10 @@
     "seeMore": "See more",
     "uploading": "Uploading...",
     "pleaseWait": "Please Wait",
-    "change": "Change"
+    "change": "Change",
+    "seeAll": "See All",
+    "all": "All",
+    "loadingMore": "Loading more..."
   },
   "app": {
     "title": "Cuisto",
@@ -514,7 +517,55 @@
     }
   },
   "search": {
-    "placeholder": "Search recipes..."
+    "placeholder": "Search recipes...",
+    "loading": "Searching...",
+    "initial": {
+      "title": "Search for recipes",
+      "description": "Enter keywords to find your favorite recipes"
+    },
+    "empty": {
+      "title": "No recipes found",
+      "description": "Try different search terms or adjust your filters",
+      "library": "No recipes in your library match this search",
+      "libraryDescription": "Try searching public recipes below",
+      "popular": "No popular recipes found"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "description": "Failed to search recipes. Please try again."
+    },
+    "sections": {
+      "library": "Your Library",
+      "popular": "Popular Recipes"
+    },
+    "filters": {
+      "title": "Filters",
+      "subtitle": "Refine your search",
+      "cookingTime": "Cooking Time",
+      "difficulty": "Difficulty",
+      "category": "Category",
+      "time": {
+        "quick": "Quick (<30min)",
+        "medium": "Medium (30-60min)",
+        "long": "Long (>60min)"
+      },
+      "clearAll": "Clear All",
+      "apply": "Apply Filters"
+    },
+    "sort": {
+      "title": "Sort By",
+      "subtitle": "Change the order of results",
+      "relevance": "Relevance",
+      "recent": "Recently Added",
+      "rating": "Highest Rated",
+      "cook_count": "Most Cooked",
+      "time": "Quickest to Make"
+    },
+    "libraryResults": {
+      "title": "Library Results",
+      "count": "{{count}} recipes found",
+      "searching": "Searching your library..."
+    }
   },
   "welcome": {
     "headline": "All your recipes",
