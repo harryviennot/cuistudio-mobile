@@ -6,8 +6,28 @@ export type DifficultyFilter = "easy" | "medium" | "hard";
 export type SortOption = "relevance" | "recent" | "rating" | "cook_count" | "time";
 export type TimeFilter = "quick" | "medium" | "long";
 
+/**
+ * Granular time filter configuration for individual time types
+ */
+export interface TimeFilterConfig {
+  enabled: boolean;
+  maxMinutes: number;
+}
+
+/**
+ * Time filters for prep, cook, and rest times
+ */
+export interface TimeFilters {
+  prep?: TimeFilterConfig;
+  cook?: TimeFilterConfig;
+  rest?: TimeFilterConfig;
+}
+
 export interface SearchFilters {
   difficulty?: DifficultyFilter;
+  categorySlugs?: string[];      // Multi-select categories (OR logic)
+  timeFilters?: TimeFilters;     // Granular time filters
+  // Legacy fields (deprecated, kept for backward compatibility)
   categorySlug?: string;
   timeFilter?: TimeFilter;
 }

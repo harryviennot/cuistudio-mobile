@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { recipeService } from "@/api/services";
 import type { Recipe } from "@/types/recipe";
-import type { SearchFilters, SearchSort, TimeFilter } from "@/types/search";
+import type { SearchFilters, SearchSort } from "@/types/search";
 import { TIME_FILTER_RANGES } from "@/types/search";
 
 interface UseSearchOptions {
@@ -19,11 +19,38 @@ export function useSearch(options: UseSearchOptions = {}) {
 
   const hasQuery = query.trim().length > 0;
 
-  // Convert time filter to min/max values
+  // Convert time filters to min/max values
+  // Supports both new granular timeFilters and legacy timeFilter
   const timeRange = useMemo(() => {
-    if (!filters.timeFilter) return {};
-    return TIME_FILTER_RANGES[filters.timeFilter];
-  }, [filters.timeFilter]);
+    // New granular time filters
+    if (filters.timeFilters) {
+      const { prep, cook, rest } = filters.timeFilters;
+      let maxTime = 0;
+
+      if (prep?.enabled && prep.maxMinutes > 0) maxTime += prep.maxMinutes;
+      if (cook?.enabled && cook.maxMinutes > 0) maxTime += cook.maxMinutes;
+      if (rest?.enabled && rest.maxMinutes > 0) maxTime += rest.maxMinutes;
+
+      return maxTime > 0 ? { max: maxTime } : {};
+    }
+
+    // Legacy time filter (backward compatibility)
+    if (filters.timeFilter) {
+      return TIME_FILTER_RANGES[filters.timeFilter];
+    }
+
+    return {};
+  }, [filters.timeFilters, filters.timeFilter]);
+
+  // Handle category parameter (supports both single and multi-select)
+  const categoryParam = useMemo(() => {
+    // New multi-select categories
+    if (filters.categorySlugs && filters.categorySlugs.length > 0) {
+      return filters.categorySlugs.join(",");
+    }
+    // Legacy single category (backward compatibility)
+    return filters.categorySlug;
+  }, [filters.categorySlugs, filters.categorySlug]);
 
   // Library search query (user's own recipes)
   const libraryQuery = useQuery<Recipe[], Error>({
@@ -31,7 +58,7 @@ export function useSearch(options: UseSearchOptions = {}) {
     queryFn: () =>
       recipeService.searchRecipesFiltered(query, {
         difficulty: filters.difficulty,
-        categorySlug: filters.categorySlug,
+        categorySlug: categoryParam,
         minTime: timeRange.min,
         maxTime: timeRange.max,
         sortBy: sort.sortBy === "cook_count" ? "cook_count" : sort.sortBy,
@@ -48,7 +75,7 @@ export function useSearch(options: UseSearchOptions = {}) {
     queryFn: () =>
       recipeService.searchRecipesFiltered(query, {
         difficulty: filters.difficulty,
-        categorySlug: filters.categorySlug,
+        categorySlug: categoryParam,
         minTime: timeRange.min,
         maxTime: timeRange.max,
         sortBy: sort.sortBy === "cook_count" ? "rating" : sort.sortBy, // Use rating instead of cook_count for public
@@ -78,9 +105,17 @@ export function useSearch(options: UseSearchOptions = {}) {
     setSort({ sortBy: "relevance" });
   }, []);
 
-  // Derived state
+  // Derived state - check for any active filters (new or legacy)
   const hasActiveFilters = useMemo(() => {
-    return !!(filters.difficulty || filters.categorySlug || filters.timeFilter);
+    const hasTimeFilters =
+      filters.timeFilters?.prep?.enabled ||
+      filters.timeFilters?.cook?.enabled ||
+      filters.timeFilters?.rest?.enabled;
+
+    const hasCategories =
+      (filters.categorySlugs && filters.categorySlugs.length > 0) || !!filters.categorySlug;
+
+    return !!(filters.difficulty || hasCategories || hasTimeFilters || filters.timeFilter);
   }, [filters]);
 
   const isSearching = libraryQuery.isLoading || publicQuery.isLoading;

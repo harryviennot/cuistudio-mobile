@@ -542,6 +542,10 @@
       "title": "Filters",
       "subtitle": "Refine your search",
       "cookingTime": "Cooking Time",
+      "prepTime": "Prep Time",
+      "cookTime": "Cook Time",
+      "restTime": "Rest Time",
+      "totalLimit": "Total time limit",
       "difficulty": "Difficulty",
       "category": "Category",
       "time": {

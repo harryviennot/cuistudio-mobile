@@ -515,7 +515,59 @@
     }
   },
   "search": {
-    "placeholder": "Rechercher des recettes..."
+    "placeholder": "Rechercher des recettes...",
+    "loading": "Recherche...",
+    "initial": {
+      "title": "Rechercher des recettes",
+      "description": "Entrez des mots-clés pour trouver vos recettes préférées"
+    },
+    "empty": {
+      "title": "Aucune recette trouvée",
+      "description": "Essayez d'autres termes de recherche ou ajustez vos filtres",
+      "library": "Aucune recette dans votre bibliothèque ne correspond",
+      "libraryDescription": "Essayez les recettes populaires ci-dessous",
+      "popular": "Aucune recette populaire trouvée"
+    },
+    "error": {
+      "title": "Une erreur s'est produite",
+      "description": "Échec de la recherche. Veuillez réessayer."
+    },
+    "sections": {
+      "library": "Votre Bibliothèque",
+      "popular": "Recettes Populaires"
+    },
+    "filters": {
+      "title": "Filtres",
+      "subtitle": "Affiner votre recherche",
+      "cookingTime": "Temps de Cuisson",
+      "prepTime": "Temps de Préparation",
+      "cookTime": "Temps de Cuisson",
+      "restTime": "Temps de Repos",
+      "totalLimit": "Temps total maximum",
+      "difficulty": "Difficulté",
+      "category": "Catégorie",
+      "time": {
+        "quick": "Rapide (<30min)",
+        "medium": "Moyen (30-60min)",
+        "long": "Long (>60min)"
+      },
+      "clearAll": "Tout Effacer",
+      "apply": "Appliquer"
+    },
+    "sort": {
+      "title": "Trier Par",
+      "subtitle": "Changer l'ordre des résultats",
+      "relevance": "Pertinence",
+      "recent": "Récemment Ajouté",
+      "rating": "Mieux Noté",
+      "cook_count": "Plus Cuisiné",
+      "time": "Plus Rapide"
+    },
+    "libraryResults": {
+      "title": "Résultats de la Bibliothèque",
+      "count": "{{count}} recettes trouvées",
+      "searching": "Recherche dans votre bibliothèque..."
+    }
   },
   "welcome": {
     "headline": "Toutes vos recettes",
