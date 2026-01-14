@@ -55,7 +55,7 @@ export function ActiveFiltersChips({
       {filters.difficulty && (
         <View className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-primary/10 border border-primary/20">
           <Text className="text-sm font-medium text-foreground capitalize">
-            {t(`recipe.difficulty.${filters.difficulty}`)}
+            {t(`recipe.difficulty.${filters.difficulty}`, { defaultValue: filters.difficulty })}
           </Text>
           <Pressable
             onPress={() => onRemoveFilter("difficulty")}
@@ -71,7 +71,7 @@ export function ActiveFiltersChips({
       {filters.timeFilter && (
         <View className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-primary/10 border border-primary/20">
           <Text className="text-sm font-medium text-foreground">
-            {t(TIME_FILTER_LABELS[filters.timeFilter])}
+            {t(TIME_FILTER_LABELS[filters.timeFilter], { defaultValue: filters.timeFilter })}
           </Text>
           <Pressable
             onPress={() => onRemoveFilter("timeFilter")}
@@ -87,7 +87,7 @@ export function ActiveFiltersChips({
       {filters.categorySlug && (
         <View className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-primary/10 border border-primary/20">
           <Text className="text-sm font-medium text-foreground">
-            {t(`categories.${filters.categorySlug}`)}
+            {t(`categories.${filters.categorySlug}`, { defaultValue: filters.categorySlug })}
           </Text>
           <Pressable
             onPress={() => onRemoveFilter("categorySlug")}
@@ -104,7 +104,7 @@ export function ActiveFiltersChips({
         <View className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-blue-50 border border-blue-200">
           <SortAscending size={16} color="#334d43" />
           <Text className="text-sm font-medium text-foreground">
-            {t(SORT_OPTION_LABELS[sort.sortBy])}
+            {t(SORT_OPTION_LABELS[sort.sortBy], { defaultValue: sort.sortBy })}
           </Text>
           <Pressable
             onPress={onRemoveSort}

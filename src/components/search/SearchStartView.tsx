@@ -1,16 +1,7 @@
 import React from "react";
-import { View, Text, ScrollView, Pressable, Image } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
-import {
-  Coffee,
-  MoonStars,
-  Heartbeat,
-  Fire,
-  Leaf,
-  Clock,
-  TrendUp,
-  ForkKnife,
-} from "phosphor-react-native";
+import { Coffee, MoonStars, Heartbeat, Fire, Leaf, Clock, TrendUp } from "phosphor-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface SearchStartViewProps {

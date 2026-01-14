@@ -44,11 +44,11 @@ export const SearchSortSheet = forwardRef<BottomSheetModal, SearchSortSheetProps
       handleDismiss();
     };
 
-    const sortOptions: Array<{
+    const sortOptions: {
       value: SortOption;
       icon: typeof MagnifyingGlass;
       libraryOnly?: boolean;
-    }> = [
+    }[] = [
       { value: "relevance", icon: MagnifyingGlass },
       { value: "recent", icon: CalendarPlus },
       { value: "rating", icon: Star },

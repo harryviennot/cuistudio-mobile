@@ -79,12 +79,7 @@ export function SearchResultSection({
 
       {/* Results Grid */}
       {!isLoading && recipes.length > 0 && (
-        <MasonryGrid
-          recipes={recipes}
-          refreshing={false}
-          onRefresh={() => {}}
-          scrollEnabled={false}
-        />
+        <MasonryGrid recipes={recipes} refreshing={false} onRefresh={() => {}} />
       )}
     </View>
   );

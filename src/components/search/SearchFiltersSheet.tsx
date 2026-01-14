@@ -335,7 +335,6 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
             })}
           </View>
         </View>
-
       </PremiumBottomSheet>
     );
   }
