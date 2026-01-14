@@ -139,8 +139,9 @@ export function TimeFilterRow({
               {enabled && <CheckIcon size={16} color="white" weight="bold" />}
             </View>
 
-            {/* Icon */}
+            {/* Icon - key forces re-render when enabled changes */}
             <IconComponent
+              key={enabled ? "enabled" : "disabled"}
               size={20}
               color={enabled ? "#ffffff" : "#8a8177"}
               weight={enabled ? "regular" : "duotone"}
