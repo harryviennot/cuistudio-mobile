@@ -24,7 +24,6 @@ import type { SearchFilters, DifficultyFilter, TimeFilters } from "@/types/searc
 import { useCategories } from "@/hooks/useCategories";
 import { PremiumBottomSheet } from "@/components/ui/PremiumBottomSheet";
 import { ShadowItem } from "@/components/ShadowedSection";
-import { ActionButton } from "@/components/ui/ActionButton";
 import { TimeFilterRow } from "./TimeFilterRow";
 import { CategoryIcon } from "@/components/home/CategoryChip";
 import { formatDuration } from "@/utils/formatDuration";
@@ -172,16 +171,46 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
         subtitle={t("search.filters.subtitle")}
         onClose={handleDismiss}
         scrollable
-        contentStyle={{ paddingHorizontal: 20, paddingBottom: bottom + 100 }}
+        contentStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+        footer={
+          <View
+            className="px-6 pt-4 pb-2 bg-surface border-t border-border"
+            style={{ paddingBottom: bottom + 12 }}
+          >
+            <View className="flex-row gap-4">
+              <ShadowItem
+                onPress={handleClearAll}
+                className="flex-1 rounded-xl py-4 bg-white border-border-dark items-center"
+              >
+                <Text className="text-base font-semibold text-foreground-heading">
+                  {t("search.filters.clearAll")}
+                </Text>
+              </ShadowItem>
+
+              <ShadowItem
+                onPress={handleApply}
+                className="flex-1 py-4 rounded-xl"
+                variant="primary"
+              >
+                <Text className="text-base font-semibold text-white text-center">
+                  {t("search.filters.apply")}
+                </Text>
+              </ShadowItem>
+            </View>
+          </View>
+        }
       >
-        {/* Cooking Time Section */}
+        {/* Time Limits Section */}
         <View className="mb-8">
-          <View className="flex-row items-center gap-2 mb-4">
+          <View className="flex-row items-center gap-2 mb-2">
             <ClockIcon size={18} color="#8a8177" weight="duotone" />
             <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
               {t("search.filters.cookingTime")}
             </Text>
           </View>
+          <Text className="text-xs text-foreground-tertiary mb-4">
+            {t("search.filters.timeDescription", "Set maximum time for each step")}
+          </Text>
 
           {/* Time Filter Rows */}
           <TimeFilterRow
@@ -307,28 +336,6 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
           </View>
         </View>
 
-        {/* Bottom Action Bar */}
-        <View
-          className="absolute bottom-0 left-0 right-0 px-6 pt-4 pb-2 bg-surface/95"
-          style={{ paddingBottom: bottom + 12 }}
-        >
-          <View className="flex-row gap-3">
-            <View className="flex-1">
-              <ActionButton
-                title={t("search.filters.clearAll")}
-                variant="secondary"
-                onPress={handleClearAll}
-              />
-            </View>
-            <View className="flex-[2]">
-              <ActionButton
-                title={t("search.filters.apply")}
-                variant="primary"
-                onPress={handleApply}
-              />
-            </View>
-          </View>
-        </View>
       </PremiumBottomSheet>
     );
   }

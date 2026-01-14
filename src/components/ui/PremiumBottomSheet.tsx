@@ -22,6 +22,7 @@ interface PremiumBottomSheetProps extends Omit<BottomSheetModalProps, "snapPoint
   keyboardBlurBehavior?: "none" | "restore";
   android_keyboardInputMode?: "adjustPan" | "adjustResize";
   scrollable?: boolean;
+  footer?: React.ReactNode;
 }
 
 export const PremiumBottomSheet = forwardRef<BottomSheetModal, PremiumBottomSheetProps>(
@@ -37,6 +38,7 @@ export const PremiumBottomSheet = forwardRef<BottomSheetModal, PremiumBottomShee
       keyboardBlurBehavior = "restore",
       android_keyboardInputMode = "adjustResize",
       scrollable = false,
+      footer,
       ...props
     },
     ref
@@ -112,11 +114,13 @@ export const PremiumBottomSheet = forwardRef<BottomSheetModal, PremiumBottomShee
             {/* Scrollable Content */}
             <BottomSheetScrollView
               style={[{ flex: 1 }, contentStyle]}
-              contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
+              contentContainerStyle={{ paddingBottom: footer ? 20 : insets.bottom + 20 }}
               showsVerticalScrollIndicator={false}
             >
               {children}
             </BottomSheetScrollView>
+            {/* Fixed Footer */}
+            {footer}
           </View>
         ) : (
           <BottomSheetView

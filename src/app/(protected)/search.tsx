@@ -127,22 +127,15 @@ export default function SearchScreen() {
 
             {/* Filter Button */}
             <Pressable
-              onPress={() => filtersSheetRef.current?.present()}
+              onPress={() => {
+                Keyboard.dismiss();
+                filtersSheetRef.current?.present();
+              }}
               className="w-10 h-10 items-center justify-center  rounded-full active:bg-surface-elevated"
               hitSlop={10}
             >
               <Faders size={24} color="#334d43" weight="bold" />
             </Pressable>
-            {/* <TouchableOpacity
-              onPress={() => filtersSheetRef.current?.present()}
-              className={`w-10 h-10 items-center justify-center -ml-2 rounded-full ${hasActiveFilters ? "bg-primary shadow-sm" : "bg-surface-elevated"}`}
-            >
-              <Faders
-                size={20}
-                color={hasActiveFilters ? "white" : "#334d43"}
-                weight={hasActiveFilters ? "bold" : "regular"}
-              />
-            </TouchableOpacity> */}
           </View>
 
           {/* Active Filters Row */}
