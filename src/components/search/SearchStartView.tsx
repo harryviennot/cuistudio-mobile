@@ -16,6 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 interface SearchStartViewProps {
   onSelectCategory: (category: string) => void;
   onSelectTerm: (term: string) => void;
+  contentPaddingTop?: number;
 }
 
 const CATEGORIES = [
@@ -38,13 +39,17 @@ const POPULAR_SEARCHES = [
   "Salmon",
 ];
 
-export function SearchStartView({ onSelectCategory, onSelectTerm }: SearchStartViewProps) {
+export function SearchStartView({
+  onSelectCategory,
+  onSelectTerm,
+  contentPaddingTop = 20,
+}: SearchStartViewProps) {
   const { t } = useTranslation();
 
   return (
     <ScrollView
       className="flex-1"
-      contentContainerStyle={{ paddingBottom: 100, paddingTop: 20 }}
+      contentContainerStyle={{ paddingBottom: 100, paddingTop: contentPaddingTop }}
       showsVerticalScrollIndicator={false}
     >
       <View className="px-5 mb-8">

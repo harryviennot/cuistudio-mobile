@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Keyboard, TouchableOpacity } from "react-native";
+import { View, Text, Pressable, Keyboard } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Faders } from "phosphor-react-native";
@@ -6,6 +6,7 @@ import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { BlurView } from "expo-blur";
 import { SearchBar } from "@/components/home/SearchBar";
 import { useSearch } from "@/hooks/useSearch";
 import { useSearchContext } from "@/contexts/SearchContext";
@@ -94,90 +95,122 @@ export default function SearchScreen() {
     Keyboard.dismiss();
   }, []);
 
+  // Calculate header height for scroll padding
+  const headerBaseHeight = insets.top + 8 + 40 + 12; // top padding + search row + bottom padding
+  const hasFiltersRow = hasActiveFilters || sort.sortBy !== "relevance";
+  const headerHeight = hasFiltersRow ? headerBaseHeight + 40 : headerBaseHeight; // +40 for filters row
+
   return (
     <BottomSheetModalProvider>
       <View className="flex-1 bg-surface">
-        {/* Header Area */}
+        {/* Header Area - Floating with blur */}
         <View
-          style={{ paddingTop: insets.top + 8, paddingBottom: 12 }}
-          className="px-4 bg-surface border-b border-border"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 100,
+          }}
         >
-          {/* Title Row (Only on initial state or always? Let's make it clean) */}
-          {/* We'll use a standard search header layout but make it cleaner */}
+          {/* Blur Background */}
+          <BlurView
+            tint="light"
+            intensity={90}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+          />
 
-          <View className="flex-row items-center gap-3">
-            <Pressable
-              onPress={handleClose}
-              className="w-10 h-10 items-center justify-center rounded-full active:bg-surface-elevated"
-              hitSlop={10}
-            >
-              <X size={24} color="#334d43" weight="bold" />
-            </Pressable>
+          {/* Color Overlay */}
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(244, 241, 232, 0.2)",
+            }}
+          />
 
-            <View className="flex-1">
-              <SearchBar
-                value={localQuery}
-                onChangeText={setLocalQuery}
-                onSearch={handleSearch}
-                placeholder={t("search.placeholder", "Search recipes...")}
-                autoFocus={!contextQuery}
-              // Maybe check if we want autofocus every time or only if empty
-              />
-            </View>
-
-            {/* Filter Button */}
-            <Pressable
-              onPress={() => {
-                Keyboard.dismiss();
-                filtersSheetRef.current?.present();
-              }}
-              className="w-10 h-10 items-center justify-center  rounded-full active:bg-surface-elevated"
-              hitSlop={10}
-            >
-              <Faders size={24} color="#334d43" weight="bold" />
-            </Pressable>
-          </View>
-
-          {/* Active Filters Row */}
-          {(hasActiveFilters || sort.sortBy !== "relevance") && (
-            <View className="mt-3">
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 8 }}
+          {/* Header Content */}
+          <View style={{ paddingTop: insets.top + 8, paddingBottom: 12 }} className="px-4">
+            <View className="flex-row items-center gap-3">
+              <Pressable
+                onPress={handleClose}
+                className="w-10 h-10 items-center justify-center rounded-full active:bg-surface-elevated"
+                hitSlop={10}
               >
-                {/* Reset All */}
-                <Pressable
-                  onPress={() => {
-                    clearFilters();
-                    updateSort({ sortBy: "relevance" });
-                  }}
-                  className="px-3 py-1.5 rounded-full bg-surface-elevated border border-border"
-                >
-                  <Text className="text-xs font-bold text-foreground-secondary">Reset</Text>
-                </Pressable>
+                <X size={24} color="#334d43" weight="bold" />
+              </Pressable>
 
-                {/* Chips here... (keeping it simple for now or copying the elaborate chips from before if needed, 
-                    but the previous implementation was good enough for chips, just styling tweaks) */}
-                {Object.entries(filters).map(([key, value]) => {
-                  if (!value) return null;
-                  return (
-                    <View
-                      key={key}
-                      className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20"
-                    >
-                      <Text className="text-xs font-bold text-primary capitalize">
-                        {String(value)}
-                      </Text>
-                      <Pressable onPress={() => updateFilters({ [key]: undefined })}>
-                        <X size={12} color="#334d43" weight="bold" />
-                      </Pressable>
-                    </View>
-                  );
-                })}
-              </ScrollView>
+              <View className="flex-1">
+                <SearchBar
+                  value={localQuery}
+                  onChangeText={setLocalQuery}
+                  onSearch={handleSearch}
+                  placeholder={t("search.placeholder", "Search recipes...")}
+                  autoFocus={!contextQuery}
+                />
+              </View>
+
+              {/* Filter Button */}
+              <Pressable
+                onPress={() => {
+                  Keyboard.dismiss();
+                  filtersSheetRef.current?.present();
+                }}
+                className="w-10 h-10 items-center justify-center rounded-full active:bg-surface-elevated"
+                hitSlop={10}
+              >
+                <Faders size={24} color="#334d43" weight="bold" />
+              </Pressable>
             </View>
-          )}
+
+            {/* Active Filters Row */}
+            {hasFiltersRow && (
+              <View className="mt-3">
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 8 }}
+                >
+                  {/* Reset All */}
+                  <Pressable
+                    onPress={() => {
+                      clearFilters();
+                      updateSort({ sortBy: "relevance" });
+                    }}
+                    className="px-3 py-1.5 rounded-full bg-surface-elevated border border-border"
+                  >
+                    <Text className="text-xs font-bold text-foreground-secondary">Reset</Text>
+                  </Pressable>
+
+                  {Object.entries(filters).map(([key, value]) => {
+                    if (!value) return null;
+                    return (
+                      <View
+                        key={key}
+                        className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20"
+                      >
+                        <Text className="text-xs font-bold text-primary capitalize">
+                          {String(value)}
+                        </Text>
+                        <Pressable onPress={() => updateFilters({ [key]: undefined })}>
+                          <X size={12} color="#334d43" weight="bold" />
+                        </Pressable>
+                      </View>
+                    );
+                  })}
+                </ScrollView>
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Main Content Area */}
@@ -194,6 +227,7 @@ export default function SearchScreen() {
                   setLocalQuery(term);
                   handleSearch(term);
                 }}
+                contentPaddingTop={headerHeight}
               />
             </Animated.View>
           ) : (
@@ -202,7 +236,7 @@ export default function SearchScreen() {
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
                 className="flex-1"
-                contentContainerStyle={{ paddingVertical: 20 }}
+                contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: 20 }}
                 keyboardShouldPersistTaps="handled"
               >
                 {/* Results */}
