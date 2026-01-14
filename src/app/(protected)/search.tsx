@@ -1,8 +1,8 @@
 import { View, Text, Pressable, Keyboard } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, Funnel, SortAscending, ArrowLeft } from "phosphor-react-native";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { X, Funnel, SortAscending, ArrowLeft, Faders } from "phosphor-react-native";
+import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
@@ -97,133 +97,135 @@ export default function SearchScreen() {
   }, []);
 
   return (
-    <View className="flex-1 bg-surface">
-      {/* Header Area */}
-      <View
-        style={{ paddingTop: insets.top + 8, paddingBottom: 12 }}
-        className="px-5 bg-surface border-b border-border z-10"
-      >
-        {/* Title Row (Only on initial state or always? Let's make it clean) */}
-        {/* We'll use a standard search header layout but make it cleaner */}
+    <BottomSheetModalProvider>
+      <View className="flex-1 bg-surface">
+        {/* Header Area */}
+        <View
+          style={{ paddingTop: insets.top + 8, paddingBottom: 12 }}
+          className="px-5 bg-surface border-b border-border"
+        >
+          {/* Title Row (Only on initial state or always? Let's make it clean) */}
+          {/* We'll use a standard search header layout but make it cleaner */}
 
-        <View className="flex-row items-center gap-3">
-          <Pressable
-            onPress={handleClose}
-            className="w-10 h-10 items-center justify-center -ml-2 rounded-full active:bg-surface-elevated"
-            hitSlop={10}
-          >
-            <X size={24} color="#334d43" weight="bold" />
-          </Pressable>
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              onPress={handleClose}
+              className="w-10 h-10 items-center justify-center -ml-2 rounded-full active:bg-surface-elevated"
+              hitSlop={10}
+            >
+              <X size={24} color="#334d43" weight="bold" />
+            </Pressable>
 
-          <View className="flex-1">
-            <SearchBar
-              value={localQuery}
-              onChangeText={setLocalQuery}
-              onSearch={handleSearch}
-              placeholder={t("search.placeholder", "Search recipes...")}
-              autoFocus={!contextQuery}
-            // Maybe check if we want autofocus every time or only if empty
-            />
+            <View className="flex-1">
+              <SearchBar
+                value={localQuery}
+                onChangeText={setLocalQuery}
+                onSearch={handleSearch}
+                placeholder={t("search.placeholder", "Search recipes...")}
+                autoFocus={!contextQuery}
+              // Maybe check if we want autofocus every time or only if empty
+              />
+            </View>
+
+            {/* Filter Button */}
+            <Pressable
+              onPress={() => filtersSheetRef.current?.present()}
+              className={`w-11 h-11 items-center justify-center rounded-full ${hasActiveFilters ? 'bg-primary shadow-sm' : 'bg-surface-elevated'}`}
+            >
+              <Faders size={20} color={hasActiveFilters ? "white" : "#334d43"} weight={hasActiveFilters ? "bold" : "regular"} />
+            </Pressable>
           </View>
 
-          {/* Filter Button */}
-          <Pressable
-            onPress={() => filtersSheetRef.current?.present()}
-            className={`w-10 h-10 items-center justify-center rounded-full border ${hasActiveFilters ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
-          >
-            <Funnel size={20} color={hasActiveFilters ? "white" : "#334d43"} weight={hasActiveFilters ? "fill" : "bold"} />
-          </Pressable>
+          {/* Active Filters Row */}
+          {(hasActiveFilters || sort.sortBy !== "relevance") && (
+            <View className="mt-3">
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                {/* Reset All */}
+                <Pressable
+                  onPress={() => { clearFilters(); updateSort({ sortBy: 'relevance' }); }}
+                  className="px-3 py-1.5 rounded-full bg-surface-elevated border border-border"
+                >
+                  <Text className="text-xs font-bold text-foreground-secondary">Reset</Text>
+                </Pressable>
+
+                {/* Chips here... (keeping it simple for now or copying the elaborate chips from before if needed, 
+                    but the previous implementation was good enough for chips, just styling tweaks) */}
+                {Object.entries(filters).map(([key, value]) => {
+                  if (!value) return null;
+                  return (
+                    <View key={key} className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                      <Text className="text-xs font-bold text-primary capitalize">{String(value)}</Text>
+                      <Pressable onPress={() => updateFilters({ [key]: undefined })}>
+                        <X size={12} color="#334d43" weight="bold" />
+                      </Pressable>
+                    </View>
+                  )
+                })}
+              </ScrollView>
+            </View>
+          )}
         </View>
 
-        {/* Active Filters Row */}
-        {(hasActiveFilters || sort.sortBy !== "relevance") && (
-          <View className="mt-3">
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-              {/* Reset All */}
-              <Pressable
-                onPress={() => { clearFilters(); updateSort({ sortBy: 'relevance' }); }}
-                className="px-3 py-1.5 rounded-full bg-surface-elevated border border-border"
+        {/* Main Content Area */}
+        <View className="flex-1">
+          {!hasSearched && !localQuery ? (
+            <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(200)} className="flex-1">
+              <SearchStartView
+                onSelectCategory={handleSelectCategory}
+                onSelectTerm={(term) => { setLocalQuery(term); handleSearch(term); }}
+              />
+            </Animated.View>
+          ) : (
+            <Animated.View entering={FadeIn.duration(300)} className="flex-1">
+              <ScrollView
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+                className="flex-1"
+                contentContainerStyle={{ paddingVertical: 20 }}
+                keyboardShouldPersistTaps="handled"
               >
-                <Text className="text-xs font-bold text-foreground-secondary">Reset</Text>
-              </Pressable>
+                {/* Results */}
+                <SearchResultSection
+                  title={t("search.sections.library")}
+                  recipes={libraryResults}
+                  isLoading={isSearchingLibrary}
+                  onSeeAll={libraryResults.length > 0 ? handleSeeAllLibrary : undefined}
+                />
 
-              {/* Chips here... (keeping it simple for now or copying the elaborate chips from before if needed, 
-                    but the previous implementation was good enough for chips, just styling tweaks) */}
-              {Object.entries(filters).map(([key, value]) => {
-                if (!value) return null;
-                return (
-                  <View key={key} className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-                    <Text className="text-xs font-bold text-primary capitalize">{String(value)}</Text>
-                    <Pressable onPress={() => updateFilters({ [key]: undefined })}>
-                      <X size={12} color="#334d43" weight="bold" />
-                    </Pressable>
+                <SearchResultSection
+                  title={t("search.sections.popular")}
+                  recipes={publicResults}
+                  isLoading={isSearchingPublic}
+                />
+
+                {/* Empty Search Results State */}
+                {!isSearchingLibrary && !isSearchingPublic && libraryResults.length === 0 && publicResults.length === 0 && (
+                  <View className="items-center justify-center py-20 px-6">
+                    <Text className="text-lg font-playfair-bold text-foreground-heading text-center mb-2">
+                      {t("search.empty.title", "No recipes found")}
+                    </Text>
+                    <Text className="text-foreground-secondary text-center">
+                      {t("search.empty.description", "Try searching for a different ingredient or category.")}
+                    </Text>
                   </View>
-                )
-              })}
-            </ScrollView>
-          </View>
-        )}
+                )}
+              </ScrollView>
+            </Animated.View>
+          )}
+        </View>
+
+        <SearchFiltersSheet
+          ref={filtersSheetRef}
+          filters={filters}
+          onApplyFilters={updateFilters}
+        />
+
+        <SearchSortSheet
+          ref={sortSheetRef}
+          currentSort={sort.sortBy}
+          onSelectSort={(sortBy) => updateSort({ sortBy })}
+        />
       </View>
-
-      {/* Main Content Area */}
-      <View className="flex-1">
-        {!hasSearched && !localQuery ? (
-          <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(200)} className="flex-1">
-            <SearchStartView
-              onSelectCategory={handleSelectCategory}
-              onSelectTerm={(term) => { setLocalQuery(term); handleSearch(term); }}
-            />
-          </Animated.View>
-        ) : (
-          <Animated.View entering={FadeIn.duration(300)} className="flex-1">
-            <ScrollView
-              onScroll={handleScroll}
-              scrollEventThrottle={16}
-              className="flex-1"
-              contentContainerStyle={{ paddingVertical: 20 }}
-              keyboardShouldPersistTaps="handled"
-            >
-              {/* Results */}
-              <SearchResultSection
-                title={t("search.sections.library")}
-                recipes={libraryResults}
-                isLoading={isSearchingLibrary}
-                onSeeAll={libraryResults.length > 0 ? handleSeeAllLibrary : undefined}
-              />
-
-              <SearchResultSection
-                title={t("search.sections.popular")}
-                recipes={publicResults}
-                isLoading={isSearchingPublic}
-              />
-
-              {/* Empty Search Results State */}
-              {!isSearchingLibrary && !isSearchingPublic && libraryResults.length === 0 && publicResults.length === 0 && (
-                <View className="items-center justify-center py-20 px-6">
-                  <Text className="text-lg font-playfair-bold text-foreground-heading text-center mb-2">
-                    {t("search.empty.title", "No recipes found")}
-                  </Text>
-                  <Text className="text-foreground-secondary text-center">
-                    {t("search.empty.description", "Try searching for a different ingredient or category.")}
-                  </Text>
-                </View>
-              )}
-            </ScrollView>
-          </Animated.View>
-        )}
-      </View>
-
-      <SearchFiltersSheet
-        ref={filtersSheetRef}
-        filters={filters}
-        onApplyFilters={updateFilters}
-      />
-
-      <SearchSortSheet
-        ref={sortSheetRef}
-        currentSort={sort.sortBy}
-        onSelectSort={(sortBy) => updateSort({ sortBy })}
-      />
-    </View>
+    </BottomSheetModalProvider>
   );
 }

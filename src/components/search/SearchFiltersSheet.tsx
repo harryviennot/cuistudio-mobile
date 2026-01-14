@@ -55,10 +55,12 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
     const timeFilterOptions: TimeFilter[] = ["quick", "medium", "long"];
     const difficultyOptions: DifficultyFilter[] = ["easy", "medium", "hard"];
 
+    const snapPoints = React.useMemo(() => ["70%"], []);
+
     return (
       <PremiumBottomSheet
         ref={ref}
-        snapPoints={["70%"]}
+        snapPoints={snapPoints}
         title={t("search.filters.title")}
         subtitle={t("search.filters.subtitle")}
         onClose={handleDismiss}
@@ -85,16 +87,14 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
                       timeFilter: prev.timeFilter === time ? undefined : time,
                     }))
                   }
-                  className={`flex-1 px-4 py-3 rounded-2xl border ${
-                    localFilters.timeFilter === time
-                      ? "bg-primary/5 border-primary/20"
-                      : "bg-transparent border-transparent active:bg-surface-elevated"
-                  }`}
+                  className={`flex-1 px-4 py-3 rounded-2xl border ${localFilters.timeFilter === time
+                    ? "bg-primary/5 border-primary/20"
+                    : "bg-transparent border-transparent active:bg-surface-elevated"
+                    }`}
                 >
                   <Text
-                    className={`text-center font-medium ${
-                      localFilters.timeFilter === time ? "text-primary-dark" : "text-foreground-heading"
-                    }`}
+                    className={`text-center font-medium ${localFilters.timeFilter === time ? "text-primary-dark" : "text-foreground-heading"
+                      }`}
                   >
                     {t(`search.filters.time.${time}`)}
                   </Text>
@@ -121,16 +121,14 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
                       difficulty: prev.difficulty === difficulty ? undefined : difficulty,
                     }))
                   }
-                  className={`flex-1 px-4 py-3 rounded-2xl border ${
-                    localFilters.difficulty === difficulty
-                      ? "bg-primary/5 border-primary/20"
-                      : "bg-transparent border-transparent active:bg-surface-elevated"
-                  }`}
+                  className={`flex-1 px-4 py-3 rounded-2xl border ${localFilters.difficulty === difficulty
+                    ? "bg-primary/5 border-primary/20"
+                    : "bg-transparent border-transparent active:bg-surface-elevated"
+                    }`}
                 >
                   <Text
-                    className={`text-center font-medium capitalize ${
-                      localFilters.difficulty === difficulty ? "text-primary-dark" : "text-foreground-heading"
-                    }`}
+                    className={`text-center font-medium capitalize ${localFilters.difficulty === difficulty ? "text-primary-dark" : "text-foreground-heading"
+                      }`}
                   >
                     {t(`recipe.difficulty.${difficulty}`)}
                   </Text>
@@ -160,16 +158,14 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
                     categorySlug: undefined,
                   }))
                 }
-                className={`px-4 py-3 rounded-2xl border ${
-                  !localFilters.categorySlug
-                    ? "bg-primary/5 border-primary/20"
-                    : "bg-transparent border-transparent active:bg-surface-elevated"
-                }`}
+                className={`px-4 py-3 rounded-2xl border ${!localFilters.categorySlug
+                  ? "bg-primary/5 border-primary/20"
+                  : "bg-transparent border-transparent active:bg-surface-elevated"
+                  }`}
               >
                 <Text
-                  className={`font-medium ${
-                    !localFilters.categorySlug ? "text-primary-dark" : "text-foreground-heading"
-                  }`}
+                  className={`font-medium ${!localFilters.categorySlug ? "text-primary-dark" : "text-foreground-heading"
+                    }`}
                 >
                   {t("common.all")}
                 </Text>
@@ -186,18 +182,16 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
                         prev.categorySlug === category.slug ? undefined : category.slug,
                     }))
                   }
-                  className={`px-4 py-3 rounded-2xl border ${
-                    localFilters.categorySlug === category.slug
-                      ? "bg-primary/5 border-primary/20"
-                      : "bg-transparent border-transparent active:bg-surface-elevated"
-                  }`}
+                  className={`px-4 py-3 rounded-2xl border ${localFilters.categorySlug === category.slug
+                    ? "bg-primary/5 border-primary/20"
+                    : "bg-transparent border-transparent active:bg-surface-elevated"
+                    }`}
                 >
                   <Text
-                    className={`font-medium ${
-                      localFilters.categorySlug === category.slug
-                        ? "text-primary-dark"
-                        : "text-foreground-heading"
-                    }`}
+                    className={`font-medium ${localFilters.categorySlug === category.slug
+                      ? "text-primary-dark"
+                      : "text-foreground-heading"
+                      }`}
                   >
                     {t(`categories.${category.slug}`)}
                   </Text>
