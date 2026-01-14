@@ -71,9 +71,6 @@ export const PremiumBottomSheet = forwardRef<BottomSheetModal, PremiumBottomShee
           borderTopLeftRadius: 32,
           borderTopRightRadius: 32,
         }}
-        style={{
-          zIndex: 50,
-        }}
         {...props}
       >
         <BottomSheetView

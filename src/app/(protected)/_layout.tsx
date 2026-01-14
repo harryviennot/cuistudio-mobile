@@ -48,8 +48,8 @@ function ProtectedContent() {
         <Stack.Screen
           name="search"
           options={{
-            presentation: "transparentModal",
-            animation: "fade",
+            presentation: "fullScreenModal",
+            animation: "slide_from_bottom",
             animationDuration: 200,
           }}
         />

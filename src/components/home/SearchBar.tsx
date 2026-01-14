@@ -66,19 +66,18 @@ export function SearchBar({
 
   return (
     <View
-      className={`flex-row items-center px-4 py-3 rounded-xl bg-surface-elevated border ${
-        isFocused ? "border-primary" : "border-border"
-      }`}
+      className={`flex-row items-center px-4 py-2.5 rounded-full bg-surface-elevated ${isFocused ? "border border-primary/20 bg-background" : "border border-transparent"
+        }`}
       style={{
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: isFocused ? 0.1 : 0.05,
-        shadowRadius: 3,
-        elevation: isFocused ? 2 : 1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isFocused ? 0.08 : 0.03,
+        shadowRadius: 8,
+        elevation: isFocused ? 2 : 0,
       }}
     >
       {/* Search Icon */}
-      <MagnifyingGlass size={20} color={isFocused ? "#334d43" : "#5a4f3e"} weight="duotone" />
+      <MagnifyingGlass size={20} color={isFocused ? "#334d43" : "#8b7a66"} weight={isFocused ? "bold" : "regular"} />
 
       {/* Text Input */}
       <TextInput
@@ -88,8 +87,8 @@ export function SearchBar({
         placeholderTextColor="#a8a29e"
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className="flex-1 ml-3 text-lg text-foreground-heading font-regular leading-6"
-        style={{ outlineStyle: "none" } as any} // Remove web outline
+        className="flex-1 ml-3 text-base text-foreground-heading font-medium leading-5"
+        style={{ outlineStyle: "none", height: "100%" } as any} // Remove web outline
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"
@@ -103,14 +102,14 @@ export function SearchBar({
       />
 
       {/* Clear Button - always reserve space to prevent layout shift */}
-      <View style={{ width: 32, height: 32, justifyContent: "center", alignItems: "center" }}>
+      <View style={{ width: 20, height: 20, justifyContent: "center", alignItems: "center" }}>
         {value.length > 0 && (
           <Pressable
             onPress={handleClear}
-            className="p-1 rounded-full active:bg-surface"
+            className="p-1 rounded-full bg-stone-200 active:bg-stone-300"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <X size={18} color="#5a4f3e" weight="bold" />
+            <X size={12} color="#57534e" weight="bold" />
           </Pressable>
         )}
       </View>
