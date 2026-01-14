@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Keyboard } from "react-native";
+import { View, Text, Pressable, Keyboard, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Faders } from "phosphor-react-native";
@@ -100,7 +100,7 @@ export default function SearchScreen() {
         {/* Header Area */}
         <View
           style={{ paddingTop: insets.top + 8, paddingBottom: 12 }}
-          className="px-5 bg-surface border-b border-border"
+          className="px-4 bg-surface border-b border-border"
         >
           {/* Title Row (Only on initial state or always? Let's make it clean) */}
           {/* We'll use a standard search header layout but make it cleaner */}
@@ -108,7 +108,7 @@ export default function SearchScreen() {
           <View className="flex-row items-center gap-3">
             <Pressable
               onPress={handleClose}
-              className="w-10 h-10 items-center justify-center -ml-2 rounded-full active:bg-surface-elevated"
+              className="w-10 h-10 items-center justify-center rounded-full active:bg-surface-elevated"
               hitSlop={10}
             >
               <X size={24} color="#334d43" weight="bold" />
@@ -121,21 +121,28 @@ export default function SearchScreen() {
                 onSearch={handleSearch}
                 placeholder={t("search.placeholder", "Search recipes...")}
                 autoFocus={!contextQuery}
-                // Maybe check if we want autofocus every time or only if empty
+              // Maybe check if we want autofocus every time or only if empty
               />
             </View>
 
             {/* Filter Button */}
             <Pressable
               onPress={() => filtersSheetRef.current?.present()}
-              className={`w-11 h-11 items-center justify-center rounded-full ${hasActiveFilters ? "bg-primary shadow-sm" : "bg-surface-elevated"}`}
+              className="w-10 h-10 items-center justify-center  rounded-full active:bg-surface-elevated"
+              hitSlop={10}
+            >
+              <Faders size={24} color="#334d43" weight="bold" />
+            </Pressable>
+            {/* <TouchableOpacity
+              onPress={() => filtersSheetRef.current?.present()}
+              className={`w-10 h-10 items-center justify-center -ml-2 rounded-full ${hasActiveFilters ? "bg-primary shadow-sm" : "bg-surface-elevated"}`}
             >
               <Faders
                 size={20}
                 color={hasActiveFilters ? "white" : "#334d43"}
                 weight={hasActiveFilters ? "bold" : "regular"}
               />
-            </Pressable>
+            </TouchableOpacity> */}
           </View>
 
           {/* Active Filters Row */}
