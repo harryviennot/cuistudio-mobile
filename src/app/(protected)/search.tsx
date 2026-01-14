@@ -1,11 +1,11 @@
 import { View, Text, Pressable, Keyboard } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, Funnel, SortAscending, ArrowLeft, Faders } from "phosphor-react-native";
+import { X, Faders } from "phosphor-react-native";
 import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { SearchBar } from "@/components/home/SearchBar";
 import { useSearch } from "@/hooks/useSearch";
 import { useSearchContext } from "@/contexts/SearchContext";
@@ -16,8 +16,6 @@ import { SearchStartView } from "@/components/search/SearchStartView";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function SearchScreen() {
-
-  console.log("SearchScreen");
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const {
@@ -47,7 +45,7 @@ export default function SearchScreen() {
     isSearchingLibrary,
     isSearchingPublic,
     hasSearched,
-    error,
+    // error,
     clearSearch,
   } = useSearch({ initialQuery: contextQuery });
 
@@ -123,26 +121,37 @@ export default function SearchScreen() {
                 onSearch={handleSearch}
                 placeholder={t("search.placeholder", "Search recipes...")}
                 autoFocus={!contextQuery}
-              // Maybe check if we want autofocus every time or only if empty
+                // Maybe check if we want autofocus every time or only if empty
               />
             </View>
 
             {/* Filter Button */}
             <Pressable
               onPress={() => filtersSheetRef.current?.present()}
-              className={`w-11 h-11 items-center justify-center rounded-full ${hasActiveFilters ? 'bg-primary shadow-sm' : 'bg-surface-elevated'}`}
+              className={`w-11 h-11 items-center justify-center rounded-full ${hasActiveFilters ? "bg-primary shadow-sm" : "bg-surface-elevated"}`}
             >
-              <Faders size={20} color={hasActiveFilters ? "white" : "#334d43"} weight={hasActiveFilters ? "bold" : "regular"} />
+              <Faders
+                size={20}
+                color={hasActiveFilters ? "white" : "#334d43"}
+                weight={hasActiveFilters ? "bold" : "regular"}
+              />
             </Pressable>
           </View>
 
           {/* Active Filters Row */}
           {(hasActiveFilters || sort.sortBy !== "relevance") && (
             <View className="mt-3">
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 8 }}
+              >
                 {/* Reset All */}
                 <Pressable
-                  onPress={() => { clearFilters(); updateSort({ sortBy: 'relevance' }); }}
+                  onPress={() => {
+                    clearFilters();
+                    updateSort({ sortBy: "relevance" });
+                  }}
                   className="px-3 py-1.5 rounded-full bg-surface-elevated border border-border"
                 >
                   <Text className="text-xs font-bold text-foreground-secondary">Reset</Text>
@@ -153,13 +162,18 @@ export default function SearchScreen() {
                 {Object.entries(filters).map(([key, value]) => {
                   if (!value) return null;
                   return (
-                    <View key={key} className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
-                      <Text className="text-xs font-bold text-primary capitalize">{String(value)}</Text>
+                    <View
+                      key={key}
+                      className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20"
+                    >
+                      <Text className="text-xs font-bold text-primary capitalize">
+                        {String(value)}
+                      </Text>
                       <Pressable onPress={() => updateFilters({ [key]: undefined })}>
                         <X size={12} color="#334d43" weight="bold" />
                       </Pressable>
                     </View>
-                  )
+                  );
                 })}
               </ScrollView>
             </View>
@@ -169,10 +183,17 @@ export default function SearchScreen() {
         {/* Main Content Area */}
         <View className="flex-1">
           {!hasSearched && !localQuery ? (
-            <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(200)} className="flex-1">
+            <Animated.View
+              entering={FadeIn.duration(300)}
+              exiting={FadeOut.duration(200)}
+              className="flex-1"
+            >
               <SearchStartView
                 onSelectCategory={handleSelectCategory}
-                onSelectTerm={(term) => { setLocalQuery(term); handleSearch(term); }}
+                onSelectTerm={(term) => {
+                  setLocalQuery(term);
+                  handleSearch(term);
+                }}
               />
             </Animated.View>
           ) : (
@@ -199,16 +220,22 @@ export default function SearchScreen() {
                 />
 
                 {/* Empty Search Results State */}
-                {!isSearchingLibrary && !isSearchingPublic && libraryResults.length === 0 && publicResults.length === 0 && (
-                  <View className="items-center justify-center py-20 px-6">
-                    <Text className="text-lg font-playfair-bold text-foreground-heading text-center mb-2">
-                      {t("search.empty.title", "No recipes found")}
-                    </Text>
-                    <Text className="text-foreground-secondary text-center">
-                      {t("search.empty.description", "Try searching for a different ingredient or category.")}
-                    </Text>
-                  </View>
-                )}
+                {!isSearchingLibrary &&
+                  !isSearchingPublic &&
+                  libraryResults.length === 0 &&
+                  publicResults.length === 0 && (
+                    <View className="items-center justify-center py-20 px-6">
+                      <Text className="text-lg font-playfair-bold text-foreground-heading text-center mb-2">
+                        {t("search.empty.title", "No recipes found")}
+                      </Text>
+                      <Text className="text-foreground-secondary text-center">
+                        {t(
+                          "search.empty.description",
+                          "Try searching for a different ingredient or category."
+                        )}
+                      </Text>
+                    </View>
+                  )}
               </ScrollView>
             </Animated.View>
           )}

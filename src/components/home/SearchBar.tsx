@@ -66,8 +66,9 @@ export function SearchBar({
 
   return (
     <View
-      className={`flex-row items-center px-4 py-2.5 rounded-full bg-surface-elevated ${isFocused ? "border border-primary/20 bg-background" : "border border-transparent"
-        }`}
+      className={`flex-row items-center px-4 py-2.5 rounded-full bg-surface-elevated ${
+        isFocused ? "border border-primary/20 bg-background" : "border border-transparent"
+      }`}
       style={{
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -77,7 +78,11 @@ export function SearchBar({
       }}
     >
       {/* Search Icon */}
-      <MagnifyingGlass size={20} color={isFocused ? "#334d43" : "#8b7a66"} weight={isFocused ? "bold" : "regular"} />
+      <MagnifyingGlass
+        size={20}
+        color={isFocused ? "#334d43" : "#8b7a66"}
+        weight={isFocused ? "bold" : "regular"}
+      />
 
       {/* Text Input */}
       <TextInput

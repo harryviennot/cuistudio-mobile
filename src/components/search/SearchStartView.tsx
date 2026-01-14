@@ -9,7 +9,7 @@ import {
   Leaf,
   Clock,
   TrendUp,
-  ForkKnife
+  ForkKnife,
 } from "phosphor-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -19,16 +19,23 @@ interface SearchStartViewProps {
 }
 
 const CATEGORIES = [
-  { id: 'breakfast', icon: Coffee, color: '#eab308' },
-  { id: 'dinner', icon: MoonStars, color: '#3b82f6' },
-  { id: 'healthy', icon: Heartbeat, color: '#ef4444' },
-  { id: 'dessert', icon: Fire, color: '#f97316' },
-  { id: 'vegetarian', icon: Leaf, color: '#22c55e' },
-  { id: 'quick', icon: Clock, color: '#a855f7' },
+  { id: "breakfast", icon: Coffee, color: "#eab308" },
+  { id: "dinner", icon: MoonStars, color: "#3b82f6" },
+  { id: "healthy", icon: Heartbeat, color: "#ef4444" },
+  { id: "dessert", icon: Fire, color: "#f97316" },
+  { id: "vegetarian", icon: Leaf, color: "#22c55e" },
+  { id: "quick", icon: Clock, color: "#a855f7" },
 ];
 
 const POPULAR_SEARCHES = [
-  "Pasta", "Chicken", "Salad", "Soup", "Pancakes", "Curry", "Avocado", "Salmon"
+  "Pasta",
+  "Chicken",
+  "Salad",
+  "Soup",
+  "Pancakes",
+  "Curry",
+  "Avocado",
+  "Salmon",
 ];
 
 export function SearchStartView({ onSelectCategory, onSelectTerm }: SearchStartViewProps) {
@@ -42,10 +49,10 @@ export function SearchStartView({ onSelectCategory, onSelectTerm }: SearchStartV
     >
       <View className="px-5 mb-8">
         <Text className="font-playfair-bold text-2xl text-foreground-heading mb-2">
-          {t('search.browse.title', 'Browse Categories')}
+          {t("search.browse.title", "Browse Categories")}
         </Text>
         <Text className="text-foreground-secondary mb-6">
-          {t('search.browse.subtitle', 'Explore recipes by meal type or diet')}
+          {t("search.browse.subtitle", "Explore recipes by meal type or diet")}
         </Text>
 
         <View className="flex-row flex-wrap gap-3">
@@ -56,13 +63,29 @@ export function SearchStartView({ onSelectCategory, onSelectTerm }: SearchStartV
               className="w-[48%] aspect-[1.4] mb-1 relative overflow-hidden rounded-2xl active:opacity-90"
             >
               <LinearGradient
-                colors={[cat.color + '15', cat.color + '05']}
+                colors={[cat.color + "15", cat.color + "05"]}
                 className="absolute inset-0"
               />
 
               <View className="absolute inset-0 items-center justify-center p-4 border border-white/20 rounded-2xl">
-                <cat.icon size={48} color={cat.color} weight="duotone" style={{ opacity: 0.15, position: 'absolute', right: -10, bottom: -10, transform: [{ rotate: '-15deg' }] }} />
-                <cat.icon size={32} color={cat.color} weight="duotone" style={{ marginBottom: 8 }} />
+                <cat.icon
+                  size={48}
+                  color={cat.color}
+                  weight="duotone"
+                  style={{
+                    opacity: 0.15,
+                    position: "absolute",
+                    right: -10,
+                    bottom: -10,
+                    transform: [{ rotate: "-15deg" }],
+                  }}
+                />
+                <cat.icon
+                  size={32}
+                  color={cat.color}
+                  weight="duotone"
+                  style={{ marginBottom: 8 }}
+                />
                 <Text className="font-playfair-bold text-lg text-foreground-heading capitalize">
                   {t(`category.${cat.id}`, cat.id)}
                 </Text>
@@ -76,7 +99,7 @@ export function SearchStartView({ onSelectCategory, onSelectTerm }: SearchStartV
         <View className="flex-row items-center gap-2 mb-4">
           <TrendUp size={20} color="#334d43" weight="bold" />
           <Text className="font-playfair-bold text-xl text-foreground-heading">
-            {t('search.popular.title', 'Popular Searches')}
+            {t("search.popular.title", "Popular Searches")}
           </Text>
         </View>
 

@@ -12,7 +12,14 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
-import { ClockIcon, ChartBarIcon, ForkKnifeIcon, TimerIcon, FlameIcon, MoonIcon } from "phosphor-react-native";
+import {
+  ClockIcon,
+  ChartBarIcon,
+  ForkKnifeIcon,
+  TimerIcon,
+  FlameIcon,
+  MoonIcon,
+} from "phosphor-react-native";
 import type { SearchFilters, DifficultyFilter, TimeFilters } from "@/types/search";
 import { useCategories } from "@/hooks/useCategories";
 import { PremiumBottomSheet } from "@/components/ui/PremiumBottomSheet";
@@ -239,8 +246,9 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
                   className="flex-1 py-4"
                 >
                   <Text
-                    className={`text-center font-medium capitalize ${isSelected ? "text-white" : "text-foreground-heading"
-                      }`}
+                    className={`text-center font-medium capitalize ${
+                      isSelected ? "text-white" : "text-foreground-heading"
+                    }`}
                   >
                     {t(`recipe.difficulty.${difficulty}`)}
                   </Text>

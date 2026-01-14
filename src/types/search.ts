@@ -25,8 +25,8 @@ export interface TimeFilters {
 
 export interface SearchFilters {
   difficulty?: DifficultyFilter;
-  categorySlugs?: string[];      // Multi-select categories (OR logic)
-  timeFilters?: TimeFilters;     // Granular time filters
+  categorySlugs?: string[]; // Multi-select categories (OR logic)
+  timeFilters?: TimeFilters; // Granular time filters
   // Legacy fields (deprecated, kept for backward compatibility)
   categorySlug?: string;
   timeFilter?: TimeFilter;

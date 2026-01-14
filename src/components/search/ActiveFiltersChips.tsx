@@ -43,9 +43,7 @@ export function ActiveFiltersChips({
         className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-surface-elevated border border-border active:bg-surface-hover"
       >
         <Funnel size={16} color="#334d43" weight="fill" />
-        <Text className="text-sm font-medium text-foreground">
-          {t("search.filters.title")}
-        </Text>
+        <Text className="text-sm font-medium text-foreground">{t("search.filters.title")}</Text>
         {filterCount > 0 && (
           <View className="bg-primary rounded-full min-w-[20px] h-5 items-center justify-center px-1.5">
             <Text className="text-xs font-bold text-white">{filterCount}</Text>

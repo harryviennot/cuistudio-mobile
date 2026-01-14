@@ -41,9 +41,7 @@ export function SearchResultSection({
       {showHeader && (
         <View className="flex-row items-center justify-between px-5 mb-3">
           <View className="flex-row items-center gap-2">
-            <Text className="text-lg font-playfair-bold text-foreground-heading">
-              {title}
-            </Text>
+            <Text className="text-lg font-playfair-bold text-foreground-heading">{title}</Text>
             {!isLoading && recipes.length > 0 && (
               <View className="bg-surface-elevated rounded-full px-2 py-0.5">
                 <Text className="text-xs text-foreground-secondary font-medium">
@@ -55,10 +53,7 @@ export function SearchResultSection({
 
           {/* See All Button */}
           {onSeeAll && recipes.length > 0 && !isLoading && (
-            <Pressable
-              onPress={onSeeAll}
-              className="active:opacity-70"
-            >
+            <Pressable onPress={onSeeAll} className="active:opacity-70">
               <Text className="text-sm font-semibold text-primary">
                 {seeAllText || t("common.seeAll")}
               </Text>
@@ -71,18 +66,14 @@ export function SearchResultSection({
       {isLoading && (
         <View className="px-5 py-12">
           <ActivityIndicator size="large" color="#334d43" />
-          <Text className="mt-4 text-center text-foreground-secondary">
-            {t("search.loading")}
-          </Text>
+          <Text className="mt-4 text-center text-foreground-secondary">{t("search.loading")}</Text>
         </View>
       )}
 
       {/* Empty State */}
       {!isLoading && recipes.length === 0 && emptyText && (
         <View className="px-5 py-12">
-          <Text className="text-center text-foreground-secondary">
-            {emptyText}
-          </Text>
+          <Text className="text-center text-foreground-secondary">{emptyText}</Text>
         </View>
       )}
 
