@@ -25,7 +25,7 @@ interface TimeFilterRowProps {
 }
 
 const COLLAPSED_HEIGHT = 0;
-const EXPANDED_HEIGHT = 62;
+const EXPANDED_HEIGHT = 68;
 
 // Dynamic increment based on current value
 function getDynamicIncrement(currentMinutes: number): number {
@@ -126,7 +126,7 @@ export function TimeFilterRow({
           <ShadowItem
             className={cn(
               "flex-row items-center gap-3 px-4 py-3.5 rounded-xl",
-              enabled && "border-primary bg-primary/5"
+              enabled && "bg-primary"
             )}
           >
             {/* Custom Checkbox */}
@@ -142,15 +142,15 @@ export function TimeFilterRow({
             {/* Icon */}
             <IconComponent
               size={20}
-              color={enabled ? "#334d43" : "#8a8177"}
-              weight={enabled ? "fill" : "duotone"}
+              color={enabled ? "#ffffff" : "#8a8177"}
+              weight={enabled ? "regular" : "duotone"}
             />
 
             {/* Label */}
             <Text
               className={cn(
                 "flex-1 text-sm font-bold uppercase tracking-widest",
-                enabled ? "text-foreground-heading" : "text-foreground-tertiary"
+                enabled ? "text-white" : "text-foreground-tertiary"
               )}
             >
               {label}
@@ -160,7 +160,7 @@ export function TimeFilterRow({
       </Pressable>
 
       {/* Compact Time Adjuster - Animated expand/collapse */}
-      <Animated.View style={[expandAnimatedStyle, { overflow: "hidden" }]}>
+      <Animated.View style={expandAnimatedStyle}>
         {enabled && (
           <ShadowItem className="flex-row items-center justify-between rounded-xl px-4 py-3 mt-2">
             <Pressable

@@ -165,140 +165,139 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
         subtitle={t("search.filters.subtitle")}
         onClose={handleDismiss}
         scrollable
-        contentStyle={{ paddingHorizontal: 24, paddingBottom: bottom + 100 }}
+        contentStyle={{ paddingHorizontal: 20, paddingBottom: bottom + 100 }}
       >
-          {/* Cooking Time Section */}
-          <View className="mb-8">
-            <View className="flex-row items-center gap-2 mb-4">
-              <ClockIcon size={18} color="#8a8177" weight="duotone" />
-              <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
-                {t("search.filters.cookingTime")}
+        {/* Cooking Time Section */}
+        <View className="mb-8">
+          <View className="flex-row items-center gap-2 mb-4">
+            <ClockIcon size={18} color="#8a8177" weight="duotone" />
+            <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
+              {t("search.filters.cookingTime")}
+            </Text>
+          </View>
+
+          {/* Time Filter Rows */}
+          <TimeFilterRow
+            label={t("search.filters.prepTime")}
+            icon={TimerIcon}
+            enabled={localFilters.timeFilters.prep?.enabled ?? false}
+            maxMinutes={localFilters.timeFilters.prep?.maxMinutes ?? 30}
+            onToggle={() => handleTimeToggle("prep")}
+            onMaxMinutesChange={(mins) => handleTimeMaxChange("prep", mins)}
+          />
+
+          <TimeFilterRow
+            label={t("search.filters.cookTime")}
+            icon={FlameIcon}
+            enabled={localFilters.timeFilters.cook?.enabled ?? false}
+            maxMinutes={localFilters.timeFilters.cook?.maxMinutes ?? 60}
+            onToggle={() => handleTimeToggle("cook")}
+            onMaxMinutesChange={(mins) => handleTimeMaxChange("cook", mins)}
+          />
+
+          <TimeFilterRow
+            label={t("search.filters.restTime")}
+            icon={MoonIcon}
+            enabled={localFilters.timeFilters.rest?.enabled ?? false}
+            maxMinutes={localFilters.timeFilters.rest?.maxMinutes ?? 30}
+            onToggle={() => handleTimeToggle("rest")}
+            onMaxMinutesChange={(mins) => handleTimeMaxChange("rest", mins)}
+          />
+
+          {/* Total Time Display */}
+          {hasAnyTimeFilter && (
+            <View className="mt-2 px-4 py-3 bg-primary/10 rounded-xl">
+              <Text className="text-sm font-semibold text-primary text-center">
+                {t("search.filters.totalLimit")}: {formatDuration(computedTotalTime, { t })}
               </Text>
             </View>
+          )}
+        </View>
 
-            {/* Time Filter Rows */}
-            <TimeFilterRow
-              label={t("search.filters.prepTime")}
-              icon={TimerIcon}
-              enabled={localFilters.timeFilters.prep?.enabled ?? false}
-              maxMinutes={localFilters.timeFilters.prep?.maxMinutes ?? 30}
-              onToggle={() => handleTimeToggle("prep")}
-              onMaxMinutesChange={(mins) => handleTimeMaxChange("prep", mins)}
-            />
+        {/* Difficulty Section */}
+        <View className="mb-8">
+          <View className="flex-row items-center gap-2 mb-4">
+            <ChartBarIcon size={18} color="#8a8177" weight="duotone" />
+            <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
+              {t("search.filters.difficulty")}
+            </Text>
+          </View>
+          <View className="flex-row gap-3">
+            {difficultyOptions.map((difficulty) => {
+              const isSelected = localFilters.difficulty === difficulty;
+              return (
+                <ShadowItem
+                  key={difficulty}
+                  variant={isSelected ? "primary" : "default"}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setLocalFilters((prev) => ({
+                      ...prev,
+                      difficulty: prev.difficulty === difficulty ? undefined : difficulty,
+                    }));
+                  }}
+                  className="flex-1 py-4"
+                >
+                  <Text
+                    className={`text-center font-medium capitalize ${isSelected ? "text-white" : "text-foreground-heading"
+                      }`}
+                  >
+                    {t(`recipe.difficulty.${difficulty}`)}
+                  </Text>
+                </ShadowItem>
+              );
+            })}
+          </View>
+        </View>
 
-            <TimeFilterRow
-              label={t("search.filters.cookTime")}
-              icon={FlameIcon}
-              enabled={localFilters.timeFilters.cook?.enabled ?? false}
-              maxMinutes={localFilters.timeFilters.cook?.maxMinutes ?? 60}
-              onToggle={() => handleTimeToggle("cook")}
-              onMaxMinutesChange={(mins) => handleTimeMaxChange("cook", mins)}
-            />
-
-            <TimeFilterRow
-              label={t("search.filters.restTime")}
-              icon={MoonIcon}
-              enabled={localFilters.timeFilters.rest?.enabled ?? false}
-              maxMinutes={localFilters.timeFilters.rest?.maxMinutes ?? 30}
-              onToggle={() => handleTimeToggle("rest")}
-              onMaxMinutesChange={(mins) => handleTimeMaxChange("rest", mins)}
-            />
-
-            {/* Total Time Display */}
-            {hasAnyTimeFilter && (
-              <View className="mt-2 px-4 py-3 bg-primary/10 rounded-xl">
-                <Text className="text-sm font-semibold text-primary text-center">
-                  {t("search.filters.totalLimit")}: {formatDuration(computedTotalTime, { t })}
+        {/* Category Section - Wrapped Multi-Select */}
+        <View className="mb-8">
+          <View className="flex-row items-center gap-2 mb-4">
+            <ForkKnifeIcon size={18} color="#8a8177" weight="duotone" />
+            <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
+              {t("search.filters.category")}
+            </Text>
+            {localFilters.categorySlugs.length > 0 && (
+              <View className="bg-primary/20 px-2 py-0.5 rounded-full">
+                <Text className="text-xs font-semibold text-primary">
+                  {localFilters.categorySlugs.length}
                 </Text>
               </View>
             )}
           </View>
 
-          {/* Difficulty Section */}
-          <View className="mb-8">
-            <View className="flex-row items-center gap-2 mb-4">
-              <ChartBarIcon size={18} color="#8a8177" weight="duotone" />
-              <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
-                {t("search.filters.difficulty")}
-              </Text>
-            </View>
-            <View className="flex-row gap-3">
-              {difficultyOptions.map((difficulty) => {
-                const isSelected = localFilters.difficulty === difficulty;
-                return (
+          {/* Wrapped Category Chips */}
+          <View className="flex-row flex-wrap gap-2">
+            {categories?.map((category) => {
+              const isSelected = localFilters.categorySlugs.includes(category.slug);
+              return (
+                <Pressable key={category.id} onPress={() => handleCategoryToggle(category.slug)}>
                   <ShadowItem
-                    key={difficulty}
-                    variant={isSelected ? "primary" : "default"}
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      setLocalFilters((prev) => ({
-                        ...prev,
-                        difficulty: prev.difficulty === difficulty ? undefined : difficulty,
-                      }));
-                    }}
-                    className="flex-1 py-4"
+                    className={cn(
+                      "flex-row items-center gap-2 px-4 py-2.5 rounded-full",
+                      isSelected && "border-primary bg-primary/10"
+                    )}
                   >
+                    <CategoryIcon
+                      slug={category.slug}
+                      size={16}
+                      color={isSelected ? "#334d43" : "#8a8177"}
+                      weight={isSelected ? "fill" : "bold"}
+                    />
                     <Text
-                      className={`text-center font-medium capitalize ${
-                        isSelected ? "text-white" : "text-foreground-heading"
-                      }`}
-                    >
-                      {t(`recipe.difficulty.${difficulty}`)}
-                    </Text>
-                  </ShadowItem>
-                );
-              })}
-            </View>
-          </View>
-
-          {/* Category Section - Wrapped Multi-Select */}
-          <View className="mb-8">
-            <View className="flex-row items-center gap-2 mb-4">
-              <ForkKnifeIcon size={18} color="#8a8177" weight="duotone" />
-              <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
-                {t("search.filters.category")}
-              </Text>
-              {localFilters.categorySlugs.length > 0 && (
-                <View className="bg-primary/20 px-2 py-0.5 rounded-full">
-                  <Text className="text-xs font-semibold text-primary">
-                    {localFilters.categorySlugs.length}
-                  </Text>
-                </View>
-              )}
-            </View>
-
-            {/* Wrapped Category Chips */}
-            <View className="flex-row flex-wrap gap-2">
-              {categories?.map((category) => {
-                const isSelected = localFilters.categorySlugs.includes(category.slug);
-                return (
-                  <Pressable key={category.id} onPress={() => handleCategoryToggle(category.slug)}>
-                    <ShadowItem
                       className={cn(
-                        "flex-row items-center gap-2 px-4 py-2.5 rounded-full",
-                        isSelected && "border-primary bg-primary/10"
+                        "text-sm font-semibold",
+                        isSelected ? "text-primary" : "text-foreground-secondary"
                       )}
                     >
-                      <CategoryIcon
-                        slug={category.slug}
-                        size={16}
-                        color={isSelected ? "#334d43" : "#8a8177"}
-                        weight={isSelected ? "fill" : "bold"}
-                      />
-                      <Text
-                        className={cn(
-                          "text-sm font-semibold",
-                          isSelected ? "text-primary" : "text-foreground-secondary"
-                        )}
-                      >
-                        {t(`categories.${category.slug}` as any)}
-                      </Text>
-                    </ShadowItem>
-                  </Pressable>
-                );
-              })}
-            </View>
+                      {t(`categories.${category.slug}` as any)}
+                    </Text>
+                  </ShadowItem>
+                </Pressable>
+              );
+            })}
           </View>
+        </View>
 
         {/* Bottom Action Bar */}
         <View
