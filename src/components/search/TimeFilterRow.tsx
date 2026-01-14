@@ -3,8 +3,9 @@ import { View, Text, Pressable } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withTiming,
   interpolate,
+  Easing,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { CheckIcon } from "phosphor-react-native";
@@ -23,7 +24,7 @@ interface TimeFilterRowProps {
 }
 
 const COLLAPSED_HEIGHT = 0;
-const EXPANDED_HEIGHT = 90;
+const EXPANDED_HEIGHT = 80;
 
 export function TimeFilterRow({
   label,
@@ -36,11 +37,11 @@ export function TimeFilterRow({
   const expandProgress = useSharedValue(enabled ? 1 : 0);
   const checkboxScale = useSharedValue(1);
 
-  // Update animation when enabled changes
+  // Smooth animation without bounce
   React.useEffect(() => {
-    expandProgress.value = withSpring(enabled ? 1 : 0, {
-      damping: 20,
-      stiffness: 300,
+    expandProgress.value = withTiming(enabled ? 1 : 0, {
+      duration: 250,
+      easing: Easing.bezier(0.4, 0, 0.2, 1),
     });
   }, [enabled, expandProgress]);
 
@@ -50,11 +51,11 @@ export function TimeFilterRow({
   }, [onToggle]);
 
   const handlePressIn = useCallback(() => {
-    checkboxScale.value = withSpring(0.95, { damping: 15, stiffness: 400 });
+    checkboxScale.value = withTiming(0.97, { duration: 100 });
   }, [checkboxScale]);
 
   const handlePressOut = useCallback(() => {
-    checkboxScale.value = withSpring(1, { damping: 15, stiffness: 400 });
+    checkboxScale.value = withTiming(1, { duration: 100 });
   }, [checkboxScale]);
 
   const checkboxAnimatedStyle = useAnimatedStyle(() => ({
@@ -64,7 +65,7 @@ export function TimeFilterRow({
   const expandAnimatedStyle = useAnimatedStyle(() => ({
     height: interpolate(expandProgress.value, [0, 1], [COLLAPSED_HEIGHT, EXPANDED_HEIGHT]),
     opacity: expandProgress.value,
-    marginTop: interpolate(expandProgress.value, [0, 1], [0, 12]),
+    marginTop: interpolate(expandProgress.value, [0, 1], [0, 4]),
   }));
 
   return (
@@ -98,8 +99,8 @@ export function TimeFilterRow({
             {/* Label */}
             <Text
               className={cn(
-                "flex-1 text-base font-semibold",
-                enabled ? "text-foreground-heading" : "text-foreground-secondary"
+                "flex-1 text-sm font-bold uppercase tracking-widest",
+                enabled ? "text-foreground-heading" : "text-foreground-tertiary"
               )}
             >
               {label}

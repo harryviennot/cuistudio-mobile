@@ -170,8 +170,8 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
           {/* Cooking Time Section */}
           <View className="mb-8">
             <View className="flex-row items-center gap-2 mb-4">
-              <ClockIcon size={22} color="#334d43" weight="duotone" />
-              <Text className="text-xl text-foreground font-playfair-bold">
+              <ClockIcon size={18} color="#8a8177" weight="duotone" />
+              <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
                 {t("search.filters.cookingTime")}
               </Text>
             </View>
@@ -217,8 +217,8 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
           {/* Difficulty Section */}
           <View className="mb-8">
             <View className="flex-row items-center gap-2 mb-4">
-              <ChartBarIcon size={22} color="#334d43" weight="duotone" />
-              <Text className="text-xl text-foreground font-playfair-bold">
+              <ChartBarIcon size={18} color="#8a8177" weight="duotone" />
+              <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
                 {t("search.filters.difficulty")}
               </Text>
             </View>
@@ -254,8 +254,8 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
           {/* Category Section - Wrapped Multi-Select */}
           <View className="mb-8">
             <View className="flex-row items-center gap-2 mb-4">
-              <ForkKnifeIcon size={22} color="#334d43" weight="duotone" />
-              <Text className="text-xl text-foreground font-playfair-bold">
+              <ForkKnifeIcon size={18} color="#8a8177" weight="duotone" />
+              <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
                 {t("search.filters.category")}
               </Text>
               {localFilters.categorySlugs.length > 0 && (
