@@ -31,6 +31,8 @@ export interface MasonryGridProps {
   onScroll?: any;
   ListEmptyComponent?: ReactElement;
   ListHeaderComponent?: ReactElement;
+  /** Custom loading component shown while initial data loads. Defaults to ActivityIndicator. */
+  ListLoadingComponent?: ReactElement;
   contentContainerStyle?: any;
   /** Custom key extractor for recipes. Defaults to recipe.id */
   keyExtractor?: (recipe: Recipe) => string;
@@ -58,6 +60,7 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
     onScroll,
     ListEmptyComponent,
     ListHeaderComponent,
+    ListLoadingComponent,
     contentContainerStyle,
     keyExtractor = (recipe) => recipe.id,
     renderRecipeCard,
@@ -131,8 +134,11 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
 
   // Loading footer component - show when fetching next page OR initial loading with header
   const ListFooterComponent = useMemo(() => {
-    // Show loading indicator when loading initial data (with header visible)
+    // Show loading component when loading initial data (with header visible)
     if (loading && recipes.length === 0 && ListHeaderComponent) {
+      if (ListLoadingComponent) {
+        return ListLoadingComponent;
+      }
       return (
         <View className="py-12 items-center">
           <ActivityIndicator size="large" color="#334d43" />
@@ -146,10 +152,13 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
         <ActivityIndicator size="small" color="#334d43" />
       </View>
     );
-  }, [showLoadingFooter, loading, recipes.length, ListHeaderComponent]);
+  }, [showLoadingFooter, loading, recipes.length, ListHeaderComponent, ListLoadingComponent]);
 
   // Show loading state only when there's no header to show
   if (loading && recipes.length === 0 && !ListHeaderComponent) {
+    if (ListLoadingComponent) {
+      return <View className="flex-1">{ListLoadingComponent}</View>;
+    }
     return (
       <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" color="#334d43" />

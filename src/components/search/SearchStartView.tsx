@@ -1,33 +1,26 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
-import {
-  Coffee,
-  MoonStars,
-  Heartbeat,
-  Fire,
-  Leaf,
-  Clock,
-  TrendUp,
-  ClockCounterClockwise,
-} from "phosphor-react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { TrendUp, ClockCounterClockwise, ForkKnifeIcon } from "phosphor-react-native";
 import { getSearchHistory, clearSearchHistory } from "@/utils/searchHistory";
 import { useFocusEffect } from "expo-router";
 
 interface SearchStartViewProps {
-  onSelectCategory: (category: string) => void;
   onSelectTerm: (term: string) => void;
   contentPaddingTop?: number;
 }
 
-const CATEGORIES = [
-  { id: "breakfast", icon: Coffee, color: "#eab308" },
-  { id: "dinner", icon: MoonStars, color: "#3b82f6" },
-  { id: "healthy", icon: Heartbeat, color: "#ef4444" },
-  { id: "dessert", icon: Fire, color: "#f97316" },
-  { id: "vegetarian", icon: Leaf, color: "#22c55e" },
-  { id: "quick", icon: Clock, color: "#a855f7" },
+const QUICK_INGREDIENTS = [
+  { id: "chicken", icon: "🍗" },
+  { id: "pasta", icon: "🍝" },
+  { id: "eggs", icon: "🥚" },
+  { id: "salmon", icon: "🐟" },
+  { id: "beef", icon: "🥩" },
+  { id: "tomato", icon: "🍅" },
+  { id: "avocado", icon: "🥑" },
+  { id: "rice", icon: "🍚" },
+  { id: "potato", icon: "🥔" },
+  { id: "cheese", icon: "🧀" },
 ];
 
 const POPULAR_SEARCHES = [
@@ -42,7 +35,6 @@ const POPULAR_SEARCHES = [
 ];
 
 export function SearchStartView({
-  onSelectCategory,
   onSelectTerm,
   contentPaddingTop = 20,
 }: SearchStartViewProps) {
@@ -72,8 +64,8 @@ export function SearchStartView({
         <View className="px-5 mb-8">
           <View className="flex-row items-center justify-between mb-4">
             <View className="flex-row items-center gap-2">
-              <ClockCounterClockwise size={20} color="#334d43" weight="bold" />
-              <Text className="font-playfair-bold text-xl text-foreground-heading">
+              <ClockCounterClockwise size={18} color="#8a8177" weight="duotone" />
+              <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
                 {t("search.history.title", "Recent Searches")}
               </Text>
             </View>
@@ -98,50 +90,26 @@ export function SearchStartView({
         </View>
       )}
 
-      {/* Browse Categories Section */}
+      {/* Ingredients Quick Search */}
       <View className="px-5 mb-8">
-        <Text className="font-playfair-bold text-2xl text-foreground-heading mb-2">
-          {t("search.browse.title", "Browse Categories")}
-        </Text>
-        <Text className="text-foreground-secondary mb-6">
-          {t("search.browse.subtitle", "Explore recipes by meal type or diet")}
-        </Text>
+        <View className="flex-row items-center gap-2 mb-4">
+          <ForkKnifeIcon size={18} color="#8a8177" weight="duotone" />
+          <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
+            {t("search.ingredients.title", "Ingredients")}
+          </Text>
+        </View>
 
-        <View className="flex-row flex-wrap gap-3">
-          {CATEGORIES.map((cat) => (
+        <View className="flex-row flex-wrap gap-2">
+          {QUICK_INGREDIENTS.map((ingredient) => (
             <Pressable
-              key={cat.id}
-              onPress={() => onSelectCategory(cat.id)}
-              className="w-[48%] aspect-[1.4] mb-1 relative overflow-hidden rounded-2xl active:opacity-90"
+              key={ingredient.id}
+              onPress={() => onSelectTerm(ingredient.id)}
+              className="flex-row items-center gap-2 px-4 py-2.5 bg-surface-elevated rounded-full border border-border active:bg-primary/5 active:border-primary/30"
             >
-              <LinearGradient
-                colors={[cat.color + "15", cat.color + "05"]}
-                className="absolute inset-0"
-              />
-
-              <View className="absolute inset-0 items-center justify-center p-4 border border-white/20 rounded-2xl">
-                <cat.icon
-                  size={48}
-                  color={cat.color}
-                  weight="duotone"
-                  style={{
-                    opacity: 0.15,
-                    position: "absolute",
-                    right: -10,
-                    bottom: -10,
-                    transform: [{ rotate: "-15deg" }],
-                  }}
-                />
-                <cat.icon
-                  size={32}
-                  color={cat.color}
-                  weight="duotone"
-                  style={{ marginBottom: 8 }}
-                />
-                <Text className="font-playfair-bold text-lg text-foreground-heading capitalize">
-                  {t(`category.${cat.id}`, cat.id)}
-                </Text>
-              </View>
+              <Text className="text-base">{ingredient.icon}</Text>
+              <Text className="text-foreground font-medium capitalize">
+                {t(`ingredients.${ingredient.id}` as any, ingredient.id)}
+              </Text>
             </Pressable>
           ))}
         </View>
@@ -150,8 +118,8 @@ export function SearchStartView({
       {/* Popular Searches Section */}
       <View className="px-5">
         <View className="flex-row items-center gap-2 mb-4">
-          <TrendUp size={20} color="#334d43" weight="bold" />
-          <Text className="font-playfair-bold text-xl text-foreground-heading">
+          <TrendUp size={18} color="#8a8177" weight="duotone" />
+          <Text className="text-sm font-bold uppercase tracking-widest text-foreground-tertiary">
             {t("search.popular.title", "Popular Searches")}
           </Text>
         </View>

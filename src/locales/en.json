@@ -569,7 +569,29 @@
       "title": "Library Results",
       "count": "{{count}} recipes found",
       "searching": "Searching your library..."
+    },
+    "history": {
+      "title": "Recent Searches",
+      "clear": "Clear"
+    },
+    "ingredients": {
+      "title": "Ingredients"
+    },
+    "popular": {
+      "title": "Popular Searches"
     }
+  },
+  "ingredients": {
+    "chicken": "Chicken",
+    "pasta": "Pasta",
+    "eggs": "Eggs",
+    "salmon": "Salmon",
+    "beef": "Beef",
+    "tomato": "Tomato",
+    "avocado": "Avocado",
+    "rice": "Rice",
+    "potato": "Potato",
+    "cheese": "Cheese"
   },
   "welcome": {
     "headline": "All your recipes",

@@ -567,7 +567,29 @@
       "title": "Résultats de la Bibliothèque",
       "count": "{{count}} recettes trouvées",
       "searching": "Recherche dans votre bibliothèque..."
+    },
+    "history": {
+      "title": "Recherches récentes",
+      "clear": "Effacer"
+    },
+    "ingredients": {
+      "title": "Ingrédients"
+    },
+    "popular": {
+      "title": "Recherches populaires"
     }
+  },
+  "ingredients": {
+    "chicken": "Poulet",
+    "pasta": "Pâtes",
+    "eggs": "Œufs",
+    "salmon": "Saumon",
+    "beef": "Bœuf",
+    "tomato": "Tomate",
+    "avocado": "Avocat",
+    "rice": "Riz",
+    "potato": "Pomme de terre",
+    "cheese": "Fromage"
   },
   "welcome": {
     "headline": "Toutes vos recettes",

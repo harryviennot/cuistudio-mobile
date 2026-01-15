@@ -1,6 +1,14 @@
-import { View, Text, Pressable, Keyboard, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  Keyboard,
+  TouchableOpacity,
+  Platform,
+  useWindowDimensions,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { X, Faders } from "phosphor-react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
@@ -25,9 +33,14 @@ const LIBRARY_CARD_WIDTH = 220;
 const LIBRARY_IMAGE_HEIGHT = 160;
 const MIN_LIBRARY_ITEMS = 1;
 
+// Grid padding matches MasonryGrid's contentContainerStyle paddingHorizontal
+const GRID_PADDING = 10;
+const CARD_PADDING = 8; // padding per card (matches MasonryGrid renderItem padding)
+
 export default function SearchScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { width: screenWidth } = useWindowDimensions();
   const {
     searchQuery: contextQuery,
     setSearchQuery: setContextQuery,
@@ -88,11 +101,6 @@ export default function SearchScreen() {
     [setQuery, setContextQuery]
   );
 
-  const handleSelectCategory = (category: string) => {
-    setQuery(category);
-    setLocalQuery(category);
-  };
-
   const handleSeeAllLibrary = () => {
     router.push({
       pathname: "/search/library-results" as any,
@@ -130,6 +138,36 @@ export default function SearchScreen() {
   const headerBaseHeight = insets.top + 8 + 40 + 12 + 16; // top padding + search row + bottom padding + extra margin
   const hasFiltersRow = hasActiveFilters || sort.sortBy !== "relevance";
   const headerHeight = hasFiltersRow ? headerBaseHeight + 40 : headerBaseHeight; // +40 for filters row
+
+  // Calculate skeleton grid dimensions to match MasonryGrid
+  const numColumns = useMemo(() => {
+    const isTablet = Platform.OS === "ios" && Platform.isPad;
+    if (!isTablet) return 2;
+    // iPad: calculate based on width (max 5 columns)
+    const minColumnWidth = 250;
+    const availableWidth = screenWidth - GRID_PADDING * 2;
+    const calculatedColumns = Math.floor((availableWidth + CARD_PADDING) / (minColumnWidth + CARD_PADDING));
+    return Math.min(Math.max(calculatedColumns, 2), 5);
+  }, [screenWidth]);
+
+  const cardWidth = useMemo(() => {
+    const availableWidth = screenWidth - GRID_PADDING * 2;
+    return (availableWidth - CARD_PADDING * numColumns * 2) / numColumns + CARD_PADDING;
+  }, [screenWidth, numColumns]);
+
+  // Skeleton grid for loading state
+  const SearchResultsSkeleton = useMemo(
+    () => (
+      <View className="flex-row flex-wrap" style={{ paddingHorizontal: GRID_PADDING }}>
+        {Array.from({ length: numColumns * 3 }).map((_, i) => (
+          <View key={i} style={{ width: cardWidth, padding: CARD_PADDING }}>
+            <RecipeCardSkeleton />
+          </View>
+        ))}
+      </View>
+    ),
+    [numColumns, cardWidth]
+  );
 
   // Empty search results component
   const EmptySearchResults = (
@@ -197,191 +235,191 @@ export default function SearchScreen() {
 
   return (
     <View className="flex-1 bg-surface">
-        {/* Header Area - Floating with blur (z-index lower than premium bottomsheet) */}
+      {/* Header Area - Floating with blur (z-index lower than premium bottomsheet) */}
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+        }}
+      >
+        {/* Blur Background */}
+        <BlurView
+          tint="light"
+          intensity={90}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+        />
+
+        {/* Color Overlay */}
         <View
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
-            zIndex: 50,
+            bottom: 0,
+            backgroundColor: "rgba(244, 241, 232, 0.5)",
           }}
-        >
-          {/* Blur Background */}
-          <BlurView
-            tint="light"
-            intensity={90}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-            }}
-          />
+        />
 
-          {/* Color Overlay */}
-          <View
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(244, 241, 232, 0.5)",
-            }}
-          />
+        {/* Header Content */}
+        <View style={{ paddingTop: insets.top + 8, paddingBottom: 12 }} className="px-4">
+          <View className="flex-row items-center gap-3">
+            <TouchableOpacity
+              onPress={handleClose}
+              className="w-10 h-10 items-center justify-center rounded-full"
+              hitSlop={10}
+            >
+              <X size={24} color="#334d43" weight="bold" />
+            </TouchableOpacity>
 
-          {/* Header Content */}
-          <View style={{ paddingTop: insets.top + 8, paddingBottom: 12 }} className="px-4">
-            <View className="flex-row items-center gap-3">
-              <Pressable
-                onPress={handleClose}
-                className="w-10 h-10 items-center justify-center rounded-full active:bg-surface-elevated"
-                hitSlop={10}
-              >
-                <X size={24} color="#334d43" weight="bold" />
-              </Pressable>
-
-              <View className="flex-1">
-                <SearchBar
-                  value={localQuery}
-                  onChangeText={setLocalQuery}
-                  onSearch={handleSearch}
-                  placeholder={
-                    libraryOnly
-                      ? t("search.placeholderLibrary", "Search in library...")
-                      : t("search.placeholder", "Search recipes...")
-                  }
-                  autoFocus={!contextQuery}
-                />
-              </View>
-
-              {/* Filter Button */}
-              <Pressable
-                onPress={() => {
-                  Keyboard.dismiss();
-                  filtersSheetRef.current?.present();
-                }}
-                className="w-10 h-10 items-center justify-center rounded-full active:bg-surface-elevated"
-                hitSlop={10}
-              >
-                <Faders size={24} color="#334d43" weight="bold" />
-              </Pressable>
+            <View className="flex-1">
+              <SearchBar
+                value={localQuery}
+                onChangeText={setLocalQuery}
+                onSearch={handleSearch}
+                placeholder={
+                  libraryOnly
+                    ? t("search.placeholderLibrary", "Search in library...")
+                    : t("search.placeholder", "Search recipes...")
+                }
+                autoFocus={!contextQuery}
+              />
             </View>
 
-            {/* Active Filters Row */}
-            {hasFiltersRow && (
-              <View className="mt-3">
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 8 }}
-                >
-                  {/* Reset All */}
-                  <Pressable
-                    onPress={() => {
-                      clearFilters();
-                      updateSort({ sortBy: "relevance" });
-                    }}
-                    className="px-3 py-1.5 rounded-full bg-surface-elevated border border-border"
-                  >
-                    <Text className="text-xs font-bold text-foreground-secondary">Reset</Text>
-                  </Pressable>
-
-                  {Object.entries(filters).map(([key, value]) => {
-                    if (!value) return null;
-                    return (
-                      <View
-                        key={key}
-                        className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20"
-                      >
-                        <Text className="text-xs font-bold text-primary capitalize">
-                          {String(value)}
-                        </Text>
-                        <Pressable onPress={() => updateFilters({ [key]: undefined })}>
-                          <X size={12} color="#334d43" weight="bold" />
-                        </Pressable>
-                      </View>
-                    );
-                  })}
-                </ScrollView>
-              </View>
-            )}
-          </View>
-        </View>
-
-        {/* Main Content Area */}
-        <View className="flex-1">
-          {!hasSearched && !localQuery ? (
-            <Animated.View
-              entering={FadeIn.duration(300)}
-              exiting={FadeOut.duration(200)}
-              className="flex-1"
+            {/* Filter Button */}
+            <TouchableOpacity
+              onPress={() => {
+                Keyboard.dismiss();
+                filtersSheetRef.current?.present();
+              }}
+              className="w-10 h-10 items-center justify-center rounded-full"
+              hitSlop={10}
             >
-              <SearchStartView
-                onSelectCategory={handleSelectCategory}
-                onSelectTerm={(term) => {
-                  setLocalQuery(term);
-                  handleSearch(term);
-                }}
-                contentPaddingTop={headerHeight}
-              />
-            </Animated.View>
-          ) : (
-            <Animated.View entering={FadeIn.duration(300)} className="flex-1">
-              {/* In library-only mode: show library results in masonry grid
-                  In normal mode: show public results with library horizontal section in header */}
-              <MasonryGrid
-                recipes={libraryOnly ? libraryResults : publicResults}
-                loading={
-                  libraryOnly
-                    ? isSearchingLibrary && libraryResults.length === 0
-                    : isSearchingPublic && publicResults.length === 0
-                }
-                onEndReached={handleEndReached}
-                showLoadingFooter={isFetchingNextPublicPage}
-                onScroll={handleScroll}
-                ListHeaderComponent={ListHeader}
-                ListEmptyComponent={
-                  libraryOnly
-                    ? !isSearchingLibrary && libraryResults.length === 0
-                      ? EmptySearchResults
-                      : undefined
-                    : !isSearchingLibrary &&
-                        !isSearchingPublic &&
-                        libraryResults.length === 0 &&
-                        publicResults.length === 0
-                      ? EmptySearchResults
-                      : undefined
-                }
-                contentContainerStyle={{
-                  paddingTop: headerHeight,
-                  paddingBottom: 20,
-                }}
-                renderRecipeCard={(recipe, index) => (
-                  <RecipeCard
-                    recipe={recipe}
-                    index={index}
-                    onPress={() => handleRecipePress(recipe)}
-                  />
-                )}
-              />
-            </Animated.View>
+              <Faders size={24} color="#334d43" weight="bold" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Active Filters Row */}
+          {hasFiltersRow && (
+            <View className="mt-3">
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 8 }}
+              >
+                {/* Reset All */}
+                <Pressable
+                  onPress={() => {
+                    clearFilters();
+                    updateSort({ sortBy: "relevance" });
+                  }}
+                  className="px-3 py-1.5 rounded-full bg-surface-elevated border border-border"
+                >
+                  <Text className="text-xs font-bold text-foreground-secondary">Reset</Text>
+                </Pressable>
+
+                {Object.entries(filters).map(([key, value]) => {
+                  if (!value) return null;
+                  return (
+                    <View
+                      key={key}
+                      className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20"
+                    >
+                      <Text className="text-xs font-bold text-primary capitalize">
+                        {String(value)}
+                      </Text>
+                      <Pressable onPress={() => updateFilters({ [key]: undefined })}>
+                        <X size={12} color="#334d43" weight="bold" />
+                      </Pressable>
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            </View>
           )}
         </View>
+      </View>
 
-        <SearchFiltersSheet
-          ref={filtersSheetRef}
-          filters={filters}
-          onApplyFilters={updateFilters}
-        />
+      {/* Main Content Area */}
+      <View className="flex-1">
+        {!hasSearched && !localQuery ? (
+          <Animated.View
+            entering={FadeIn.duration(300)}
+            exiting={FadeOut.duration(200)}
+            className="flex-1"
+          >
+            <SearchStartView
+              onSelectTerm={(term) => {
+                setLocalQuery(term);
+                handleSearch(term);
+              }}
+              contentPaddingTop={headerHeight}
+            />
+          </Animated.View>
+        ) : (
+          <Animated.View entering={FadeIn.duration(300)} className="flex-1">
+            {/* In library-only mode: show library results in masonry grid
+                  In normal mode: show public results with library horizontal section in header */}
+            <MasonryGrid
+              recipes={libraryOnly ? libraryResults : publicResults}
+              loading={
+                libraryOnly
+                  ? isSearchingLibrary && libraryResults.length === 0
+                  : isSearchingPublic && publicResults.length === 0
+              }
+              onEndReached={handleEndReached}
+              showLoadingFooter={isFetchingNextPublicPage}
+              onScroll={handleScroll}
+              ListHeaderComponent={ListHeader}
+              ListLoadingComponent={SearchResultsSkeleton}
+              ListEmptyComponent={
+                libraryOnly
+                  ? !isSearchingLibrary && libraryResults.length === 0
+                    ? EmptySearchResults
+                    : undefined
+                  : !isSearchingLibrary &&
+                    !isSearchingPublic &&
+                    libraryResults.length === 0 &&
+                    publicResults.length === 0
+                    ? EmptySearchResults
+                    : undefined
+              }
+              contentContainerStyle={{
+                paddingTop: headerHeight,
+                paddingBottom: 20,
+              }}
+              renderRecipeCard={(recipe, index) => (
+                <RecipeCard
+                  recipe={recipe}
+                  index={index}
+                  onPress={() => handleRecipePress(recipe)}
+                />
+              )}
+            />
+          </Animated.View>
+        )}
+      </View>
 
-        <SearchSortSheet
-          ref={sortSheetRef}
-          currentSort={sort.sortBy}
-          onSelectSort={(sortBy) => updateSort({ sortBy })}
-        />
+      <SearchFiltersSheet
+        ref={filtersSheetRef}
+        filters={filters}
+        onApplyFilters={updateFilters}
+      />
+
+      <SearchSortSheet
+        ref={sortSheetRef}
+        currentSort={sort.sortBy}
+        onSelectSort={(sortBy) => updateSort({ sortBy })}
+      />
     </View>
   );
 }
