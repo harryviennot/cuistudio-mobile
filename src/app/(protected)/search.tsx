@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Keyboard } from "react-native";
+import { View, Text, Pressable, Keyboard, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Faders } from "phosphor-react-native";
@@ -320,9 +320,9 @@ export default function SearchScreen() {
                 ListHeaderComponent={ListHeader}
                 ListEmptyComponent={
                   !isSearchingLibrary &&
-                  !isSearchingPublic &&
-                  libraryResults.length === 0 &&
-                  publicResults.length === 0
+                    !isSearchingPublic &&
+                    libraryResults.length === 0 &&
+                    publicResults.length === 0
                     ? EmptySearchResults
                     : undefined
                 }
