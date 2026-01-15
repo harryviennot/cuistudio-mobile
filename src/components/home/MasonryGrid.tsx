@@ -170,7 +170,14 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
         <ActivityIndicator size="small" color="#334d43" />
       </View>
     );
-  }, [showLoadingFooter, loading, recipes.length, ListHeaderComponent, ListLoadingComponent, SkeletonGrid]);
+  }, [
+    showLoadingFooter,
+    loading,
+    recipes.length,
+    ListHeaderComponent,
+    ListLoadingComponent,
+    SkeletonGrid,
+  ]);
 
   // Show loading state only when there's no header to show
   if (loading && recipes.length === 0 && !ListHeaderComponent) {

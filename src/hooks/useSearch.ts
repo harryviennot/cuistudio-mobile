@@ -163,9 +163,7 @@ export function useSearch(options: UseSearchOptions = {}) {
   }, [filters]);
 
   // Determine loading/search states based on mode
-  const isSearchingLibrary = libraryOnly
-    ? libraryInfiniteQuery.isLoading
-    : libraryQuery.isLoading;
+  const isSearchingLibrary = libraryOnly ? libraryInfiniteQuery.isLoading : libraryQuery.isLoading;
   const isSearchingPublic = libraryOnly ? false : publicQuery.isLoading;
   const isSearching = isSearchingLibrary || isSearchingPublic;
   const hasSearched = libraryOnly
@@ -210,17 +208,13 @@ export function useSearch(options: UseSearchOptions = {}) {
     isSearching,
     hasSearched,
     hasError,
-    error: libraryOnly
-      ? libraryInfiniteQuery.error
-      : libraryQuery.error || publicQuery.error,
+    error: libraryOnly ? libraryInfiniteQuery.error : libraryQuery.error || publicQuery.error,
 
     // Pagination - in libraryOnly mode, use library pagination
     fetchNextPublicPage: libraryOnly
       ? libraryInfiniteQuery.fetchNextPage
       : publicQuery.fetchNextPage,
-    hasNextPublicPage: libraryOnly
-      ? libraryInfiniteQuery.hasNextPage
-      : publicQuery.hasNextPage,
+    hasNextPublicPage: libraryOnly ? libraryInfiniteQuery.hasNextPage : publicQuery.hasNextPage,
     isFetchingNextPublicPage: libraryOnly
       ? libraryInfiniteQuery.isFetchingNextPage
       : publicQuery.isFetchingNextPage,

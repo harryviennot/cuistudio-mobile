@@ -34,10 +34,7 @@ const POPULAR_SEARCHES = [
   "Salmon",
 ];
 
-export function SearchStartView({
-  onSelectTerm,
-  contentPaddingTop = 20,
-}: SearchStartViewProps) {
+export function SearchStartView({ onSelectTerm, contentPaddingTop = 20 }: SearchStartViewProps) {
   const { t } = useTranslation();
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
 

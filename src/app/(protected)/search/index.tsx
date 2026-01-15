@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  Pressable,
-  Keyboard,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Pressable, Keyboard, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Faders } from "phosphor-react-native";
@@ -349,9 +343,9 @@ export default function SearchScreen() {
                     ? EmptySearchResults
                     : undefined
                   : !isSearchingLibrary &&
-                    !isSearchingPublic &&
-                    libraryResults.length === 0 &&
-                    publicResults.length === 0
+                      !isSearchingPublic &&
+                      libraryResults.length === 0 &&
+                      publicResults.length === 0
                     ? EmptySearchResults
                     : undefined
               }
@@ -371,11 +365,7 @@ export default function SearchScreen() {
         )}
       </View>
 
-      <SearchFiltersSheet
-        ref={filtersSheetRef}
-        filters={filters}
-        onApplyFilters={updateFilters}
-      />
+      <SearchFiltersSheet ref={filtersSheetRef} filters={filters} onApplyFilters={updateFilters} />
 
       <SearchSortSheet
         ref={sortSheetRef}

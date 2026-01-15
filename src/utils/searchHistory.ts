@@ -30,9 +30,7 @@ export async function addSearchTerm(term: string): Promise<void> {
     const oneWeekAgo = now - ONE_WEEK_MS;
 
     // Find existing entry or create new one
-    const existingIndex = history.findIndex(
-      (entry) => entry.term.toLowerCase() === normalizedTerm
-    );
+    const existingIndex = history.findIndex((entry) => entry.term.toLowerCase() === normalizedTerm);
 
     if (existingIndex >= 0) {
       // Update existing entry - add new timestamp, filter old ones
