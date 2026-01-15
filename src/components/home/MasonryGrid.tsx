@@ -9,8 +9,12 @@ import {
   useRef,
   type ReactElement,
 } from "react";
-import { RecipeCard } from "../recipe/RecipeCard";
+import { RecipeCard, RecipeCardSkeleton } from "../recipe/RecipeCard";
 import type { Recipe } from "@/types/recipe";
+
+// Layout constants
+const GRID_PADDING = 10;
+const CARD_PADDING = 8;
 
 // Create Reanimated-wrapped FlashList for scroll animations
 const ReanimatedFlashList = Animated.createAnimatedComponent(FlashList as React.ComponentType<any>);
@@ -132,18 +136,32 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
   // Key extractor wrapped in useCallback
   const getItemKey = useCallback((item: Recipe) => keyExtractor(item), [keyExtractor]);
 
+  // Built-in skeleton grid that matches the masonry layout
+  const SkeletonGrid = useMemo(() => {
+    const cardWidth = (width - GRID_PADDING * 2) / numColumns;
+    return (
+      <View className="flex-row flex-wrap">
+        {Array.from({ length: numColumns * 3 }).map((_, i) => (
+          <View
+            key={i}
+            style={{
+              width: cardWidth,
+              paddingHorizontal: CARD_PADDING,
+              paddingBottom: CARD_PADDING,
+            }}
+          >
+            <RecipeCardSkeleton />
+          </View>
+        ))}
+      </View>
+    );
+  }, [width, numColumns]);
+
   // Loading footer component - show when fetching next page OR initial loading with header
   const ListFooterComponent = useMemo(() => {
-    // Show loading component when loading initial data (with header visible)
+    // Show skeleton grid when loading initial data (with header visible)
     if (loading && recipes.length === 0 && ListHeaderComponent) {
-      if (ListLoadingComponent) {
-        return ListLoadingComponent;
-      }
-      return (
-        <View className="py-12 items-center">
-          <ActivityIndicator size="large" color="#334d43" />
-        </View>
-      );
+      return ListLoadingComponent ?? SkeletonGrid;
     }
     // Show small loader for pagination
     if (!showLoadingFooter) return null;
@@ -152,16 +170,13 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
         <ActivityIndicator size="small" color="#334d43" />
       </View>
     );
-  }, [showLoadingFooter, loading, recipes.length, ListHeaderComponent, ListLoadingComponent]);
+  }, [showLoadingFooter, loading, recipes.length, ListHeaderComponent, ListLoadingComponent, SkeletonGrid]);
 
   // Show loading state only when there's no header to show
   if (loading && recipes.length === 0 && !ListHeaderComponent) {
-    if (ListLoadingComponent) {
-      return <View className="flex-1">{ListLoadingComponent}</View>;
-    }
     return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#334d43" />
+      <View className="flex-1" style={{ paddingHorizontal: GRID_PADDING }}>
+        {ListLoadingComponent ?? SkeletonGrid}
       </View>
     );
   }

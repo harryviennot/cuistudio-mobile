@@ -4,11 +4,9 @@ import {
   Pressable,
   Keyboard,
   TouchableOpacity,
-  Platform,
-  useWindowDimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Faders } from "phosphor-react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
@@ -33,14 +31,9 @@ const LIBRARY_CARD_WIDTH = 220;
 const LIBRARY_IMAGE_HEIGHT = 160;
 const MIN_LIBRARY_ITEMS = 1;
 
-// Grid padding matches MasonryGrid's contentContainerStyle paddingHorizontal
-const GRID_PADDING = 10;
-const CARD_PADDING = 8; // padding per card (matches MasonryGrid renderItem padding)
-
 export default function SearchScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { width: screenWidth } = useWindowDimensions();
   const {
     searchQuery: contextQuery,
     setSearchQuery: setContextQuery,
@@ -138,36 +131,6 @@ export default function SearchScreen() {
   const headerBaseHeight = insets.top + 8 + 40 + 12 + 16; // top padding + search row + bottom padding + extra margin
   const hasFiltersRow = hasActiveFilters || sort.sortBy !== "relevance";
   const headerHeight = hasFiltersRow ? headerBaseHeight + 40 : headerBaseHeight; // +40 for filters row
-
-  // Calculate skeleton grid dimensions to match MasonryGrid
-  const numColumns = useMemo(() => {
-    const isTablet = Platform.OS === "ios" && Platform.isPad;
-    if (!isTablet) return 2;
-    // iPad: calculate based on width (max 5 columns)
-    const minColumnWidth = 250;
-    const availableWidth = screenWidth - GRID_PADDING * 2;
-    const calculatedColumns = Math.floor((availableWidth + CARD_PADDING) / (minColumnWidth + CARD_PADDING));
-    return Math.min(Math.max(calculatedColumns, 2), 5);
-  }, [screenWidth]);
-
-  const cardWidth = useMemo(() => {
-    const availableWidth = screenWidth - GRID_PADDING * 2;
-    return (availableWidth - CARD_PADDING * numColumns * 2) / numColumns + CARD_PADDING;
-  }, [screenWidth, numColumns]);
-
-  // Skeleton grid for loading state
-  const SearchResultsSkeleton = useMemo(
-    () => (
-      <View className="flex-row flex-wrap" style={{ paddingHorizontal: GRID_PADDING }}>
-        {Array.from({ length: numColumns * 3 }).map((_, i) => (
-          <View key={i} style={{ width: cardWidth, padding: CARD_PADDING }}>
-            <RecipeCardSkeleton />
-          </View>
-        ))}
-      </View>
-    ),
-    [numColumns, cardWidth]
-  );
 
   // Empty search results component
   const EmptySearchResults = (
@@ -380,7 +343,6 @@ export default function SearchScreen() {
               showLoadingFooter={isFetchingNextPublicPage}
               onScroll={handleScroll}
               ListHeaderComponent={ListHeader}
-              ListLoadingComponent={SearchResultsSkeleton}
               ListEmptyComponent={
                 libraryOnly
                   ? !isSearchingLibrary && libraryResults.length === 0
