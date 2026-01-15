@@ -32,6 +32,7 @@ export default function SearchScreen() {
     searchQuery: contextQuery,
     setSearchQuery: setContextQuery,
     clearSearch: clearContextSearch,
+    libraryOnly,
   } = useSearchContext();
 
   const [localQuery, setLocalQuery] = useState(contextQuery);
@@ -59,7 +60,7 @@ export default function SearchScreen() {
     fetchNextPublicPage,
     hasNextPublicPage,
     isFetchingNextPublicPage,
-  } = useSearch({ initialQuery: contextQuery });
+  } = useSearch({ initialQuery: contextQuery, libraryOnly });
 
   // Auto-search when query changes from context
   useEffect(() => {
@@ -142,8 +143,17 @@ export default function SearchScreen() {
     </View>
   );
 
-  // Header component for MasonryGrid (includes library section)
-  const ListHeader = (
+  // Header component for MasonryGrid
+  // In library-only mode: show "Showing results from your library" header
+  // In normal mode: show library horizontal section + public results header
+  const ListHeader = libraryOnly ? (
+    <View className="flex-row items-center gap-3 px-6 mb-4">
+      <Text className="font-bold shrink-0 text-sm uppercase tracking-widest text-foreground-tertiary">
+        {t("search.sections.libraryResults", "Showing results from your library")}
+      </Text>
+      <View className="h-px flex-1 bg-border-light" />
+    </View>
+  ) : (
     <View>
       {/* Library Results - Horizontal Scroll Section */}
       {(libraryResults.length > 0 || isSearchingLibrary) && (
@@ -238,7 +248,11 @@ export default function SearchScreen() {
                   value={localQuery}
                   onChangeText={setLocalQuery}
                   onSearch={handleSearch}
-                  placeholder={t("search.placeholder", "Search recipes...")}
+                  placeholder={
+                    libraryOnly
+                      ? t("search.placeholderLibrary", "Search in library...")
+                      : t("search.placeholder", "Search recipes...")
+                  }
                   autoFocus={!contextQuery}
                 />
               </View>
@@ -316,21 +330,30 @@ export default function SearchScreen() {
             </Animated.View>
           ) : (
             <Animated.View entering={FadeIn.duration(300)} className="flex-1">
-              {/* Combined results with MasonryGrid for public recipes */}
+              {/* In library-only mode: show library results in masonry grid
+                  In normal mode: show public results with library horizontal section in header */}
               <MasonryGrid
-                recipes={publicResults}
-                loading={isSearchingPublic && publicResults.length === 0}
+                recipes={libraryOnly ? libraryResults : publicResults}
+                loading={
+                  libraryOnly
+                    ? isSearchingLibrary && libraryResults.length === 0
+                    : isSearchingPublic && publicResults.length === 0
+                }
                 onEndReached={handleEndReached}
                 showLoadingFooter={isFetchingNextPublicPage}
                 onScroll={handleScroll}
                 ListHeaderComponent={ListHeader}
                 ListEmptyComponent={
-                  !isSearchingLibrary &&
-                    !isSearchingPublic &&
-                    libraryResults.length === 0 &&
-                    publicResults.length === 0
-                    ? EmptySearchResults
-                    : undefined
+                  libraryOnly
+                    ? !isSearchingLibrary && libraryResults.length === 0
+                      ? EmptySearchResults
+                      : undefined
+                    : !isSearchingLibrary &&
+                        !isSearchingPublic &&
+                        libraryResults.length === 0 &&
+                        publicResults.length === 0
+                      ? EmptySearchResults
+                      : undefined
                 }
                 contentContainerStyle={{
                   paddingTop: headerHeight,

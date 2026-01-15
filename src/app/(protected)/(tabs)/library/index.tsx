@@ -19,6 +19,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useCollectionCounts } from "@/hooks/useCollections";
+import { useSearchContext } from "@/contexts/SearchContext";
 import { SmartCollectionCard, CookingHistoryPreview } from "@/components/library";
 import { UnifiedStickyHeader } from "@/components/ui/UnifiedStickyHeader";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -30,6 +31,7 @@ export default function LibraryScreen() {
 
   // Fetch only the recipe counts (lightweight)
   const { data: counts, refetch } = useCollectionCounts();
+  const { setLibraryOnly } = useSearchContext();
 
   // 52 is roughly the height of UnifiedStickyHeader content (40px button + 12px paddingBottom)
   const headerTopPadding = insets.top + 28;
@@ -50,10 +52,11 @@ export default function LibraryScreen() {
     setRefreshing(false);
   }, [refetch]);
 
-  // Handle search press
+  // Handle search press - opens search in library-only mode
   const handleSearchPress = useCallback(() => {
+    setLibraryOnly(true);
     router.push("/search");
-  }, []);
+  }, [setLibraryOnly]);
 
   // Handle user/profile press
   const handleUserPress = useCallback(() => {
