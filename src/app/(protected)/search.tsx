@@ -112,8 +112,8 @@ export default function SearchScreen() {
     Keyboard.dismiss();
   }, []);
 
-  // Calculate header height for scroll padding
-  const headerBaseHeight = insets.top + 8 + 40 + 12; // top padding + search row + bottom padding
+  // Calculate header height for scroll padding (with extra margin for spacing)
+  const headerBaseHeight = insets.top + 8 + 40 + 12 + 16; // top padding + search row + bottom padding + extra margin
   const hasFiltersRow = hasActiveFilters || sort.sortBy !== "relevance";
   const headerHeight = hasFiltersRow ? headerBaseHeight + 40 : headerBaseHeight; // +40 for filters row
 
@@ -136,7 +136,7 @@ export default function SearchScreen() {
       {(libraryResults.length > 0 || isSearchingLibrary) && (
         <View className="mb-6">
           <HorizontalPreviewSection<(typeof libraryResults)[0]>
-            title={t("search.sections.library")}
+            title={t("search.sections.fromLibrary", "From your library")}
             data={libraryResults}
             renderItem={(recipe, index) => (
               <RecipeCard
@@ -163,16 +163,9 @@ export default function SearchScreen() {
       {(publicResults.length > 0 || isSearchingPublic) && (
         <View className="flex-row items-center gap-3 px-6 mb-4">
           <Text className="font-bold shrink-0 text-sm uppercase tracking-widest text-foreground-tertiary">
-            {t("search.sections.popular")}
+            {t("search.sections.results", "Search results")}
           </Text>
           <View className="h-px flex-1 bg-border-light" />
-          {!isSearchingPublic && publicResults.length > 0 && (
-            <View className="bg-surface-elevated rounded-full px-2 py-0.5">
-              <Text className="text-xs text-foreground-secondary font-medium">
-                {publicResults.length}+
-              </Text>
-            </View>
-          )}
         </View>
       )}
     </View>
@@ -181,14 +174,14 @@ export default function SearchScreen() {
   return (
     <BottomSheetModalProvider>
       <View className="flex-1 bg-surface">
-        {/* Header Area - Floating with blur */}
+        {/* Header Area - Floating with blur (z-index lower than premium bottomsheet) */}
         <View
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
-            zIndex: 100,
+            zIndex: 50,
           }}
         >
           {/* Blur Background */}
@@ -212,7 +205,7 @@ export default function SearchScreen() {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: "rgba(244, 241, 232, 0.2)",
+              backgroundColor: "rgba(244, 241, 232, 0.5)",
             }}
           />
 
