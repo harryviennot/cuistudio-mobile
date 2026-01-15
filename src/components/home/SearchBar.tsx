@@ -2,7 +2,7 @@
  * SearchBar component for recipe search
  * Beautiful, accessible search input with design tokens
  */
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { View, TextInput, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
 import { MagnifyingGlass, X } from "phosphor-react-native";
@@ -13,7 +13,6 @@ interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
   isLoading?: boolean;
-  debounceMs?: number;
   readOnly?: boolean;
   autoFocus?: boolean;
 }
@@ -24,40 +23,14 @@ export function SearchBar({
   onSearch,
   placeholder,
   isLoading = false,
-  debounceMs = 150, // Reduced from 300ms for snappier feel
   readOnly = false,
   autoFocus = false,
 }: SearchBarProps) {
   const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Use translation as default placeholder
   const placeholderText = placeholder || t("search.placeholder");
-
-  // Debounced search effect (skip if readOnly)
-  useEffect(() => {
-    if (readOnly) return;
-
-    // Clear existing timer
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    // Only search if there's a query
-    if (value.trim().length > 0) {
-      debounceTimerRef.current = setTimeout(() => {
-        onSearch(value.trim());
-      }, debounceMs);
-    }
-
-    // Cleanup on unmount
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
-  }, [value, debounceMs, onSearch, readOnly]);
 
   const handleClear = () => {
     onChangeText("");

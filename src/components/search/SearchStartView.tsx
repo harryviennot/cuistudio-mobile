@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Coffee, MoonStars, Heartbeat, Fire, Leaf, Clock, TrendUp } from "phosphor-react-native";
+import {
+  Coffee,
+  MoonStars,
+  Heartbeat,
+  Fire,
+  Leaf,
+  Clock,
+  TrendUp,
+  ClockCounterClockwise,
+} from "phosphor-react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { getSearchHistory, clearSearchHistory } from "@/utils/searchHistory";
+import { useFocusEffect } from "expo-router";
 
 interface SearchStartViewProps {
   onSelectCategory: (category: string) => void;
@@ -36,6 +47,19 @@ export function SearchStartView({
   contentPaddingTop = 20,
 }: SearchStartViewProps) {
   const { t } = useTranslation();
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+
+  // Load search history when view is focused
+  useFocusEffect(
+    useCallback(() => {
+      getSearchHistory().then(setSearchHistory);
+    }, [])
+  );
+
+  const handleClearHistory = async () => {
+    await clearSearchHistory();
+    setSearchHistory([]);
+  };
 
   return (
     <ScrollView
@@ -43,6 +67,38 @@ export function SearchStartView({
       contentContainerStyle={{ paddingBottom: 100, paddingTop: contentPaddingTop }}
       showsVerticalScrollIndicator={false}
     >
+      {/* Search History Section */}
+      {searchHistory.length > 0 && (
+        <View className="px-5 mb-8">
+          <View className="flex-row items-center justify-between mb-4">
+            <View className="flex-row items-center gap-2">
+              <ClockCounterClockwise size={20} color="#334d43" weight="bold" />
+              <Text className="font-playfair-bold text-xl text-foreground-heading">
+                {t("search.history.title", "Recent Searches")}
+              </Text>
+            </View>
+            <Pressable onPress={handleClearHistory} hitSlop={10}>
+              <Text className="text-sm text-foreground-tertiary font-medium">
+                {t("search.history.clear", "Clear")}
+              </Text>
+            </Pressable>
+          </View>
+
+          <View className="flex-row flex-wrap gap-2">
+            {searchHistory.map((term, index) => (
+              <Pressable
+                key={`${term}-${index}`}
+                onPress={() => onSelectTerm(term)}
+                className="flex-row items-center gap-2 px-4 py-2.5 bg-surface-elevated rounded-full border border-border active:bg-primary/5 active:border-primary/30"
+              >
+                <Text className="text-foreground font-medium capitalize">{term}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {/* Browse Categories Section */}
       <View className="px-5 mb-8">
         <Text className="font-playfair-bold text-2xl text-foreground-heading mb-2">
           {t("search.browse.title", "Browse Categories")}
@@ -91,6 +147,7 @@ export function SearchStartView({
         </View>
       </View>
 
+      {/* Popular Searches Section */}
       <View className="px-5">
         <View className="flex-row items-center gap-2 mb-4">
           <TrendUp size={20} color="#334d43" weight="bold" />

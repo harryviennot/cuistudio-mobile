@@ -100,9 +100,10 @@ export const recipeService = {
       limit?: number;
       offset?: number;
       difficulty?: "easy" | "medium" | "hard";
-      categorySlug?: string;
-      minTime?: number;
-      maxTime?: number;
+      categorySlugs?: string[];
+      maxPrepTime?: number;
+      maxCookTime?: number;
+      maxRestTime?: number;
       sortBy?: "relevance" | "recent" | "rating" | "cook_count" | "time";
       libraryOnly?: boolean;
     } = {}
@@ -115,9 +116,12 @@ export const recipeService = {
 
     // Add optional filter parameters
     if (options.difficulty) params.difficulty = options.difficulty;
-    if (options.categorySlug) params.category_slug = options.categorySlug;
-    if (options.minTime !== undefined) params.min_time = options.minTime;
-    if (options.maxTime !== undefined) params.max_time = options.maxTime;
+    if (options.categorySlugs && options.categorySlugs.length > 0) {
+      params.category_slugs = options.categorySlugs.join(",");
+    }
+    if (options.maxPrepTime !== undefined) params.max_prep_time = options.maxPrepTime;
+    if (options.maxCookTime !== undefined) params.max_cook_time = options.maxCookTime;
+    if (options.maxRestTime !== undefined) params.max_rest_time = options.maxRestTime;
     if (options.sortBy) params.sort_by = options.sortBy;
     if (options.libraryOnly) params.library_only = options.libraryOnly;
 

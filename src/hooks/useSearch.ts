@@ -1,15 +1,16 @@
 import { useState, useCallback, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { recipeService } from "@/api/services";
 import type { Recipe } from "@/types/recipe";
 import type { SearchFilters, SearchSort } from "@/types/search";
-import { TIME_FILTER_RANGES } from "@/types/search";
 
 interface UseSearchOptions {
   initialQuery?: string;
   initialFilters?: SearchFilters;
   initialSort?: SearchSort;
 }
+
+const PAGE_SIZE = 20;
 
 export function useSearch(options: UseSearchOptions = {}) {
   // State management
@@ -19,69 +20,74 @@ export function useSearch(options: UseSearchOptions = {}) {
 
   const hasQuery = query.trim().length > 0;
 
-  // Convert time filters to min/max values
-  // Supports both new granular timeFilters and legacy timeFilter
-  const timeRange = useMemo(() => {
-    // New granular time filters
-    if (filters.timeFilters) {
-      const { prep, cook, rest } = filters.timeFilters;
-      let maxTime = 0;
+  // Stabilize queryKey by extracting primitive values
+  const stableFilterKey = useMemo(() => {
+    return JSON.stringify({
+      difficulty: filters.difficulty,
+      categorySlugs: filters.categorySlugs,
+      prepEnabled: filters.timeFilters?.prep?.enabled,
+      prepMax: filters.timeFilters?.prep?.maxMinutes,
+      cookEnabled: filters.timeFilters?.cook?.enabled,
+      cookMax: filters.timeFilters?.cook?.maxMinutes,
+      restEnabled: filters.timeFilters?.rest?.enabled,
+      restMax: filters.timeFilters?.rest?.maxMinutes,
+    });
+  }, [filters]);
 
-      if (prep?.enabled && prep.maxMinutes > 0) maxTime += prep.maxMinutes;
-      if (cook?.enabled && cook.maxMinutes > 0) maxTime += cook.maxMinutes;
-      if (rest?.enabled && rest.maxMinutes > 0) maxTime += rest.maxMinutes;
-
-      return maxTime > 0 ? { max: maxTime } : {};
-    }
-
-    // Legacy time filter (backward compatibility)
-    if (filters.timeFilter) {
-      return TIME_FILTER_RANGES[filters.timeFilter];
-    }
-
-    return {};
-  }, [filters.timeFilters, filters.timeFilter]);
-
-  // Handle category parameter (supports both single and multi-select)
-  const categoryParam = useMemo(() => {
-    // New multi-select categories
-    if (filters.categorySlugs && filters.categorySlugs.length > 0) {
-      return filters.categorySlugs.join(",");
-    }
-    // Legacy single category (backward compatibility)
-    return filters.categorySlug;
-  }, [filters.categorySlugs, filters.categorySlug]);
+  const stableSortKey = sort.sortBy;
 
   // Library search query (user's own recipes)
   const libraryQuery = useQuery<Recipe[], Error>({
-    queryKey: ["search", "library", query, filters, sort],
+    queryKey: ["search", "library", query, stableFilterKey, stableSortKey],
     queryFn: () =>
       recipeService.searchRecipesFiltered(query, {
         difficulty: filters.difficulty,
-        categorySlug: categoryParam,
-        minTime: timeRange.min,
-        maxTime: timeRange.max,
+        categorySlugs: filters.categorySlugs,
+        maxPrepTime: filters.timeFilters?.prep?.enabled
+          ? filters.timeFilters.prep.maxMinutes
+          : undefined,
+        maxCookTime: filters.timeFilters?.cook?.enabled
+          ? filters.timeFilters.cook.maxMinutes
+          : undefined,
+        maxRestTime: filters.timeFilters?.rest?.enabled
+          ? filters.timeFilters.rest.maxMinutes
+          : undefined,
         sortBy: sort.sortBy === "cook_count" ? "cook_count" : sort.sortBy,
         libraryOnly: true,
-        limit: 20,
+        limit: PAGE_SIZE,
       }),
     enabled: hasQuery,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
-  // Public search query (popular recipes)
-  const publicQuery = useQuery<Recipe[], Error>({
-    queryKey: ["search", "public", query, filters, sort],
-    queryFn: () =>
-      recipeService.searchRecipesFiltered(query, {
+  // Public search query with infinite scroll (popular recipes)
+  const publicQuery = useInfiniteQuery<Recipe[], Error>({
+    queryKey: ["search", "public", query, stableFilterKey, stableSortKey],
+    queryFn: async ({ pageParam }) => {
+      const offset = pageParam as number;
+      return recipeService.searchRecipesFiltered(query, {
         difficulty: filters.difficulty,
-        categorySlug: categoryParam,
-        minTime: timeRange.min,
-        maxTime: timeRange.max,
+        categorySlugs: filters.categorySlugs,
+        maxPrepTime: filters.timeFilters?.prep?.enabled
+          ? filters.timeFilters.prep.maxMinutes
+          : undefined,
+        maxCookTime: filters.timeFilters?.cook?.enabled
+          ? filters.timeFilters.cook.maxMinutes
+          : undefined,
+        maxRestTime: filters.timeFilters?.rest?.enabled
+          ? filters.timeFilters.rest.maxMinutes
+          : undefined,
         sortBy: sort.sortBy === "cook_count" ? "rating" : sort.sortBy, // Use rating instead of cook_count for public
         libraryOnly: false,
-        limit: 20,
-      }),
+        limit: PAGE_SIZE,
+        offset,
+      });
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < PAGE_SIZE) return undefined;
+      return allPages.length * PAGE_SIZE;
+    },
+    initialPageParam: 0,
     enabled: hasQuery,
     staleTime: 2 * 60 * 1000,
   });
@@ -122,6 +128,11 @@ export function useSearch(options: UseSearchOptions = {}) {
   const hasSearched = libraryQuery.isFetched || publicQuery.isFetched;
   const hasError = libraryQuery.isError || publicQuery.isError;
 
+  // Flatten paginated public results
+  const publicResults = useMemo(() => {
+    return publicQuery.data?.pages.flat() ?? [];
+  }, [publicQuery.data]);
+
   return {
     // Query state
     query,
@@ -140,7 +151,7 @@ export function useSearch(options: UseSearchOptions = {}) {
 
     // Results
     libraryResults: libraryQuery.data ?? [],
-    publicResults: publicQuery.data ?? [],
+    publicResults,
 
     // Loading states
     isSearchingLibrary: libraryQuery.isLoading,
@@ -149,6 +160,11 @@ export function useSearch(options: UseSearchOptions = {}) {
     hasSearched,
     hasError,
     error: libraryQuery.error || publicQuery.error,
+
+    // Pagination for public results
+    fetchNextPublicPage: publicQuery.fetchNextPage,
+    hasNextPublicPage: publicQuery.hasNextPage,
+    isFetchingNextPublicPage: publicQuery.isFetchingNextPage,
 
     // Actions
     clearSearch,

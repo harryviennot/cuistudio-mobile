@@ -10,11 +10,19 @@ import { BlurView } from "expo-blur";
 import { SearchBar } from "@/components/home/SearchBar";
 import { useSearch } from "@/hooks/useSearch";
 import { useSearchContext } from "@/contexts/SearchContext";
-import { SearchResultSection } from "@/components/search/SearchResultSection";
 import { SearchFiltersSheet } from "@/components/search/SearchFiltersSheet";
 import { SearchSortSheet } from "@/components/search/SearchSortSheet";
 import { SearchStartView } from "@/components/search/SearchStartView";
 import { ScrollView } from "react-native-gesture-handler";
+import { HorizontalPreviewSection } from "@/components/ui/HorizontalPreviewSection";
+import { RecipeCard, RecipeCardSkeleton } from "@/components/recipe/RecipeCard";
+import { MasonryGrid } from "@/components/home/MasonryGrid";
+import { addSearchTerm } from "@/utils/searchHistory";
+
+// Constants for horizontal library section
+const LIBRARY_CARD_WIDTH = 220;
+const LIBRARY_IMAGE_HEIGHT = 160;
+const MIN_LIBRARY_ITEMS = 1;
 
 export default function SearchScreen() {
   const { t } = useTranslation();
@@ -31,7 +39,7 @@ export default function SearchScreen() {
   const filtersSheetRef = useRef<BottomSheetModal>(null);
   const sortSheetRef = useRef<BottomSheetModal>(null);
 
-  // Use new search hook
+  // Use new search hook with pagination
   const {
     query,
     setQuery,
@@ -46,8 +54,10 @@ export default function SearchScreen() {
     isSearchingLibrary,
     isSearchingPublic,
     hasSearched,
-    // error,
     clearSearch,
+    fetchNextPublicPage,
+    hasNextPublicPage,
+    isFetchingNextPublicPage,
   } = useSearch({ initialQuery: contextQuery });
 
   // Auto-search when query changes from context
@@ -65,9 +75,13 @@ export default function SearchScreen() {
   }, [clearSearch, clearContextSearch]);
 
   const handleSearch = useCallback(
-    (q: string) => {
+    async (q: string) => {
       setQuery(q);
       setContextQuery(q);
+      // Record search term in history
+      if (q.trim()) {
+        await addSearchTerm(q);
+      }
     },
     [setQuery, setContextQuery]
   );
@@ -75,9 +89,6 @@ export default function SearchScreen() {
   const handleSelectCategory = (category: string) => {
     setQuery(category);
     setLocalQuery(category);
-    // You might want to also set a filter instead of just searching the text
-    // For now searching the text is fine, or:
-    // updateFilters({ categorySlug: category });
   };
 
   const handleSeeAllLibrary = () => {
@@ -91,6 +102,12 @@ export default function SearchScreen() {
     });
   };
 
+  const handleEndReached = useCallback(() => {
+    if (hasNextPublicPage && !isFetchingNextPublicPage) {
+      fetchNextPublicPage();
+    }
+  }, [hasNextPublicPage, isFetchingNextPublicPage, fetchNextPublicPage]);
+
   const handleScroll = useCallback(() => {
     Keyboard.dismiss();
   }, []);
@@ -99,6 +116,67 @@ export default function SearchScreen() {
   const headerBaseHeight = insets.top + 8 + 40 + 12; // top padding + search row + bottom padding
   const hasFiltersRow = hasActiveFilters || sort.sortBy !== "relevance";
   const headerHeight = hasFiltersRow ? headerBaseHeight + 40 : headerBaseHeight; // +40 for filters row
+
+  // Empty search results component
+  const EmptySearchResults = (
+    <View className="items-center justify-center py-20 px-6">
+      <Text className="text-lg font-playfair-bold text-foreground-heading text-center mb-2">
+        {t("search.empty.title", "No recipes found")}
+      </Text>
+      <Text className="text-foreground-secondary text-center">
+        {t("search.empty.description", "Try searching for a different ingredient or category.")}
+      </Text>
+    </View>
+  );
+
+  // Header component for MasonryGrid (includes library section)
+  const ListHeader = (
+    <View>
+      {/* Library Results - Horizontal Scroll Section */}
+      {(libraryResults.length > 0 || isSearchingLibrary) && (
+        <View className="mb-6">
+          <HorizontalPreviewSection<(typeof libraryResults)[0]>
+            title={t("search.sections.library")}
+            data={libraryResults}
+            renderItem={(recipe, index) => (
+              <RecipeCard
+                recipe={recipe}
+                index={index}
+                width={LIBRARY_CARD_WIDTH}
+                imageHeight={LIBRARY_IMAGE_HEIGHT}
+              />
+            )}
+            keyExtractor={(recipe) => recipe.id}
+            onSeeMore={libraryResults.length > 5 ? handleSeeAllLibrary : undefined}
+            seeMoreText={t("common.seeAll")}
+            isLoading={isSearchingLibrary}
+            SkeletonComponent={() => (
+              <RecipeCardSkeleton width={LIBRARY_CARD_WIDTH} imageHeight={LIBRARY_IMAGE_HEIGHT} />
+            )}
+            minItems={MIN_LIBRARY_ITEMS}
+            cardWidth={LIBRARY_CARD_WIDTH}
+          />
+        </View>
+      )}
+
+      {/* Public Results Header */}
+      {(publicResults.length > 0 || isSearchingPublic) && (
+        <View className="flex-row items-center gap-3 px-6 mb-4">
+          <Text className="font-bold shrink-0 text-sm uppercase tracking-widest text-foreground-tertiary">
+            {t("search.sections.popular")}
+          </Text>
+          <View className="h-px flex-1 bg-border-light" />
+          {!isSearchingPublic && publicResults.length > 0 && (
+            <View className="bg-surface-elevated rounded-full px-2 py-0.5">
+              <Text className="text-xs text-foreground-secondary font-medium">
+                {publicResults.length}+
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
+    </View>
+  );
 
   return (
     <BottomSheetModalProvider>
@@ -232,45 +310,27 @@ export default function SearchScreen() {
             </Animated.View>
           ) : (
             <Animated.View entering={FadeIn.duration(300)} className="flex-1">
-              <ScrollView
+              {/* Combined results with MasonryGrid for public recipes */}
+              <MasonryGrid
+                recipes={publicResults}
+                loading={isSearchingPublic && publicResults.length === 0}
+                onEndReached={handleEndReached}
+                showLoadingFooter={isFetchingNextPublicPage}
                 onScroll={handleScroll}
-                scrollEventThrottle={16}
-                className="flex-1"
-                contentContainerStyle={{ paddingTop: headerHeight, paddingBottom: 20 }}
-                keyboardShouldPersistTaps="handled"
-              >
-                {/* Results */}
-                <SearchResultSection
-                  title={t("search.sections.library")}
-                  recipes={libraryResults}
-                  isLoading={isSearchingLibrary}
-                  onSeeAll={libraryResults.length > 0 ? handleSeeAllLibrary : undefined}
-                />
-
-                <SearchResultSection
-                  title={t("search.sections.popular")}
-                  recipes={publicResults}
-                  isLoading={isSearchingPublic}
-                />
-
-                {/* Empty Search Results State */}
-                {!isSearchingLibrary &&
+                ListHeaderComponent={ListHeader}
+                ListEmptyComponent={
+                  !isSearchingLibrary &&
                   !isSearchingPublic &&
                   libraryResults.length === 0 &&
-                  publicResults.length === 0 && (
-                    <View className="items-center justify-center py-20 px-6">
-                      <Text className="text-lg font-playfair-bold text-foreground-heading text-center mb-2">
-                        {t("search.empty.title", "No recipes found")}
-                      </Text>
-                      <Text className="text-foreground-secondary text-center">
-                        {t(
-                          "search.empty.description",
-                          "Try searching for a different ingredient or category."
-                        )}
-                      </Text>
-                    </View>
-                  )}
-              </ScrollView>
+                  publicResults.length === 0
+                    ? EmptySearchResults
+                    : undefined
+                }
+                contentContainerStyle={{
+                  paddingTop: headerHeight,
+                  paddingBottom: 20,
+                }}
+              />
             </Animated.View>
           )}
         </View>
