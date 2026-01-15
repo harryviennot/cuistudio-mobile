@@ -2,7 +2,7 @@ import { View, Text, Pressable, Keyboard, ActivityIndicator } from "react-native
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Faders } from "phosphor-react-native";
-import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
@@ -18,6 +18,7 @@ import { HorizontalPreviewSection } from "@/components/ui/HorizontalPreviewSecti
 import { RecipeCard, RecipeCardSkeleton } from "@/components/recipe/RecipeCard";
 import { MasonryGrid } from "@/components/home/MasonryGrid";
 import { addSearchTerm } from "@/utils/searchHistory";
+import type { Recipe } from "@/types/recipe";
 
 // Constants for horizontal library section
 const LIBRARY_CARD_WIDTH = 220;
@@ -71,7 +72,7 @@ export default function SearchScreen() {
   const handleClose = useCallback(() => {
     clearSearch();
     clearContextSearch();
-    router.back();
+    router.dismissAll();
   }, [clearSearch, clearContextSearch]);
 
   const handleSearch = useCallback(
@@ -112,6 +113,18 @@ export default function SearchScreen() {
     Keyboard.dismiss();
   }, []);
 
+  // Navigate to recipe within search stack
+  const handleRecipePress = useCallback((recipe: Recipe) => {
+    router.push({
+      pathname: "/search/[id]",
+      params: {
+        id: recipe.id,
+        title: recipe.title,
+        ...(recipe.image_url && { imageUrl: recipe.image_url }),
+      },
+    });
+  }, []);
+
   // Calculate header height for scroll padding (with extra margin for spacing)
   const headerBaseHeight = insets.top + 8 + 40 + 12 + 16; // top padding + search row + bottom padding + extra margin
   const hasFiltersRow = hasActiveFilters || sort.sortBy !== "relevance";
@@ -144,6 +157,7 @@ export default function SearchScreen() {
                 index={index}
                 width={LIBRARY_CARD_WIDTH}
                 imageHeight={LIBRARY_IMAGE_HEIGHT}
+                onPress={() => handleRecipePress(recipe)}
               />
             )}
             keyExtractor={(recipe) => recipe.id}
@@ -172,8 +186,7 @@ export default function SearchScreen() {
   );
 
   return (
-    <BottomSheetModalProvider>
-      <View className="flex-1 bg-surface">
+    <View className="flex-1 bg-surface">
         {/* Header Area - Floating with blur (z-index lower than premium bottomsheet) */}
         <View
           style={{
@@ -323,6 +336,13 @@ export default function SearchScreen() {
                   paddingTop: headerHeight,
                   paddingBottom: 20,
                 }}
+                renderRecipeCard={(recipe, index) => (
+                  <RecipeCard
+                    recipe={recipe}
+                    index={index}
+                    onPress={() => handleRecipePress(recipe)}
+                  />
+                )}
               />
             </Animated.View>
           )}
@@ -339,7 +359,6 @@ export default function SearchScreen() {
           currentSort={sort.sortBy}
           onSelectSort={(sortBy) => updateSort({ sortBy })}
         />
-      </View>
-    </BottomSheetModalProvider>
+    </View>
   );
 }

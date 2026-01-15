@@ -26,6 +26,8 @@ interface RecipeCardProps {
   width?: number;
   imageHeight?: number;
   statsBadge?: StatsBadge;
+  /** Custom press handler - overrides default navigation to /recipe/[id] */
+  onPress?: () => void;
 }
 
 export const RecipeCard = memo(function RecipeCard({
@@ -33,6 +35,7 @@ export const RecipeCard = memo(function RecipeCard({
   width,
   imageHeight: fixedImageHeight,
   statsBadge,
+  onPress,
 }: RecipeCardProps) {
   const { t } = useTranslation();
   const [imageLoading, setImageLoading] = useState(true);
@@ -47,6 +50,10 @@ export const RecipeCard = memo(function RecipeCard({
   };
 
   const handlePress = () => {
+    if (onPress) {
+      onPress();
+      return;
+    }
     // Navigate to recipe detail page with optimistic data
     router.push({
       pathname: `/recipe/[id]` as const,
