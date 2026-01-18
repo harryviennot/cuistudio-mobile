@@ -128,12 +128,6 @@ export default function SearchScreen() {
             },
           });
         }
-      } else if (key === "categorySlug") {
-        // Legacy support
-        updateFilters({ categorySlug: undefined });
-      } else if (key === "timeFilter") {
-        // Legacy support
-        updateFilters({ timeFilter: undefined });
       }
     },
     [filters, updateFilters]

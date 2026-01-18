@@ -12,7 +12,6 @@ interface SearchBarProps {
   onChangeText: (text: string) => void;
   onSearch: (query: string) => void;
   placeholder?: string;
-  isLoading?: boolean;
   readOnly?: boolean;
   autoFocus?: boolean;
 }
@@ -22,7 +21,6 @@ export function SearchBar({
   onChangeText,
   onSearch,
   placeholder,
-  isLoading = false,
   readOnly = false,
   autoFocus = false,
 }: SearchBarProps) {

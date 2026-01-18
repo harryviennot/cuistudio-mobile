@@ -64,6 +64,9 @@ export function useSearch(options: UseSearchOptions = {}) {
       }),
     enabled: hasQuery && !libraryOnly, // Disabled when in libraryOnly mode (use infinite query instead)
     staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes after unused
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   // Library-only infinite query (for library search mode with pagination)
@@ -96,6 +99,9 @@ export function useSearch(options: UseSearchOptions = {}) {
     initialPageParam: 0,
     enabled: hasQuery && libraryOnly, // Only enabled in libraryOnly mode
     staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   // Public search query with infinite scroll (popular recipes)
@@ -128,6 +134,9 @@ export function useSearch(options: UseSearchOptions = {}) {
     initialPageParam: 0,
     enabled: hasQuery && !libraryOnly, // Disabled in libraryOnly mode
     staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   // Update functions
@@ -149,17 +158,16 @@ export function useSearch(options: UseSearchOptions = {}) {
     setSort({ sortBy: "relevance" });
   }, []);
 
-  // Derived state - check for any active filters (new or legacy)
+  // Derived state - check for any active filters
   const hasActiveFilters = useMemo(() => {
     const hasTimeFilters =
       filters.timeFilters?.prep?.enabled ||
       filters.timeFilters?.cook?.enabled ||
       filters.timeFilters?.rest?.enabled;
 
-    const hasCategories =
-      (filters.categorySlugs && filters.categorySlugs.length > 0) || !!filters.categorySlug;
+    const hasCategories = filters.categorySlugs && filters.categorySlugs.length > 0;
 
-    return !!(filters.difficulty || hasCategories || hasTimeFilters || filters.timeFilter);
+    return !!(filters.difficulty || hasCategories || hasTimeFilters);
   }, [filters]);
 
   // Determine loading/search states based on mode

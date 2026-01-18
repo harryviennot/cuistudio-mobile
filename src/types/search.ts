@@ -4,7 +4,6 @@
 
 export type DifficultyFilter = "easy" | "medium" | "hard";
 export type SortOption = "relevance" | "recent" | "rating" | "cook_count" | "time";
-export type TimeFilter = "quick" | "medium" | "long";
 
 /**
  * Granular time filter configuration for individual time types
@@ -27,9 +26,6 @@ export interface SearchFilters {
   difficulty?: DifficultyFilter;
   categorySlugs?: string[]; // Multi-select categories (OR logic)
   timeFilters?: TimeFilters; // Granular time filters
-  // Legacy fields (deprecated, kept for backward compatibility)
-  categorySlug?: string;
-  timeFilter?: TimeFilter;
 }
 
 export interface SearchSort {
@@ -43,18 +39,6 @@ export interface SearchState {
 }
 
 /**
- * Time filter ranges mapping
- * - quick: Under 30 minutes
- * - medium: 30-60 minutes
- * - long: Over 60 minutes
- */
-export const TIME_FILTER_RANGES: Record<TimeFilter, { min?: number; max?: number }> = {
-  quick: { max: 30 },
-  medium: { min: 30, max: 60 },
-  long: { min: 60 },
-};
-
-/**
  * Sort option labels for UI display
  */
 export const SORT_OPTION_LABELS: Record<SortOption, string> = {
@@ -63,13 +47,4 @@ export const SORT_OPTION_LABELS: Record<SortOption, string> = {
   rating: "search.sort.rating",
   cook_count: "search.sort.cookCount",
   time: "search.sort.time",
-};
-
-/**
- * Time filter labels for UI display
- */
-export const TIME_FILTER_LABELS: Record<TimeFilter, string> = {
-  quick: "search.filters.time.quick",
-  medium: "search.filters.time.medium",
-  long: "search.filters.time.long",
 };
