@@ -135,15 +135,26 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
   // Key extractor wrapped in useCallback
   const getItemKey = useCallback((item: Recipe) => keyExtractor(item), [keyExtractor]);
 
-  // Simple 2-column skeleton grid for loading state
-  const SkeletonGrid = (
-    <View className="flex-row flex-wrap px-2">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <View key={i} className="w-1/2 p-2">
-          <RecipeCardSkeleton />
-        </View>
-      ))}
-    </View>
+  // Calculate skeleton card width based on screen width and columns
+  const skeletonCardWidth = useMemo(() => {
+    const horizontalPadding = 10; // 10px on each side from contentContainerStyle
+    const itemPadding = 10; // 8px on each side per item
+    const availableWidth = width - horizontalPadding;
+    return (availableWidth / numColumns) - itemPadding;
+  }, [width, numColumns]);
+
+  // Simple skeleton grid for loading state
+  const SkeletonGrid = useMemo(
+    () => (
+      <View style={{ flexDirection: "row", flexWrap: "wrap", width: width }}>
+        {Array.from({ length: numColumns * 3 }).map((_, i) => (
+          <View key={i} style={{ width: width / numColumns, paddingHorizontal: 10, paddingBottom: 10 }}>
+            <RecipeCardSkeleton width={skeletonCardWidth} imageHeight={180} />
+          </View>
+        ))}
+      </View>
+    ),
+    [width, numColumns, skeletonCardWidth]
   );
 
   // Loading footer component - show when fetching next page OR initial loading with header
