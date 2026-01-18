@@ -5,45 +5,10 @@ import React, { useCallback } from "react";
 import { Text } from "react-native";
 import * as Haptics from "expo-haptics";
 import type { Icon } from "phosphor-react-native";
-import {
-  SquaresFourIcon,
-  ForkKnifeIcon,
-  BowlSteamIcon,
-  ShrimpIcon,
-  CheeseIcon,
-  IceCreamIcon,
-  BreadIcon,
-  MartiniIcon,
-  PopcornIcon,
-  GrainsIcon,
-  PintGlassIcon,
-  HamburgerIcon,
-} from "phosphor-react-native";
+import { ForkKnifeIcon } from "phosphor-react-native";
 import { ShadowItem } from "../ShadowedSection";
 import type { TabComponentProps } from "../ui/HorizontalTabBar";
-import { SaladIcon, CroissantIcon, SidesIcon, SauceDipIcon, GrillIcon, PastaIcon } from "../icons";
-
-// Map category slugs to icons (Phosphor + custom)
-export const CATEGORY_ICONS: Record<string, Icon> = {
-  all: SquaresFourIcon,
-  "main-dishes": ForkKnifeIcon,
-  soups: BowlSteamIcon,
-  salads: SaladIcon,
-  "pasta-noodles": PastaIcon,
-  sandwiches: HamburgerIcon,
-  appetizers: ShrimpIcon,
-  apero: CheeseIcon,
-  desserts: IceCreamIcon,
-  "baked-goods": BreadIcon,
-  beverages: PintGlassIcon,
-  cocktails: MartiniIcon,
-  breakfast: CroissantIcon,
-  sides: SidesIcon,
-  "sauces-dips": SauceDipIcon,
-  snacks: PopcornIcon,
-  grilled: GrillIcon,
-  "bowls-grains": GrainsIcon,
-};
+import { CATEGORY_ICONS } from "@/constants/categoryIcons";
 
 /**
  * CategoryIcon - Renders the icon for a category based on its slug

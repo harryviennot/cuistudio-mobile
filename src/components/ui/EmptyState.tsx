@@ -26,6 +26,8 @@ export interface EmptyStateProps {
   ctaIcon?: Icon;
   /** Callback when CTA button is pressed */
   onCtaPress: () => void;
+  /** Optional minimum height for the container */
+  minHeight?: number;
 }
 
 export function EmptyState({
@@ -37,11 +39,13 @@ export function EmptyState({
   ctaLabel,
   ctaIcon: CtaIconComponent,
   onCtaPress,
+  minHeight,
 }: EmptyStateProps) {
   return (
     <Animated.View
       entering={FadeInDown.delay(200).duration(400)}
       className="flex-1 px-6 py-12 items-center justify-center"
+      style={minHeight ? { minHeight } : undefined}
     >
       {/* Empty Slot Container */}
       <View className="w-full aspect-[3/4] max-h-[420px] border-2 border-dashed border-border rounded-[32px] items-center justify-center bg-surface-texture-light/20 p-8">

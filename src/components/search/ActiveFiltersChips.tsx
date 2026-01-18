@@ -4,15 +4,30 @@
  * Shows a horizontal scrollable list of filter chips with X buttons to remove them
  */
 import { View, Text, Pressable, ScrollView } from "react-native";
-import { X, Funnel, SortAscending } from "phosphor-react-native";
+import {
+  X,
+  Funnel,
+  SortAscending,
+  Clock,
+  ChartBar,
+  ForkKnife,
+  Timer,
+  Flame,
+  Moon,
+} from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
-import type { SearchFilters, SearchSort } from "@/types/search";
-import { TIME_FILTER_LABELS, SORT_OPTION_LABELS } from "@/types/search";
+import type { SearchFilters, SearchSort, TimeFilters } from "@/types/search";
+import { SORT_OPTION_LABELS } from "@/types/search";
+import { ShadowItem } from "@/components/ShadowedSection";
+import { formatDuration } from "@/utils/formatDuration";
+import { cn } from "@/utils/cn";
+import * as Haptics from "expo-haptics";
+import { CATEGORY_ICONS } from "@/constants/categoryIcons";
 
 interface ActiveFiltersChipsProps {
   filters: SearchFilters;
   sort: SearchSort;
-  onRemoveFilter: (filterKey: keyof SearchFilters) => void;
+  onRemoveFilter: (filterKey: keyof SearchFilters, value?: any) => void;
   onRemoveSort: () => void;
   onOpenFilters: () => void;
 }
@@ -26,94 +41,171 @@ export function ActiveFiltersChips({
 }: ActiveFiltersChipsProps) {
   const { t } = useTranslation();
 
+  // Helper to count active time filters
+  const timeFilterCount =
+    (filters.timeFilters?.prep?.enabled ? 1 : 0) +
+    (filters.timeFilters?.cook?.enabled ? 1 : 0) +
+    (filters.timeFilters?.rest?.enabled ? 1 : 0);
+
   // Count active filters
-  const filterCount = Object.values(filters).filter(Boolean).length;
+  const activeCategoriesCount = filters.categorySlugs?.length ?? 0;
+  const isDifficultyActive = !!filters.difficulty;
+
+  const totalFilterCount = timeFilterCount + activeCategoriesCount + (isDifficultyActive ? 1 : 0);
   const hasActiveSort = sort.sortBy !== "relevance";
+
+  const handleRemove = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
 
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      className="mt-3"
+      className="mt-3 -mx-4"
       contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
     >
-      {/* Filters Button */}
-      <Pressable
-        onPress={onOpenFilters}
-        className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-surface-elevated border border-border active:bg-surface-hover"
-      >
-        <Funnel size={16} color="#334d43" weight="fill" />
-        <Text className="text-sm font-medium text-foreground">{t("search.filters.title")}</Text>
-        {filterCount > 0 && (
-          <View className="bg-primary rounded-full min-w-[20px] h-5 items-center justify-center px-1.5">
-            <Text className="text-xs font-bold text-white">{filterCount}</Text>
-          </View>
-        )}
-      </Pressable>
-
       {/* Difficulty Filter Chip */}
       {filters.difficulty && (
-        <View className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-primary/10 border border-primary/20">
-          <Text className="text-sm font-medium text-foreground capitalize">
+        <ShadowItem
+          variant="primary"
+          className="flex-row items-center gap-2 px-3 py-2 h-9 bg-primary/10 border-primary/20"
+        >
+          <ChartBar size={14} color="#334d43" weight="duotone" />
+          <Text className="text-sm font-semibold text-primary capitalize">
             {t(`recipe.difficulty.${filters.difficulty}`, { defaultValue: filters.difficulty })}
           </Text>
           <Pressable
-            onPress={() => onRemoveFilter("difficulty")}
-            className="active:opacity-70"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            onPress={() => {
+              handleRemove();
+              onRemoveFilter("difficulty");
+            }}
+            hitSlop={8}
+            className="rounded-full p-0.5"
           >
-            <X size={14} color="#334d43" weight="bold" />
+            <X size={12} color="#334d43" weight="bold" />
           </Pressable>
-        </View>
+        </ShadowItem>
       )}
 
-      {/* Time Filter Chip */}
-      {filters.timeFilter && (
-        <View className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-primary/10 border border-primary/20">
-          <Text className="text-sm font-medium text-foreground">
-            {t(TIME_FILTER_LABELS[filters.timeFilter], { defaultValue: filters.timeFilter })}
+      {/* Category Filter Chips */}
+      {filters.categorySlugs?.map((slug) => {
+        const Icon = CATEGORY_ICONS[slug] || ForkKnife;
+        return (
+          <ShadowItem
+            key={`cat-${slug}`}
+            variant="primary"
+            className="flex-row items-center gap-2 px-3 py-2 h-9 bg-primary/10 border-primary/20"
+          >
+            <Icon size={14} color="#334d43" weight="duotone" />
+            <Text className="text-sm font-semibold text-primary capitalize">
+              {t(`categories.${slug}`, { defaultValue: slug })}
+            </Text>
+            <Pressable
+              onPress={() => {
+                handleRemove();
+                onRemoveFilter("categorySlugs", slug);
+              }}
+              hitSlop={8}
+              className="rounded-full p-0.5"
+            >
+              <X size={12} color="#334d43" weight="bold" />
+            </Pressable>
+          </ShadowItem>
+        );
+      })}
+
+      {/* Time Filters Chips */}
+      {filters.timeFilters?.prep?.enabled && (
+        <ShadowItem
+          variant="primary"
+          className="flex-row items-center gap-2 px-3 py-2 h-9 bg-primary/10 border-primary/20"
+        >
+          <Timer size={14} color="#334d43" weight="duotone" />
+          <Text className="text-sm font-semibold text-primary">
+            {t("search.filters.prepTime")} &lt;{" "}
+            {formatDuration(filters.timeFilters?.prep?.maxMinutes ?? 0, { t })}
           </Text>
           <Pressable
-            onPress={() => onRemoveFilter("timeFilter")}
-            className="active:opacity-70"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            onPress={() => {
+              handleRemove();
+              onRemoveFilter("timeFilters", "prep");
+            }}
+            hitSlop={8}
+            className="rounded-full p-0.5"
           >
-            <X size={14} color="#334d43" weight="bold" />
+            <X size={12} color="#334d43" weight="bold" />
           </Pressable>
-        </View>
+        </ShadowItem>
       )}
 
-      {/* Category Filter Chip */}
-      {filters.categorySlug && (
-        <View className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-primary/10 border border-primary/20">
-          <Text className="text-sm font-medium text-foreground">
-            {t(`categories.${filters.categorySlug}`, { defaultValue: filters.categorySlug })}
+      {filters.timeFilters?.cook?.enabled && (
+        <ShadowItem
+          variant="primary"
+          className="flex-row items-center gap-2 px-3 py-2 h-9 bg-primary/10 border-primary/20"
+        >
+          <Flame size={14} color="#334d43" weight="duotone" />
+          <Text className="text-sm font-semibold text-primary">
+            {t("search.filters.cookTime")} &lt;{" "}
+            {formatDuration(filters.timeFilters?.cook?.maxMinutes ?? 0, { t })}
           </Text>
           <Pressable
-            onPress={() => onRemoveFilter("categorySlug")}
-            className="active:opacity-70"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            onPress={() => {
+              handleRemove();
+              onRemoveFilter("timeFilters", "cook");
+            }}
+            hitSlop={8}
+            className="rounded-full p-0.5"
           >
-            <X size={14} color="#334d43" weight="bold" />
+            <X size={12} color="#334d43" weight="bold" />
           </Pressable>
-        </View>
+        </ShadowItem>
+      )}
+
+      {filters.timeFilters?.rest?.enabled && (
+        <ShadowItem
+          variant="primary"
+          className="flex-row items-center gap-2 px-3 py-2 h-9 bg-primary/10 border-primary/20"
+        >
+          <Moon size={14} color="#334d43" weight="duotone" />
+          <Text className="text-sm font-semibold text-primary">
+            {t("search.filters.restTime")} &lt;{" "}
+            {formatDuration(filters.timeFilters?.rest?.maxMinutes ?? 0, { t })}
+          </Text>
+          <Pressable
+            onPress={() => {
+              handleRemove();
+              onRemoveFilter("timeFilters", "rest");
+            }}
+            hitSlop={8}
+            className="rounded-full p-0.5"
+          >
+            <X size={12} color="#334d43" weight="bold" />
+          </Pressable>
+        </ShadowItem>
       )}
 
       {/* Sort Chip */}
       {hasActiveSort && (
-        <View className="flex-row items-center gap-2 px-3 py-2 rounded-full bg-blue-50 border border-blue-200">
-          <SortAscending size={16} color="#334d43" />
-          <Text className="text-sm font-medium text-foreground">
+        <ShadowItem
+          variant="default"
+          className="flex-row items-center gap-2 px-3 py-2 h-9 bg-blue-50 border-blue-200"
+        >
+          <SortAscending size={14} color="#334d43" />
+          <Text className="text-sm font-semibold text-foreground-heading">
             {t(SORT_OPTION_LABELS[sort.sortBy], { defaultValue: sort.sortBy })}
           </Text>
           <Pressable
-            onPress={onRemoveSort}
-            className="active:opacity-70"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            onPress={() => {
+              handleRemove();
+              onRemoveSort();
+            }}
+            hitSlop={8}
+            className="rounded-full p-0.5"
           >
-            <X size={14} color="#334d43" weight="bold" />
+            <X size={12} color="#334d43" weight="bold" />
           </Pressable>
-        </View>
+        </ShadowItem>
       )}
     </ScrollView>
   );

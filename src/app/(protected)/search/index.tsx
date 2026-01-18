@@ -1,24 +1,26 @@
-import { View, Text, Pressable, Keyboard, TouchableOpacity } from "react-native";
+import { View, Text, Pressable, Keyboard, TouchableOpacity, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, Faders } from "phosphor-react-native";
+import { X, Faders, MagnifyingGlass } from "phosphor-react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { BlurView } from "expo-blur";
+import { ActiveFiltersChips } from "@/components/search/ActiveFiltersChips";
 import { SearchBar } from "@/components/search/SearchBar";
 import { useSearch } from "@/hooks/useSearch";
 import { useSearchContext } from "@/contexts/SearchContext";
 import { SearchFiltersSheet } from "@/components/search/SearchFiltersSheet";
 import { SearchSortSheet } from "@/components/search/SearchSortSheet";
 import { SearchStartView } from "@/components/search/SearchStartView";
-import { ScrollView } from "react-native-gesture-handler";
 import { HorizontalPreviewSection } from "@/components/ui/HorizontalPreviewSection";
 import { RecipeCard, RecipeCardSkeleton } from "@/components/recipe/RecipeCard";
 import { MasonryGrid } from "@/components/home/MasonryGrid";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { addSearchTerm } from "@/utils/searchHistory";
 import type { Recipe } from "@/types/recipe";
+import type { SearchFilters } from "@/types/search";
 
 // Constants for horizontal library section
 const LIBRARY_CARD_WIDTH = 220;
@@ -109,6 +111,37 @@ export default function SearchScreen() {
     Keyboard.dismiss();
   }, []);
 
+  // Handle removing filters
+  const handleRemoveFilter = useCallback(
+    (key: keyof SearchFilters, value?: any) => {
+      if (key === "difficulty") {
+        updateFilters({ difficulty: undefined });
+      } else if (key === "categorySlugs") {
+        const currentSlugs = filters.categorySlugs || [];
+        updateFilters({
+          categorySlugs: currentSlugs.filter((s) => s !== value),
+        });
+      } else if (key === "timeFilters") {
+        const type = value as "prep" | "cook" | "rest";
+        if (type && filters.timeFilters) {
+          updateFilters({
+            timeFilters: {
+              ...filters.timeFilters,
+              [type]: { ...filters.timeFilters[type], enabled: false },
+            },
+          });
+        }
+      } else if (key === "categorySlug") {
+        // Legacy support
+        updateFilters({ categorySlug: undefined });
+      } else if (key === "timeFilter") {
+        // Legacy support
+        updateFilters({ timeFilter: undefined });
+      }
+    },
+    [filters, updateFilters]
+  );
+
   // Navigate to recipe within search stack
   const handleRecipePress = useCallback((recipe: Recipe) => {
     router.push({
@@ -126,16 +159,24 @@ export default function SearchScreen() {
   const hasFiltersRow = hasActiveFilters || sort.sortBy !== "relevance";
   const headerHeight = hasFiltersRow ? headerBaseHeight + 40 : headerBaseHeight; // +40 for filters row
 
-  // Empty search results component
+  // Calculate available height for empty state (screen height minus header and bottom padding)
+  const { height: screenHeight } = useWindowDimensions();
+  const emptyStateHeight = screenHeight - headerHeight - insets.bottom - 20; // 20 for bottom padding
+
+  // Empty search results component using the EmptyState UI component
   const EmptySearchResults = (
-    <View className="items-center justify-center py-20 px-6">
-      <Text className="text-lg font-playfair-bold text-foreground-heading text-center mb-2">
-        {t("search.empty.title", "No recipes found")}
-      </Text>
-      <Text className="text-foreground-secondary text-center">
-        {t("search.empty.description", "Try searching for a different ingredient or category.")}
-      </Text>
-    </View>
+    <EmptyState
+      icon={MagnifyingGlass}
+      title={t("search.empty.title", "No recipes found")}
+      message={t("search.empty.description", "Try searching for a different ingredient or category.")}
+      ctaLabel={t("search.empty.cta", "Clear search")}
+      onCtaPress={() => {
+        setLocalQuery("");
+        clearSearch();
+        clearContextSearch();
+      }}
+      minHeight={emptyStateHeight}
+    />
   );
 
   // Header component for MasonryGrid
@@ -267,48 +308,28 @@ export default function SearchScreen() {
 
           {/* Active Filters Row */}
           {hasFiltersRow && (
-            <View className="mt-3">
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 8 }}
-              >
-                {/* Reset All */}
-                <Pressable
-                  onPress={() => {
-                    clearFilters();
-                    updateSort({ sortBy: "relevance" });
-                  }}
-                  className="px-3 py-1.5 rounded-full bg-surface-elevated border border-border"
-                >
-                  <Text className="text-xs font-bold text-foreground-secondary">Reset</Text>
-                </Pressable>
-
-                {Object.entries(filters).map(([key, value]) => {
-                  if (!value) return null;
-                  return (
-                    <View
-                      key={key}
-                      className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20"
-                    >
-                      <Text className="text-xs font-bold text-primary capitalize">
-                        {String(value)}
-                      </Text>
-                      <Pressable onPress={() => updateFilters({ [key]: undefined })}>
-                        <X size={12} color="#334d43" weight="bold" />
-                      </Pressable>
-                    </View>
-                  );
-                })}
-              </ScrollView>
-            </View>
+            <ActiveFiltersChips
+              filters={filters}
+              sort={sort}
+              onRemoveFilter={handleRemoveFilter}
+              onRemoveSort={() => updateSort({ sortBy: "relevance" })}
+              onOpenFilters={() => {
+                Keyboard.dismiss();
+                filtersSheetRef.current?.present();
+              }}
+            />
           )}
         </View>
       </View>
 
       {/* Main Content Area */}
       <View className="flex-1">
-        {!hasSearched && !localQuery ? (
+        {/* Three states:
+            1. No search submitted yet AND no typing: Show SearchStartView
+            2. User is typing OR search is loading: Show MasonryGrid (blank while typing, skeletons while loading)
+            3. Search completed: Show results or EmptyState */}
+        {!query && !localQuery ? (
+          // Initial state: show search start view with history, suggestions, etc.
           <Animated.View
             entering={FadeIn.duration(300)}
             exiting={FadeOut.duration(200)}
@@ -323,6 +344,7 @@ export default function SearchScreen() {
             />
           </Animated.View>
         ) : (
+          // User is typing, searching, or has results
           <Animated.View entering={FadeIn.duration(300)} className="flex-1">
             {/* In library-only mode: show library results in masonry grid
                   In normal mode: show public results with library horizontal section in header */}
@@ -330,24 +352,24 @@ export default function SearchScreen() {
               recipes={libraryOnly ? libraryResults : publicResults}
               loading={
                 libraryOnly
-                  ? isSearchingLibrary && libraryResults.length === 0
-                  : isSearchingPublic && publicResults.length === 0
+                  ? isSearchingLibrary
+                  : isSearchingLibrary || isSearchingPublic
               }
               onEndReached={handleEndReached}
               showLoadingFooter={isFetchingNextPublicPage}
               onScroll={handleScroll}
-              ListHeaderComponent={ListHeader}
+              ListHeaderComponent={query ? ListHeader : undefined}
               ListEmptyComponent={
-                libraryOnly
-                  ? !isSearchingLibrary && libraryResults.length === 0
-                    ? EmptySearchResults
-                    : undefined
-                  : !isSearchingLibrary &&
-                    !isSearchingPublic &&
-                    libraryResults.length === 0 &&
-                    publicResults.length === 0
-                    ? EmptySearchResults
-                    : undefined
+                // Only show empty state after search has completed with no results
+                hasSearched && !isSearchingLibrary && !isSearchingPublic
+                  ? libraryOnly
+                    ? libraryResults.length === 0
+                      ? EmptySearchResults
+                      : undefined
+                    : libraryResults.length === 0 && publicResults.length === 0
+                      ? EmptySearchResults
+                      : undefined
+                  : undefined
               }
               contentContainerStyle={{
                 paddingTop: headerHeight,
