@@ -518,6 +518,7 @@
   },
   "search": {
     "placeholder": "Search recipes...",
+    "placeholderLibrary": "Search in library...",
     "loading": "Searching...",
     "initial": {
       "title": "Search for recipes",
@@ -526,6 +527,7 @@
     "empty": {
       "title": "No recipes found",
       "description": "Try different search terms or adjust your filters",
+      "cta": "Clear search",
       "library": "No recipes in your library match this search",
       "libraryDescription": "Try searching public recipes below",
       "popular": "No popular recipes found"
@@ -536,12 +538,26 @@
     },
     "sections": {
       "library": "Your Library",
-      "popular": "Popular Recipes"
+      "popular": "Popular Recipes",
+      "fromLibrary": "From your library",
+      "results": "Search results",
+      "libraryResults": "Showing results from your library"
+    },
+    "popularSearches": {
+      "pasta": "Pasta",
+      "chicken": "Chicken",
+      "salad": "Salad",
+      "soup": "Soup",
+      "pancakes": "Pancakes",
+      "curry": "Curry",
+      "avocado": "Avocado",
+      "salmon": "Salmon"
     },
     "filters": {
       "title": "Filters",
       "subtitle": "Refine your search",
       "cookingTime": "Cooking Time",
+      "timeDescription": "Set maximum time for each step",
       "prepTime": "Prep Time",
       "cookTime": "Cook Time",
       "restTime": "Rest Time",

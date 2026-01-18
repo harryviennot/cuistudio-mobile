@@ -23,15 +23,16 @@ const QUICK_INGREDIENTS = [
   { id: "cheese", icon: "🧀" },
 ];
 
-const POPULAR_SEARCHES = [
-  "Pasta",
-  "Chicken",
-  "Salad",
-  "Soup",
-  "Pancakes",
-  "Curry",
-  "Avocado",
-  "Salmon",
+// Popular search IDs - will be translated
+const POPULAR_SEARCH_IDS = [
+  "pasta",
+  "chicken",
+  "salad",
+  "soup",
+  "pancakes",
+  "curry",
+  "avocado",
+  "salmon",
 ];
 
 export function SearchStartView({ onSelectTerm, contentPaddingTop = 20 }: SearchStartViewProps) {
@@ -97,18 +98,20 @@ export function SearchStartView({ onSelectTerm, contentPaddingTop = 20 }: Search
         </View>
 
         <View className="flex-row flex-wrap gap-2">
-          {QUICK_INGREDIENTS.map((ingredient) => (
-            <Pressable
-              key={ingredient.id}
-              onPress={() => onSelectTerm(ingredient.id)}
-              className="flex-row items-center gap-2 px-4 py-2.5 bg-surface-elevated rounded-full border border-border active:bg-primary/5 active:border-primary/30"
-            >
-              <Text className="text-base">{ingredient.icon}</Text>
-              <Text className="text-foreground font-medium capitalize">
-                {t(`ingredients.${ingredient.id}` as any, ingredient.id)}
-              </Text>
-            </Pressable>
-          ))}
+          {QUICK_INGREDIENTS.map((ingredient) => {
+            // Use the translated ingredient name for search
+            const translatedName = t(`ingredients.${ingredient.id}` as any, ingredient.id);
+            return (
+              <Pressable
+                key={ingredient.id}
+                onPress={() => onSelectTerm(translatedName)}
+                className="flex-row items-center gap-2 px-4 py-2.5 bg-surface-elevated rounded-full border border-border active:bg-primary/5 active:border-primary/30"
+              >
+                <Text className="text-base">{ingredient.icon}</Text>
+                <Text className="text-foreground font-medium capitalize">{translatedName}</Text>
+              </Pressable>
+            );
+          })}
         </View>
       </View>
 
@@ -122,15 +125,19 @@ export function SearchStartView({ onSelectTerm, contentPaddingTop = 20 }: Search
         </View>
 
         <View className="flex-row flex-wrap gap-2">
-          {POPULAR_SEARCHES.map((term) => (
-            <Pressable
-              key={term}
-              onPress={() => onSelectTerm(term)}
-              className="px-4 py-2.5 bg-surface-elevated rounded-full border border-border active:bg-primary/5 active:border-primary/30"
-            >
-              <Text className="text-foreground font-medium">{term}</Text>
-            </Pressable>
-          ))}
+          {POPULAR_SEARCH_IDS.map((id) => {
+            // Use translated name for both display and search
+            const translatedName = t(`search.popularSearches.${id}` as any, id);
+            return (
+              <Pressable
+                key={id}
+                onPress={() => onSelectTerm(translatedName)}
+                className="px-4 py-2.5 bg-surface-elevated rounded-full border border-border active:bg-primary/5 active:border-primary/30"
+              >
+                <Text className="text-foreground font-medium capitalize">{translatedName}</Text>
+              </Pressable>
+            );
+          })}
         </View>
       </View>
     </ScrollView>

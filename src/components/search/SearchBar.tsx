@@ -78,18 +78,16 @@ export function SearchBar({
         }}
       />
 
-      {/* Clear Button - always reserve space to prevent layout shift */}
-      <View style={{ width: 20, height: 20, justifyContent: "center", alignItems: "center" }}>
-        {value.length > 0 && (
-          <TouchableOpacity
-            onPress={handleClear}
-            className="p-1"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <X size={12} color="#57534e" weight="bold" />
-          </TouchableOpacity>
-        )}
-      </View>
+      {/* Clear Button - only render when there's text */}
+      {value.length > 0 && (
+        <TouchableOpacity
+          onPress={handleClear}
+          className="ml-2 p-1"
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <X size={12} color="#57534e" weight="bold" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

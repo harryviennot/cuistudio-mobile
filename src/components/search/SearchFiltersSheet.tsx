@@ -6,7 +6,7 @@
  * - Multi-select categories with wrapped chips
  * - Difficulty selection
  */
-import React, { forwardRef, useMemo, useCallback } from "react";
+import React, { forwardRef, useCallback } from "react";
 import { View, Text, Pressable } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,7 +26,6 @@ import { PremiumBottomSheet } from "@/components/ui/PremiumBottomSheet";
 import { ShadowItem } from "@/components/ShadowedSection";
 import { TimeFilterRow } from "./TimeFilterRow";
 import { CategoryIcon } from "@/components/home/CategoryChip";
-import { formatDuration } from "@/utils/formatDuration";
 import { cn } from "@/utils/cn";
 
 interface SearchFiltersSheetProps {
@@ -145,21 +144,6 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
       }));
     }, []);
 
-    // Compute total time limit for display
-    const computedTotalTime = useMemo(() => {
-      const { prep, cook, rest } = localFilters.timeFilters;
-      let total = 0;
-      if (prep?.enabled) total += prep.maxMinutes;
-      if (cook?.enabled) total += cook.maxMinutes;
-      if (rest?.enabled) total += rest.maxMinutes;
-      return total;
-    }, [localFilters.timeFilters]);
-
-    const hasAnyTimeFilter =
-      localFilters.timeFilters.prep?.enabled ||
-      localFilters.timeFilters.cook?.enabled ||
-      localFilters.timeFilters.rest?.enabled;
-
     const difficultyOptions: DifficultyFilter[] = ["easy", "medium", "hard"];
     const snapPoints = React.useMemo(() => ["90%"], []);
 
@@ -239,15 +223,6 @@ export const SearchFiltersSheet = forwardRef<BottomSheetModal, SearchFiltersShee
             onToggle={() => handleTimeToggle("rest")}
             onMaxMinutesChange={(mins) => handleTimeMaxChange("rest", mins)}
           />
-
-          {/* Total Time Display */}
-          {hasAnyTimeFilter && (
-            <View className="mt-2 px-4 py-3 bg-primary/10 rounded-xl">
-              <Text className="text-sm font-semibold text-primary text-center">
-                {t("search.filters.totalLimit")}: {formatDuration(computedTotalTime, { t })}
-              </Text>
-            </View>
-          )}
         </View>
 
         {/* Difficulty Section */}
