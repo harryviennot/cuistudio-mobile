@@ -12,6 +12,12 @@ export default function SearchLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen
+          name="library-results"
+          options={{
+            animation: "slide_from_right",
+          }}
+        />
+        <Stack.Screen
           name="[id]"
           options={{
             animation: "slide_from_right",

@@ -39,6 +39,7 @@
     "share": "Partager",
     "warning": "Attention",
     "seeMore": "Voir plus",
+    "seeAll": "Voir tout",
     "uploading": "Téléchargement...",
     "pleaseWait": "Veuillez patienter",
     "change": "Modifier"
@@ -580,9 +581,18 @@
       "time": "Plus Rapide"
     },
     "libraryResults": {
-      "title": "Résultats de la Bibliothèque",
+      "title": "Dans votre bibliothèque",
+      "subtitle": "Résultats pour \"{{query}}\"",
       "count": "{{count}} recettes trouvées",
-      "searching": "Recherche dans votre bibliothèque..."
+      "searching": "Recherche dans votre bibliothèque...",
+      "empty": {
+        "title": "Aucune recette trouvée",
+        "message": "Aucune recette de votre bibliothèque ne correspond à cette recherche."
+      },
+      "error": {
+        "title": "Une erreur est survenue",
+        "message": "Impossible de charger les résultats de la bibliothèque."
+      }
     },
     "history": {
       "title": "Recherches récentes",

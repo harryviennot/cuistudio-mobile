@@ -582,9 +582,18 @@
       "time": "Quickest to Make"
     },
     "libraryResults": {
-      "title": "Library Results",
+      "title": "In Your Library",
+      "subtitle": "Results for \"{{query}}\"",
       "count": "{{count}} recipes found",
-      "searching": "Searching your library..."
+      "searching": "Searching your library...",
+      "empty": {
+        "title": "No recipes found",
+        "message": "No recipes in your library match this search."
+      },
+      "error": {
+        "title": "Something went wrong",
+        "message": "Failed to load library results."
+      }
     },
     "history": {
       "title": "Recent Searches",
