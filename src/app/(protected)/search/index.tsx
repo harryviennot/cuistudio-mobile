@@ -1,4 +1,4 @@
-import { View, Text, Pressable, Keyboard, TouchableOpacity, useWindowDimensions } from "react-native";
+import { View, Text, Keyboard, TouchableOpacity, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Faders, MagnifyingGlass } from "phosphor-react-native";
@@ -12,7 +12,6 @@ import { SearchBar } from "@/components/search/SearchBar";
 import { useSearch } from "@/hooks/useSearch";
 import { useSearchContext } from "@/contexts/SearchContext";
 import { SearchFiltersSheet } from "@/components/search/SearchFiltersSheet";
-import { SearchSortSheet } from "@/components/search/SearchSortSheet";
 import { SearchStartView } from "@/components/search/SearchStartView";
 import { HorizontalPreviewSection } from "@/components/ui/HorizontalPreviewSection";
 import { RecipeCard, RecipeCardSkeleton } from "@/components/recipe/RecipeCard";
@@ -41,7 +40,6 @@ export default function SearchScreen() {
 
   // Bottom sheet refs
   const filtersSheetRef = useRef<BottomSheetModal>(null);
-  const sortSheetRef = useRef<BottomSheetModal>(null);
 
   // Use new search hook with pagination
   const {
@@ -49,7 +47,6 @@ export default function SearchScreen() {
     setQuery,
     filters,
     updateFilters,
-    clearFilters,
     hasActiveFilters,
     sort,
     updateSort,
@@ -183,12 +180,15 @@ export default function SearchScreen() {
   // In library-only mode: show "Showing results from your library" header
   // In normal mode: show library horizontal section + public results header
   const ListHeader = libraryOnly ? (
-    <View className="flex-row items-center gap-3 px-6 mb-4">
-      <Text className="font-bold shrink-0 text-sm uppercase tracking-widest text-foreground-tertiary">
-        {t("search.sections.libraryResults", "Showing results from your library")}
-      </Text>
-      <View className="h-px flex-1 bg-border-light" />
-    </View>
+    // Only show header in library-only mode when there are results or still searching
+    (libraryResults.length > 0 || isSearchingLibrary) ? (
+      <View className="flex-row items-center gap-3 px-6 mb-4">
+        <Text className="font-bold shrink-0 text-sm uppercase tracking-widest text-foreground-tertiary">
+          {t("search.sections.libraryResults", "Showing results from your library")}
+        </Text>
+        <View className="h-px flex-1 bg-border-light" />
+      </View>
+    ) : undefined
   ) : (
     <View>
       {/* Library Results - Horizontal Scroll Section */}
@@ -223,7 +223,7 @@ export default function SearchScreen() {
       {(publicResults.length > 0 || isSearchingPublic) && (
         <View className="flex-row items-center gap-3 px-6 mb-4">
           <Text className="font-bold shrink-0 text-sm uppercase tracking-widest text-foreground-tertiary">
-            {t("search.sections.results", "Search results")}
+            {t("search.sections.results")}
           </Text>
           <View className="h-px flex-1 bg-border-light" />
         </View>
@@ -388,12 +388,6 @@ export default function SearchScreen() {
       </View>
 
       <SearchFiltersSheet ref={filtersSheetRef} filters={filters} onApplyFilters={updateFilters} />
-
-      <SearchSortSheet
-        ref={sortSheetRef}
-        currentSort={sort.sortBy}
-        onSelectSort={(sortBy) => updateSort({ sortBy })}
-      />
     </View>
   );
 }
