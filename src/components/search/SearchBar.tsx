@@ -3,9 +3,9 @@
  * Beautiful, accessible search input with design tokens
  */
 import { useState } from "react";
-import { View, TextInput, Pressable } from "react-native";
+import { View, TextInput, Pressable, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
-import { MagnifyingGlass, X } from "phosphor-react-native";
+import { MagnifyingGlassIcon, X } from "phosphor-react-native";
 
 interface SearchBarProps {
   value: string;
@@ -39,9 +39,8 @@ export function SearchBar({
 
   return (
     <View
-      className={`flex-row items-center px-4 py-2.5 rounded-full bg-surface-elevated ${
-        isFocused ? "border border-primary/20 bg-background" : "border border-transparent"
-      }`}
+      className={`flex-row items-center px-3 py-3 rounded-full bg-surface-elevated ${isFocused ? "border border-primary/20 bg-background" : "border border-transparent"
+        }`}
       style={{
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -51,7 +50,7 @@ export function SearchBar({
       }}
     >
       {/* Search Icon */}
-      <MagnifyingGlass
+      <MagnifyingGlassIcon
         size={20}
         color={isFocused ? "#334d43" : "#8b7a66"}
         weight={isFocused ? "bold" : "regular"}
@@ -82,13 +81,13 @@ export function SearchBar({
       {/* Clear Button - always reserve space to prevent layout shift */}
       <View style={{ width: 20, height: 20, justifyContent: "center", alignItems: "center" }}>
         {value.length > 0 && (
-          <Pressable
+          <TouchableOpacity
             onPress={handleClear}
-            className="p-1 rounded-full bg-stone-200 active:bg-stone-300"
+            className="p-1"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <X size={12} color="#57534e" weight="bold" />
-          </Pressable>
+          </TouchableOpacity>
         )}
       </View>
     </View>

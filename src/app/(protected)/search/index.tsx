@@ -7,7 +7,7 @@ import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { BlurView } from "expo-blur";
-import { SearchBar } from "@/components/home/SearchBar";
+import { SearchBar } from "@/components/search/SearchBar";
 import { useSearch } from "@/hooks/useSearch";
 import { useSearchContext } from "@/contexts/SearchContext";
 import { SearchFiltersSheet } from "@/components/search/SearchFiltersSheet";
@@ -343,9 +343,9 @@ export default function SearchScreen() {
                     ? EmptySearchResults
                     : undefined
                   : !isSearchingLibrary &&
-                      !isSearchingPublic &&
-                      libraryResults.length === 0 &&
-                      publicResults.length === 0
+                    !isSearchingPublic &&
+                    libraryResults.length === 0 &&
+                    publicResults.length === 0
                     ? EmptySearchResults
                     : undefined
               }

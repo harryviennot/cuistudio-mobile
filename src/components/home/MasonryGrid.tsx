@@ -14,7 +14,6 @@ import type { Recipe } from "@/types/recipe";
 
 // Layout constants
 const GRID_PADDING = 10;
-const CARD_PADDING = 8;
 
 // Create Reanimated-wrapped FlashList for scroll animations
 const ReanimatedFlashList = Animated.createAnimatedComponent(FlashList as React.ComponentType<any>);
@@ -136,26 +135,16 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
   // Key extractor wrapped in useCallback
   const getItemKey = useCallback((item: Recipe) => keyExtractor(item), [keyExtractor]);
 
-  // Built-in skeleton grid that matches the masonry layout
-  const SkeletonGrid = useMemo(() => {
-    const cardWidth = (width - GRID_PADDING * 2) / numColumns;
-    return (
-      <View className="flex-row flex-wrap">
-        {Array.from({ length: numColumns * 3 }).map((_, i) => (
-          <View
-            key={i}
-            style={{
-              width: cardWidth,
-              paddingHorizontal: CARD_PADDING,
-              paddingBottom: CARD_PADDING,
-            }}
-          >
-            <RecipeCardSkeleton />
-          </View>
-        ))}
-      </View>
-    );
-  }, [width, numColumns]);
+  // Simple 2-column skeleton grid for loading state
+  const SkeletonGrid = (
+    <View className="flex-row flex-wrap px-2">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <View key={i} className="w-1/2 p-2">
+          <RecipeCardSkeleton />
+        </View>
+      ))}
+    </View>
+  );
 
   // Loading footer component - show when fetching next page OR initial loading with header
   const ListFooterComponent = useMemo(() => {
