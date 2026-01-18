@@ -1,20 +1,29 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 
 interface SearchContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   clearSearch: () => void;
+  /** When true, search only shows results from user's library */
+  libraryOnly: boolean;
+  setLibraryOnly: (value: boolean) => void;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [libraryOnly, setLibraryOnly] = useState(false);
 
-  const clearSearch = () => setSearchQuery("");
+  const clearSearch = useCallback(() => {
+    setSearchQuery("");
+    setLibraryOnly(false);
+  }, []);
 
   return (
-    <SearchContext.Provider value={{ searchQuery, setSearchQuery, clearSearch }}>
+    <SearchContext.Provider
+      value={{ searchQuery, setSearchQuery, clearSearch, libraryOnly, setLibraryOnly }}
+    >
       {children}
     </SearchContext.Provider>
   );

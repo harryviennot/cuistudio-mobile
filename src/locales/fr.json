@@ -39,6 +39,7 @@
     "share": "Partager",
     "warning": "Attention",
     "seeMore": "Voir plus",
+    "seeAll": "Voir tout",
     "uploading": "Téléchargement...",
     "pleaseWait": "Veuillez patienter",
     "change": "Modifier"
@@ -515,7 +516,106 @@
     }
   },
   "search": {
-    "placeholder": "Rechercher des recettes..."
+    "placeholder": "Rechercher des recettes...",
+    "placeholderLibrary": "Chercher dans votre bibliothèque...",
+    "loading": "Recherche...",
+    "initial": {
+      "title": "Rechercher des recettes",
+      "description": "Entrez des mots-clés pour trouver vos recettes préférées"
+    },
+    "empty": {
+      "title": "Aucune recette trouvée",
+      "description": "Essayez d'autres termes de recherche ou ajustez vos filtres",
+      "cta": "Effacer la recherche",
+      "library": "Aucune recette dans votre bibliothèque ne correspond",
+      "libraryDescription": "Essayez les recettes populaires ci-dessous",
+      "popular": "Aucune recette populaire trouvée"
+    },
+    "error": {
+      "title": "Une erreur s'est produite",
+      "description": "Échec de la recherche. Veuillez réessayer."
+    },
+    "sections": {
+      "library": "Votre Bibliothèque",
+      "popular": "Recettes Populaires",
+      "fromLibrary": "Dans votre bibliothèque",
+      "results": "Autres résultats",
+      "libraryResults": "Résultats de votre bibliothèque"
+    },
+    "popularSearches": {
+      "pasta": "Pâtes",
+      "chicken": "Poulet",
+      "salad": "Salade",
+      "soup": "Soupe",
+      "pancakes": "Pancakes",
+      "curry": "Curry",
+      "avocado": "Avocat",
+      "salmon": "Saumon"
+    },
+    "filters": {
+      "title": "Filtres",
+      "subtitle": "Affiner votre recherche",
+      "cookingTime": "Temps de Cuisson",
+      "timeDescription": "Définir le temps maximum pour chaque étape",
+      "prepTime": "Temps de Préparation",
+      "cookTime": "Temps de Cuisson",
+      "restTime": "Temps de Repos",
+      "totalLimit": "Temps total maximum",
+      "difficulty": "Difficulté",
+      "category": "Catégorie",
+      "time": {
+        "quick": "Rapide (<30min)",
+        "medium": "Moyen (30-60min)",
+        "long": "Long (>60min)"
+      },
+      "clearAll": "Tout Effacer",
+      "apply": "Appliquer"
+    },
+    "sort": {
+      "title": "Trier Par",
+      "subtitle": "Changer l'ordre des résultats",
+      "relevance": "Pertinence",
+      "recent": "Récemment Ajouté",
+      "rating": "Mieux Noté",
+      "cook_count": "Plus Cuisiné",
+      "time": "Plus Rapide"
+    },
+    "libraryResults": {
+      "title": "Dans votre bibliothèque",
+      "subtitle": "Résultats pour \"{{query}}\"",
+      "count": "{{count}} recettes trouvées",
+      "searching": "Recherche dans votre bibliothèque...",
+      "empty": {
+        "title": "Aucune recette trouvée",
+        "message": "Aucune recette de votre bibliothèque ne correspond à cette recherche."
+      },
+      "error": {
+        "title": "Une erreur est survenue",
+        "message": "Impossible de charger les résultats de la bibliothèque."
+      }
+    },
+    "history": {
+      "title": "Recherches récentes",
+      "clear": "Effacer"
+    },
+    "ingredients": {
+      "title": "Ingrédients"
+    },
+    "popular": {
+      "title": "Recherches populaires"
+    }
+  },
+  "ingredients": {
+    "chicken": "Poulet",
+    "pasta": "Pâtes",
+    "eggs": "Œufs",
+    "salmon": "Saumon",
+    "beef": "Bœuf",
+    "tomato": "Tomate",
+    "avocado": "Avocat",
+    "rice": "Riz",
+    "potato": "Pomme de terre",
+    "cheese": "Fromage"
   },
   "welcome": {
     "headline": "Toutes vos recettes",

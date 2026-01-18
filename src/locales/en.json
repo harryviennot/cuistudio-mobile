@@ -41,7 +41,10 @@
     "seeMore": "See more",
     "uploading": "Uploading...",
     "pleaseWait": "Please Wait",
-    "change": "Change"
+    "change": "Change",
+    "seeAll": "See All",
+    "all": "All",
+    "loadingMore": "Loading more..."
   },
   "app": {
     "title": "Cuisto",
@@ -514,7 +517,106 @@
     }
   },
   "search": {
-    "placeholder": "Search recipes..."
+    "placeholder": "Search recipes...",
+    "placeholderLibrary": "Search in library...",
+    "loading": "Searching...",
+    "initial": {
+      "title": "Search for recipes",
+      "description": "Enter keywords to find your favorite recipes"
+    },
+    "empty": {
+      "title": "No recipes found",
+      "description": "Try different search terms or adjust your filters",
+      "cta": "Clear search",
+      "library": "No recipes in your library match this search",
+      "libraryDescription": "Try searching public recipes below",
+      "popular": "No popular recipes found"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "description": "Failed to search recipes. Please try again."
+    },
+    "sections": {
+      "library": "Your Library",
+      "popular": "Popular Recipes",
+      "fromLibrary": "From your library",
+      "results": "Search results",
+      "libraryResults": "Showing results from your library"
+    },
+    "popularSearches": {
+      "pasta": "Pasta",
+      "chicken": "Chicken",
+      "salad": "Salad",
+      "soup": "Soup",
+      "pancakes": "Pancakes",
+      "curry": "Curry",
+      "avocado": "Avocado",
+      "salmon": "Salmon"
+    },
+    "filters": {
+      "title": "Filters",
+      "subtitle": "Refine your search",
+      "cookingTime": "Cooking Time",
+      "timeDescription": "Set maximum time for each step",
+      "prepTime": "Prep Time",
+      "cookTime": "Cook Time",
+      "restTime": "Rest Time",
+      "totalLimit": "Total time limit",
+      "difficulty": "Difficulty",
+      "category": "Category",
+      "time": {
+        "quick": "Quick (<30min)",
+        "medium": "Medium (30-60min)",
+        "long": "Long (>60min)"
+      },
+      "clearAll": "Clear All",
+      "apply": "Apply Filters"
+    },
+    "sort": {
+      "title": "Sort By",
+      "subtitle": "Change the order of results",
+      "relevance": "Relevance",
+      "recent": "Recently Added",
+      "rating": "Highest Rated",
+      "cook_count": "Most Cooked",
+      "time": "Quickest to Make"
+    },
+    "libraryResults": {
+      "title": "In Your Library",
+      "subtitle": "Results for \"{{query}}\"",
+      "count": "{{count}} recipes found",
+      "searching": "Searching your library...",
+      "empty": {
+        "title": "No recipes found",
+        "message": "No recipes in your library match this search."
+      },
+      "error": {
+        "title": "Something went wrong",
+        "message": "Failed to load library results."
+      }
+    },
+    "history": {
+      "title": "Recent Searches",
+      "clear": "Clear"
+    },
+    "ingredients": {
+      "title": "Ingredients"
+    },
+    "popular": {
+      "title": "Popular Searches"
+    }
+  },
+  "ingredients": {
+    "chicken": "Chicken",
+    "pasta": "Pasta",
+    "eggs": "Eggs",
+    "salmon": "Salmon",
+    "beef": "Beef",
+    "tomato": "Tomato",
+    "avocado": "Avocado",
+    "rice": "Rice",
+    "potato": "Potato",
+    "cheese": "Cheese"
   },
   "welcome": {
     "headline": "All your recipes",

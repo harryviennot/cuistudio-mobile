@@ -9,8 +9,11 @@ import {
   useRef,
   type ReactElement,
 } from "react";
-import { RecipeCard } from "../recipe/RecipeCard";
+import { RecipeCard, RecipeCardSkeleton } from "../recipe/RecipeCard";
 import type { Recipe } from "@/types/recipe";
+
+// Layout constants
+const GRID_PADDING = 10;
 
 // Create Reanimated-wrapped FlashList for scroll animations
 const ReanimatedFlashList = Animated.createAnimatedComponent(FlashList as React.ComponentType<any>);
@@ -31,6 +34,8 @@ export interface MasonryGridProps {
   onScroll?: any;
   ListEmptyComponent?: ReactElement;
   ListHeaderComponent?: ReactElement;
+  /** Custom loading component shown while initial data loads. Defaults to ActivityIndicator. */
+  ListLoadingComponent?: ReactElement;
   contentContainerStyle?: any;
   /** Custom key extractor for recipes. Defaults to recipe.id */
   keyExtractor?: (recipe: Recipe) => string;
@@ -58,6 +63,7 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
     onScroll,
     ListEmptyComponent,
     ListHeaderComponent,
+    ListLoadingComponent,
     contentContainerStyle,
     keyExtractor = (recipe) => recipe.id,
     renderRecipeCard,
@@ -129,15 +135,36 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
   // Key extractor wrapped in useCallback
   const getItemKey = useCallback((item: Recipe) => keyExtractor(item), [keyExtractor]);
 
+  // Calculate skeleton card width based on screen width and columns
+  const skeletonCardWidth = useMemo(() => {
+    const horizontalPadding = 10; // 10px on each side from contentContainerStyle
+    const itemPadding = 10; // 8px on each side per item
+    const availableWidth = width - horizontalPadding;
+    return availableWidth / numColumns - itemPadding;
+  }, [width, numColumns]);
+
+  // Simple skeleton grid for loading state
+  const SkeletonGrid = useMemo(
+    () => (
+      <View style={{ flexDirection: "row", flexWrap: "wrap", width: width }}>
+        {Array.from({ length: numColumns * 3 }).map((_, i) => (
+          <View
+            key={i}
+            style={{ width: width / numColumns, paddingHorizontal: 10, paddingBottom: 10 }}
+          >
+            <RecipeCardSkeleton width={skeletonCardWidth} imageHeight={180} />
+          </View>
+        ))}
+      </View>
+    ),
+    [width, numColumns, skeletonCardWidth]
+  );
+
   // Loading footer component - show when fetching next page OR initial loading with header
   const ListFooterComponent = useMemo(() => {
-    // Show loading indicator when loading initial data (with header visible)
+    // Show skeleton grid when loading initial data (with header visible)
     if (loading && recipes.length === 0 && ListHeaderComponent) {
-      return (
-        <View className="py-12 items-center">
-          <ActivityIndicator size="large" color="#334d43" />
-        </View>
-      );
+      return ListLoadingComponent ?? SkeletonGrid;
     }
     // Show small loader for pagination
     if (!showLoadingFooter) return null;
@@ -146,13 +173,20 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
         <ActivityIndicator size="small" color="#334d43" />
       </View>
     );
-  }, [showLoadingFooter, loading, recipes.length, ListHeaderComponent]);
+  }, [
+    showLoadingFooter,
+    loading,
+    recipes.length,
+    ListHeaderComponent,
+    ListLoadingComponent,
+    SkeletonGrid,
+  ]);
 
   // Show loading state only when there's no header to show
   if (loading && recipes.length === 0 && !ListHeaderComponent) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#334d43" />
+      <View className="flex-1" style={{ paddingHorizontal: GRID_PADDING }}>
+        {ListLoadingComponent ?? SkeletonGrid}
       </View>
     );
   }
