@@ -30,7 +30,11 @@ export default function LibraryResultsScreen() {
   const { t } = useTranslation();
 
   // Parse URL parameters from search screen navigation
-  const { query, filters: filtersParam, sortBy } = useLocalSearchParams<{
+  const {
+    query,
+    filters: filtersParam,
+    sortBy,
+  } = useLocalSearchParams<{
     query: string;
     filters: string;
     sortBy: string;
@@ -137,19 +141,13 @@ export default function LibraryResultsScreen() {
 
   const renderRecipeCard = useCallback(
     (recipe: Recipe, index: number) => {
-      return (
-        <RecipeCard
-          recipe={recipe}
-          index={index}
-          onPress={() => handleRecipePress(recipe)}
-        />
-      );
+      return <RecipeCard recipe={recipe} index={index} onPress={() => handleRecipePress(recipe)} />;
     },
     [handleRecipePress]
   );
 
   const title = t("search.libraryResults.title", "Library Results");
-  const subtitle = t("search.libraryResults.subtitle", "Results for \"{{query}}\"", { query });
+  const subtitle = t("search.libraryResults.subtitle", 'Results for "{{query}}"', { query });
 
   const ListHeaderComponent = useMemo(
     () => <PageHeader subtitle={subtitle} title={title} topPadding={0} />,
@@ -182,7 +180,8 @@ export default function LibraryResultsScreen() {
           {t("search.libraryResults.error.title", "Something went wrong")}
         </Text>
         <Text className="text-foreground-secondary text-center">
-          {error?.message || t("search.libraryResults.error.message", "Failed to load library results.")}
+          {error?.message ||
+            t("search.libraryResults.error.message", "Failed to load library results.")}
         </Text>
         <Pressable
           onPress={() => refetch()}
@@ -203,7 +202,10 @@ export default function LibraryResultsScreen() {
           <EmptyState
             icon={MagnifyingGlass}
             title={t("search.libraryResults.empty.title", "No recipes found")}
-            message={t("search.libraryResults.empty.message", "No recipes in your library match this search.")}
+            message={t(
+              "search.libraryResults.empty.message",
+              "No recipes in your library match this search."
+            )}
             ctaLabel={t("common.goBack", "Go back")}
             onCtaPress={handleBack}
           />

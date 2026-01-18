@@ -140,7 +140,7 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
     const horizontalPadding = 10; // 10px on each side from contentContainerStyle
     const itemPadding = 10; // 8px on each side per item
     const availableWidth = width - horizontalPadding;
-    return (availableWidth / numColumns) - itemPadding;
+    return availableWidth / numColumns - itemPadding;
   }, [width, numColumns]);
 
   // Simple skeleton grid for loading state
@@ -148,7 +148,10 @@ export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function
     () => (
       <View style={{ flexDirection: "row", flexWrap: "wrap", width: width }}>
         {Array.from({ length: numColumns * 3 }).map((_, i) => (
-          <View key={i} style={{ width: width / numColumns, paddingHorizontal: 10, paddingBottom: 10 }}>
+          <View
+            key={i}
+            style={{ width: width / numColumns, paddingHorizontal: 10, paddingBottom: 10 }}
+          >
             <RecipeCardSkeleton width={skeletonCardWidth} imageHeight={180} />
           </View>
         ))}

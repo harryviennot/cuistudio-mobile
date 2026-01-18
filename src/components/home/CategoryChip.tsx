@@ -4,7 +4,6 @@
 import React, { useCallback } from "react";
 import { Text } from "react-native";
 import * as Haptics from "expo-haptics";
-import type { Icon } from "phosphor-react-native";
 import { ForkKnifeIcon } from "phosphor-react-native";
 import { ShadowItem } from "../ShadowedSection";
 import type { TabComponentProps } from "../ui/HorizontalTabBar";

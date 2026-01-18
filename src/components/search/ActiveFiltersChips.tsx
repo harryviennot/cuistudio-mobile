@@ -3,24 +3,21 @@
  *
  * Shows a horizontal scrollable list of filter chips with X buttons to remove them
  */
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { Text, Pressable, ScrollView } from "react-native";
 import {
-  X,
-  Funnel,
-  SortAscending,
-  Clock,
-  ChartBar,
-  ForkKnife,
-  Timer,
-  Flame,
-  Moon,
+  XIcon,
+  SortAscendingIcon,
+  ChartBarIcon,
+  ForkKnifeIcon,
+  TimerIcon,
+  FlameIcon,
+  MoonIcon,
 } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
-import type { SearchFilters, SearchSort, TimeFilters } from "@/types/search";
+import type { SearchFilters, SearchSort } from "@/types/search";
 import { SORT_OPTION_LABELS } from "@/types/search";
 import { ShadowItem } from "@/components/ShadowedSection";
 import { formatDuration } from "@/utils/formatDuration";
-import { cn } from "@/utils/cn";
 import * as Haptics from "expo-haptics";
 import { CATEGORY_ICONS } from "@/constants/categoryIcons";
 
@@ -29,7 +26,6 @@ interface ActiveFiltersChipsProps {
   sort: SearchSort;
   onRemoveFilter: (filterKey: keyof SearchFilters, value?: any) => void;
   onRemoveSort: () => void;
-  onOpenFilters: () => void;
 }
 
 export function ActiveFiltersChips({
@@ -37,21 +33,9 @@ export function ActiveFiltersChips({
   sort,
   onRemoveFilter,
   onRemoveSort,
-  onOpenFilters,
 }: ActiveFiltersChipsProps) {
   const { t } = useTranslation();
 
-  // Helper to count active time filters
-  const timeFilterCount =
-    (filters.timeFilters?.prep?.enabled ? 1 : 0) +
-    (filters.timeFilters?.cook?.enabled ? 1 : 0) +
-    (filters.timeFilters?.rest?.enabled ? 1 : 0);
-
-  // Count active filters
-  const activeCategoriesCount = filters.categorySlugs?.length ?? 0;
-  const isDifficultyActive = !!filters.difficulty;
-
-  const totalFilterCount = timeFilterCount + activeCategoriesCount + (isDifficultyActive ? 1 : 0);
   const hasActiveSort = sort.sortBy !== "relevance";
 
   const handleRemove = () => {
@@ -71,7 +55,7 @@ export function ActiveFiltersChips({
           variant="primary"
           className="flex-row items-center gap-2 px-3 py-2 h-9 bg-primary/10 border-primary/20"
         >
-          <ChartBar size={14} color="#334d43" weight="duotone" />
+          <ChartBarIcon size={14} color="#334d43" weight="duotone" />
           <Text className="text-sm font-semibold text-primary capitalize">
             {t(`recipe.difficulty.${filters.difficulty}`, { defaultValue: filters.difficulty })}
           </Text>
@@ -83,14 +67,14 @@ export function ActiveFiltersChips({
             hitSlop={8}
             className="rounded-full p-0.5"
           >
-            <X size={12} color="#334d43" weight="bold" />
+            <XIcon size={12} color="#334d43" weight="bold" />
           </Pressable>
         </ShadowItem>
       )}
 
       {/* Category Filter Chips */}
       {filters.categorySlugs?.map((slug) => {
-        const Icon = CATEGORY_ICONS[slug] || ForkKnife;
+        const Icon = CATEGORY_ICONS[slug] || ForkKnifeIcon;
         return (
           <ShadowItem
             key={`cat-${slug}`}
@@ -109,7 +93,7 @@ export function ActiveFiltersChips({
               hitSlop={8}
               className="rounded-full p-0.5"
             >
-              <X size={12} color="#334d43" weight="bold" />
+              <XIcon size={12} color="#334d43" weight="bold" />
             </Pressable>
           </ShadowItem>
         );
@@ -121,7 +105,7 @@ export function ActiveFiltersChips({
           variant="primary"
           className="flex-row items-center gap-2 px-3 py-2 h-9 bg-primary/10 border-primary/20"
         >
-          <Timer size={14} color="#334d43" weight="duotone" />
+          <TimerIcon size={14} color="#334d43" weight="duotone" />
           <Text className="text-sm font-semibold text-primary">
             {t("search.filters.prepTime")} &lt;{" "}
             {formatDuration(filters.timeFilters?.prep?.maxMinutes ?? 0, { t })}
@@ -134,7 +118,7 @@ export function ActiveFiltersChips({
             hitSlop={8}
             className="rounded-full p-0.5"
           >
-            <X size={12} color="#334d43" weight="bold" />
+            <XIcon size={12} color="#334d43" weight="bold" />
           </Pressable>
         </ShadowItem>
       )}
@@ -144,7 +128,7 @@ export function ActiveFiltersChips({
           variant="primary"
           className="flex-row items-center gap-2 px-3 py-2 h-9 bg-primary/10 border-primary/20"
         >
-          <Flame size={14} color="#334d43" weight="duotone" />
+          <FlameIcon size={14} color="#334d43" weight="duotone" />
           <Text className="text-sm font-semibold text-primary">
             {t("search.filters.cookTime")} &lt;{" "}
             {formatDuration(filters.timeFilters?.cook?.maxMinutes ?? 0, { t })}
@@ -157,7 +141,7 @@ export function ActiveFiltersChips({
             hitSlop={8}
             className="rounded-full p-0.5"
           >
-            <X size={12} color="#334d43" weight="bold" />
+            <XIcon size={12} color="#334d43" weight="bold" />
           </Pressable>
         </ShadowItem>
       )}
@@ -167,7 +151,7 @@ export function ActiveFiltersChips({
           variant="primary"
           className="flex-row items-center gap-2 px-3 py-2 h-9 bg-primary/10 border-primary/20"
         >
-          <Moon size={14} color="#334d43" weight="duotone" />
+          <MoonIcon size={14} color="#334d43" weight="duotone" />
           <Text className="text-sm font-semibold text-primary">
             {t("search.filters.restTime")} &lt;{" "}
             {formatDuration(filters.timeFilters?.rest?.maxMinutes ?? 0, { t })}
@@ -180,7 +164,7 @@ export function ActiveFiltersChips({
             hitSlop={8}
             className="rounded-full p-0.5"
           >
-            <X size={12} color="#334d43" weight="bold" />
+            <XIcon size={12} color="#334d43" weight="bold" />
           </Pressable>
         </ShadowItem>
       )}
@@ -191,7 +175,7 @@ export function ActiveFiltersChips({
           variant="default"
           className="flex-row items-center gap-2 px-3 py-2 h-9 bg-blue-50 border-blue-200"
         >
-          <SortAscending size={14} color="#334d43" />
+          <SortAscendingIcon size={14} color="#334d43" />
           <Text className="text-sm font-semibold text-foreground-heading">
             {t(SORT_OPTION_LABELS[sort.sortBy], { defaultValue: sort.sortBy })}
           </Text>
@@ -203,7 +187,7 @@ export function ActiveFiltersChips({
             hitSlop={8}
             className="rounded-full p-0.5"
           >
-            <X size={12} color="#334d43" weight="bold" />
+            <XIcon size={12} color="#334d43" weight="bold" />
           </Pressable>
         </ShadowItem>
       )}

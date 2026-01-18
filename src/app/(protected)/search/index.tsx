@@ -1,7 +1,7 @@
 import { View, Text, Keyboard, TouchableOpacity, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, Faders, MagnifyingGlass } from "phosphor-react-native";
+import { XIcon, FadersIcon, MagnifyingGlassIcon } from "phosphor-react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -157,9 +157,12 @@ export default function SearchScreen() {
   // Empty search results component using the EmptyState UI component
   const EmptySearchResults = (
     <EmptyState
-      icon={MagnifyingGlass}
+      icon={MagnifyingGlassIcon}
       title={t("search.empty.title", "No recipes found")}
-      message={t("search.empty.description", "Try searching for a different ingredient or category.")}
+      message={t(
+        "search.empty.description",
+        "Try searching for a different ingredient or category."
+      )}
       ctaLabel={t("search.empty.cta", "Clear search")}
       onCtaPress={() => {
         setLocalQuery("");
@@ -175,7 +178,7 @@ export default function SearchScreen() {
   // In normal mode: show library horizontal section + public results header
   const ListHeader = libraryOnly ? (
     // Only show header in library-only mode when there are results or still searching
-    (libraryResults.length > 0 || isSearchingLibrary) ? (
+    libraryResults.length > 0 || isSearchingLibrary ? (
       <View className="flex-row items-center gap-3 px-6 mb-4">
         <Text className="font-bold shrink-0 text-sm uppercase tracking-widest text-foreground-tertiary">
           {t("search.sections.libraryResults", "Showing results from your library")}
@@ -270,7 +273,7 @@ export default function SearchScreen() {
               className="w-10 h-10 items-center justify-center rounded-full"
               hitSlop={10}
             >
-              <X size={24} color="#334d43" weight="bold" />
+              <XIcon size={24} color="#334d43" weight="bold" />
             </TouchableOpacity>
 
             <View className="flex-1">
@@ -296,7 +299,7 @@ export default function SearchScreen() {
               className="w-10 h-10 items-center justify-center rounded-full"
               hitSlop={10}
             >
-              <Faders size={24} color="#334d43" weight="bold" />
+              <FadersIcon size={24} color="#334d43" weight="bold" />
             </TouchableOpacity>
           </View>
 
@@ -307,10 +310,6 @@ export default function SearchScreen() {
               sort={sort}
               onRemoveFilter={handleRemoveFilter}
               onRemoveSort={() => updateSort({ sortBy: "relevance" })}
-              onOpenFilters={() => {
-                Keyboard.dismiss();
-                filtersSheetRef.current?.present();
-              }}
             />
           )}
         </View>
@@ -344,11 +343,7 @@ export default function SearchScreen() {
                   In normal mode: show public results with library horizontal section in header */}
             <MasonryGrid
               recipes={libraryOnly ? libraryResults : publicResults}
-              loading={
-                libraryOnly
-                  ? isSearchingLibrary
-                  : isSearchingLibrary || isSearchingPublic
-              }
+              loading={libraryOnly ? isSearchingLibrary : isSearchingLibrary || isSearchingPublic}
               onEndReached={handleEndReached}
               showLoadingFooter={isFetchingNextPublicPage}
               onScroll={handleScroll}

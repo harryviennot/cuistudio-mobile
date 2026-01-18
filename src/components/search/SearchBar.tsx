@@ -3,9 +3,9 @@
  * Beautiful, accessible search input with design tokens
  */
 import { useState } from "react";
-import { View, TextInput, Pressable, TouchableOpacity } from "react-native";
+import { View, TextInput, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
-import { MagnifyingGlassIcon, X } from "phosphor-react-native";
+import { MagnifyingGlassIcon, XIcon } from "phosphor-react-native";
 
 interface SearchBarProps {
   value: string;
@@ -37,8 +37,9 @@ export function SearchBar({
 
   return (
     <View
-      className={`flex-row items-center px-3 py-3 rounded-full bg-surface-elevated ${isFocused ? "border border-primary/20 bg-background" : "border border-transparent"
-        }`}
+      className={`flex-row items-center px-3 py-3 rounded-full bg-surface-elevated ${
+        isFocused ? "border border-primary/20 bg-background" : "border border-transparent"
+      }`}
       style={{
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -83,7 +84,7 @@ export function SearchBar({
           className="ml-2 p-1"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <X size={12} color="#57534e" weight="bold" />
+          <XIcon size={12} color="#57534e" weight="bold" />
         </TouchableOpacity>
       )}
     </View>
