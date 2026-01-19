@@ -166,6 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             user_metadata: session.user.user_metadata ?? {},
             is_new_user: true, // Safe default - will redirect to onboarding
             is_anonymous: false,
+            unacknowledged_warnings: [],
           });
         }
       } else {
@@ -243,6 +244,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           user_metadata: data.user.user_metadata ?? {},
           is_new_user: true, // Safe default
           is_anonymous: false,
+          unacknowledged_warnings: [],
         });
       }
     } finally {
@@ -314,6 +316,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           user_metadata: data.user.user_metadata ?? {},
           is_new_user: true, // Safe default - will redirect to onboarding
           is_anonymous: false,
+          unacknowledged_warnings: [],
         });
       }
     } finally {
@@ -378,6 +381,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           user_metadata: data.user.user_metadata ?? {},
           is_new_user: true, // Safe default - will redirect to onboarding
           is_anonymous: false,
+          unacknowledged_warnings: [],
         });
       }
     } catch (error) {

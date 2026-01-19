@@ -23,6 +23,7 @@ import { configureReanimatedLogger, ReanimatedLogLevel } from "react-native-rean
 import i18n from "@/locales/i18n";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/components/ui/ToastConfig";
+import { WarningManager } from "@/components/moderation";
 
 import {
   useFonts,
@@ -170,6 +171,7 @@ export function RootLayout() {
                 <SearchProvider>
                   <SplashScreenController />
                   <RootNavigator />
+                  <WarningManager />
                 </SearchProvider>
               </SubscriptionProvider>
             </AuthProvider>
