@@ -6,6 +6,16 @@
 // USER & RESPONSE TYPES
 // ============================================================================
 
+/**
+ * User warning from moderation system
+ */
+export interface UserWarning {
+  id: string;
+  reason: string;
+  recipe_id?: string;
+  created_at: string;
+}
+
 export interface User {
   id: string;
   email?: string;
@@ -14,6 +24,7 @@ export interface User {
   user_metadata?: Record<string, unknown>;
   is_new_user: boolean;
   is_anonymous: boolean;
+  unacknowledged_warnings: UserWarning[];
 }
 
 export interface AuthResponse {

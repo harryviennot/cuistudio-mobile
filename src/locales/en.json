@@ -1146,5 +1146,10 @@
       "title": "Couldn't Submit Feedback",
       "description": "Please try again later"
     }
+  },
+  "warnings": {
+    "title": "Account Warning",
+    "info": "Please review this warning. Continued violations may result in account suspension.",
+    "acknowledge": "I Understand"
   }
 }

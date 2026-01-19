@@ -1142,5 +1142,10 @@
       "title": "Impossible d'envoyer le retour",
       "description": "Veuillez réessayer plus tard"
     }
+  },
+  "warnings": {
+    "title": "Avertissement",
+    "info": "Veuillez prendre connaissance de cet avertissement. Des violations répétées peuvent entraîner la suspension de votre compte.",
+    "acknowledge": "Je comprends"
   }
 }

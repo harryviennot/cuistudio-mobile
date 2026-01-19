@@ -77,4 +77,15 @@ export const authService = {
     const response = await api.delete<{ message: string }>("/auth/account");
     return response.data;
   },
+
+  /**
+   * Acknowledge a warning (authenticated endpoint)
+   * Marks the warning as acknowledged so it won't be shown again
+   */
+  acknowledgeWarning: async (warningId: string) => {
+    const response = await api.post<{ message: string }>(
+      `/auth/warnings/${warningId}/acknowledge`
+    );
+    return response.data;
+  },
 };
