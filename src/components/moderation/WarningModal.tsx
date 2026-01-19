@@ -1,5 +1,5 @@
 import React, { useCallback, forwardRef } from "react";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, Image } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
@@ -10,6 +10,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Warning } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import type { UserWarning } from "@/types/auth";
+import { ShadowItem } from "@/components/ShadowedSection";
+import { ActionButton } from "@/components/ui/ActionButton";
 
 interface WarningModalProps {
   warning: UserWarning;
@@ -28,8 +30,8 @@ export const WarningModal = forwardRef<BottomSheetModal, WarningModalProps>(
           {...props}
           disappearsOnIndex={-1}
           appearsOnIndex={0}
-          opacity={0.6}
-          pressBehavior="none" // Prevent closing by tapping backdrop
+          opacity={0.4}
+          pressBehavior="none"
         />
       ),
       []
@@ -39,7 +41,7 @@ export const WarningModal = forwardRef<BottomSheetModal, WarningModalProps>(
       <BottomSheetModal
         ref={ref}
         enableDynamicSizing
-        enablePanDownToClose={false} // Force user to acknowledge
+        enablePanDownToClose={false}
         backdropComponent={renderBackdrop}
         handleComponent={null}
         backgroundStyle={{
@@ -48,46 +50,66 @@ export const WarningModal = forwardRef<BottomSheetModal, WarningModalProps>(
           borderTopRightRadius: 32,
         }}
       >
-        <BottomSheetView style={{ paddingBottom: insets.bottom + 20 }}>
-          <View className="px-6 py-6">
-            {/* Warning Icon */}
-            <View className="mb-4 items-center">
-              <View className="rounded-full bg-amber-100 p-4">
-                <Warning size={48} color="#f59e0b" weight="fill" />
-              </View>
+        <BottomSheetView style={{ paddingBottom: insets.bottom + 24 }}>
+          <View className="px-6 pt-8">
+            {/* Header Section */}
+            <View className="mb-8 items-center">
+              <ShadowItem className="mb-6 h-20 w-20 rounded-full bg-amber-50 border-amber-100">
+                <Warning size={40} color="#b45309" weight="fill" />
+              </ShadowItem>
+
+              <Text
+                className="text-center text-3xl text-stone-900"
+                style={{ fontFamily: "PlayfairDisplay_700Bold" }}
+              >
+                {t("warnings.title")}
+              </Text>
             </View>
 
-            {/* Title */}
-            <Text
-              className="mb-2 text-center text-2xl text-stone-900"
-              style={{ fontFamily: "PlayfairDisplay_700Bold" }}
-            >
-              {t("warnings.title")}
-            </Text>
+            {/* Recipe Context (if available) */}
+            {warning.recipe_image_url && (
+              <ShadowItem className="mb-4 w-full overflow-hidden bg-white/50">
+                <Image
+                  source={{ uri: warning.recipe_image_url }}
+                  className="h-40 w-full"
+                  resizeMode="cover"
+                />
+                {warning.recipe_title && (
+                  <View className="px-4 py-3">
+                    <Text className="text-center text-base font-semibold text-stone-800">
+                      {warning.recipe_title}
+                    </Text>
+                  </View>
+                )}
+              </ShadowItem>
+            )}
 
-            {/* Warning Reason */}
-            <View className="mb-6 rounded-2xl bg-amber-50 p-4">
-              <Text className="text-center text-base text-stone-700">{warning.reason}</Text>
-            </View>
-
-            {/* Info Text */}
-            <Text className="mb-6 text-center text-sm text-stone-500">{t("warnings.info")}</Text>
-
-            {/* Acknowledge Button */}
-            <Pressable
-              onPress={onAcknowledge}
-              disabled={isLoading}
-              className="rounded-full bg-primary px-6 py-4 active:opacity-80"
-              style={{ opacity: isLoading ? 0.7 : 1 }}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="text-center text-lg font-semibold text-white">
-                  {t("warnings.acknowledge")}
+            {/* Warning Content */}
+            <ShadowItem className="mb-8 w-full overflow-hidden bg-white/50 p-6">
+              <View className="mb-3 flex-row items-center gap-2">
+                <View className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                <Text className="font-semibold uppercase tracking-wider text-xs text-amber-700">
+                  Moderation Note
                 </Text>
-              )}
-            </Pressable>
+              </View>
+              <Text className="text-center text-lg leading-relaxed text-stone-800 font-medium">
+                {warning.reason}
+              </Text>
+            </ShadowItem>
+
+            {/* Acknowledge Action */}
+            <View className="gap-4">
+              <ActionButton
+                title={t("warnings.acknowledge")}
+                onPress={onAcknowledge}
+                isLoading={isLoading}
+                variant="primary"
+                size="default"
+              />
+              <Text className="text-center text-xs text-stone-400">
+                {t("warnings.info")}
+              </Text>
+            </View>
           </View>
         </BottomSheetView>
       </BottomSheetModal>

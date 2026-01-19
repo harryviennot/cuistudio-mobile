@@ -13,6 +13,8 @@ export interface UserWarning {
   id: string;
   reason: string;
   recipe_id?: string;
+  recipe_title?: string;
+  recipe_image_url?: string;
   created_at: string;
 }
 
