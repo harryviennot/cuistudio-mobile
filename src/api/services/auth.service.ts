@@ -83,9 +83,7 @@ export const authService = {
    * Marks the warning as acknowledged so it won't be shown again
    */
   acknowledgeWarning: async (warningId: string) => {
-    const response = await api.post<{ message: string }>(
-      `/auth/warnings/${warningId}/acknowledge`
-    );
+    const response = await api.post<{ message: string }>(`/auth/warnings/${warningId}/acknowledge`);
     return response.data;
   },
 };

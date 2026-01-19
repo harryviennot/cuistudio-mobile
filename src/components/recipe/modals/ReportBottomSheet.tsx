@@ -109,7 +109,14 @@ export function ReportBottomSheet({
         handleClose();
       },
     });
-  }, [recipeId, selectedCategory, description, extractionJobId, submitExtractionFeedback, handleClose]);
+  }, [
+    recipeId,
+    selectedCategory,
+    description,
+    extractionJobId,
+    submitExtractionFeedback,
+    handleClose,
+  ]);
 
   const renderSelectStep = () => (
     <View className={`${isTablet ? "px-10" : "px-6"} gap-4`}>
@@ -161,7 +168,8 @@ export function ReportBottomSheet({
   };
 
   const getFeedbackCategories = () => {
-    const values = feedbackCategoriesData?.categories?.map((c) => c.value) || defaultFeedbackCategoryValues;
+    const values =
+      feedbackCategoriesData?.categories?.map((c) => c.value) || defaultFeedbackCategoryValues;
     return values.map((value) => ({
       value,
       label: t(`report.feedback.${value}.label` as never) as string,
@@ -190,28 +198,30 @@ export function ReportBottomSheet({
             <Pressable
               key={reason.value}
               onPress={() => setSelectedReason(reason.value as ContentReportReason)}
-              className={`flex-row items-center gap-3 rounded-xl border p-4 ${selectedReason === reason.value
-                ? "border-primary bg-primary/10"
-                : "border-border bg-surface-elevated"
-                }`}
+              className={`flex-row items-center gap-3 rounded-xl border p-4 ${
+                selectedReason === reason.value
+                  ? "border-primary bg-primary/10"
+                  : "border-border bg-surface-elevated"
+              }`}
             >
               <View
-                className={`h-5 w-5 rounded-full border-2 items-center justify-center ${selectedReason === reason.value ? "border-primary bg-primary" : "border-border"
-                  }`}
+                className={`h-5 w-5 rounded-full border-2 items-center justify-center ${
+                  selectedReason === reason.value ? "border-primary bg-primary" : "border-border"
+                }`}
               >
                 {selectedReason === reason.value && (
                   <Ionicons name="checkmark" size={12} color="white" />
                 )}
               </View>
               <View className="flex-1">
-                <Text className="text-base font-medium text-foreground-heading">{reason.label}</Text>
+                <Text className="text-base font-medium text-foreground-heading">
+                  {reason.label}
+                </Text>
                 <Text className="text-sm text-foreground-muted">{reason.description}</Text>
               </View>
             </Pressable>
           ))}
         </View>
-
-
       </ScrollView>
 
       <View className={`flex-row gap-4 mt-6`}>
@@ -259,21 +269,27 @@ export function ReportBottomSheet({
             <Pressable
               key={category.value}
               onPress={() => setSelectedCategory(category.value as ExtractionFeedbackCategory)}
-              className={`flex-row items-center gap-3 rounded-xl border p-4 ${selectedCategory === category.value
-                ? "border-primary bg-primary/10"
-                : "border-border bg-surface-elevated"
-                }`}
+              className={`flex-row items-center gap-3 rounded-xl border p-4 ${
+                selectedCategory === category.value
+                  ? "border-primary bg-primary/10"
+                  : "border-border bg-surface-elevated"
+              }`}
             >
               <View
-                className={`h-5 w-5 rounded-full border-2 items-center justify-center ${selectedCategory === category.value ? "border-primary bg-primary" : "border-border"
-                  }`}
+                className={`h-5 w-5 rounded-full border-2 items-center justify-center ${
+                  selectedCategory === category.value
+                    ? "border-primary bg-primary"
+                    : "border-border"
+                }`}
               >
                 {selectedCategory === category.value && (
                   <Ionicons name="checkmark" size={12} color="white" />
                 )}
               </View>
               <View className="flex-1">
-                <Text className="text-base font-medium text-foreground-heading">{category.label}</Text>
+                <Text className="text-base font-medium text-foreground-heading">
+                  {category.label}
+                </Text>
                 <Text className="text-sm text-foreground-muted">{category.description}</Text>
               </View>
             </Pressable>
