@@ -172,7 +172,20 @@ export function ReportBottomSheet({
   const renderContentReportStep = () => (
     <View className={`${isTablet ? "px-10" : "px-6"}`}>
       <ScrollView style={{ maxHeight: maxScrollHeight }} showsVerticalScrollIndicator={false}>
-        <View className="gap-2 mb-4">
+        <Text className="text-sm font-medium text-foreground-heading mb-2">
+          {t("report.additionalDetails", "Additional details (optional)")}
+        </Text>
+        <TextInput
+          value={description}
+          onChangeText={setDescription}
+          placeholder={t("report.descriptionPlaceholder", "Describe the issue...")}
+          placeholderTextColor="#a8a29e"
+          multiline
+          numberOfLines={4}
+          className="rounded-xl border border-border bg-surface-elevated p-4 mb-4 text-foreground-body min-h-[100px]"
+          textAlignVertical="top"
+        />
+        <View className="gap-2 ">
           {getReportReasons().map((reason) => (
             <Pressable
               key={reason.value}
@@ -198,19 +211,7 @@ export function ReportBottomSheet({
           ))}
         </View>
 
-        <Text className="text-sm font-medium text-foreground-heading mb-2">
-          {t("report.additionalDetails", "Additional details (optional)")}
-        </Text>
-        <TextInput
-          value={description}
-          onChangeText={setDescription}
-          placeholder={t("report.descriptionPlaceholder", "Describe the issue...")}
-          placeholderTextColor="#a8a29e"
-          multiline
-          numberOfLines={4}
-          className="rounded-xl border border-border bg-surface-elevated p-4 text-foreground-body min-h-[100px]"
-          textAlignVertical="top"
-        />
+
       </ScrollView>
 
       <View className={`flex-row gap-4 mt-6`}>
@@ -240,7 +241,20 @@ export function ReportBottomSheet({
   const renderExtractionFeedbackStep = () => (
     <View className={`${isTablet ? "px-10" : "px-6"}`}>
       <ScrollView style={{ maxHeight: maxScrollHeight }} showsVerticalScrollIndicator={false}>
-        <View className="gap-2 mb-4">
+        <Text className="text-sm font-medium text-foreground-heading mb-2">
+          {t("report.additionalDetails", "Additional details (optional)")}
+        </Text>
+        <TextInput
+          value={description}
+          onChangeText={setDescription}
+          placeholder={t("report.feedbackPlaceholder", "What's wrong with the extraction?")}
+          placeholderTextColor="#a8a29e"
+          multiline
+          numberOfLines={4}
+          className="rounded-xl border border-border bg-surface-elevated p-4 mb-4 text-foreground-body min-h-[100px]"
+          textAlignVertical="top"
+        />
+        <View className="gap-2 ">
           {getFeedbackCategories().map((category) => (
             <Pressable
               key={category.value}
@@ -265,20 +279,6 @@ export function ReportBottomSheet({
             </Pressable>
           ))}
         </View>
-
-        <Text className="text-sm font-medium text-foreground-heading mb-2">
-          {t("report.additionalDetails", "Additional details (optional)")}
-        </Text>
-        <TextInput
-          value={description}
-          onChangeText={setDescription}
-          placeholder={t("report.feedbackPlaceholder", "What's wrong with the extraction?")}
-          placeholderTextColor="#a8a29e"
-          multiline
-          numberOfLines={4}
-          className="rounded-xl border border-border bg-surface-elevated p-4 text-foreground-body min-h-[100px]"
-          textAlignVertical="top"
-        />
       </ScrollView>
 
       <View className={`flex-row gap-4 mt-6`}>
