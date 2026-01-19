@@ -1,12 +1,27 @@
 import { View, ActivityIndicator, Platform, useWindowDimensions } from "react-native";
-import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { FlashList, FlashListRef, ListRenderItem } from "@shopify/flash-list";
 import Animated from "react-native-reanimated";
-import { useMemo, useCallback, type ReactElement } from "react";
-import { RecipeCard } from "../recipe/RecipeCard";
+import {
+  useMemo,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  type ReactElement,
+} from "react";
+import { RecipeCard, RecipeCardSkeleton } from "../recipe/RecipeCard";
 import type { Recipe } from "@/types/recipe";
+
+// Layout constants
+const GRID_PADDING = 10;
 
 // Create Reanimated-wrapped FlashList for scroll animations
 const ReanimatedFlashList = Animated.createAnimatedComponent(FlashList as React.ComponentType<any>);
+
+export interface MasonryGridRef {
+  scrollToTop: (animated?: boolean) => void;
+  scrollToOffset: (offset: number, animated?: boolean) => void;
+}
 
 export interface MasonryGridProps {
   recipes: Recipe[];
@@ -19,6 +34,8 @@ export interface MasonryGridProps {
   onScroll?: any;
   ListEmptyComponent?: ReactElement;
   ListHeaderComponent?: ReactElement;
+  /** Custom loading component shown while initial data loads. Defaults to ActivityIndicator. */
+  ListLoadingComponent?: ReactElement;
   contentContainerStyle?: any;
   /** Custom key extractor for recipes. Defaults to recipe.id */
   keyExtractor?: (recipe: Recipe) => string;
@@ -34,26 +51,45 @@ export interface MasonryGridProps {
   progressViewOffset?: number;
 }
 
-export function MasonryGrid({
-  recipes,
-  loading = false,
-  refreshing = false,
-  onRefresh,
-  onEndReached,
-  onEndReachedThreshold = 0.5,
-  showLoadingFooter = false,
-  onScroll,
-  ListEmptyComponent,
-  ListHeaderComponent,
-  contentContainerStyle,
-  keyExtractor = (recipe) => recipe.id,
-  renderRecipeCard,
-  contentInset,
-  contentOffset,
-  scrollIndicatorInsets,
-  progressViewOffset,
-}: MasonryGridProps) {
+export const MasonryGrid = forwardRef<MasonryGridRef, MasonryGridProps>(function MasonryGrid(
+  {
+    recipes,
+    loading = false,
+    refreshing = false,
+    onRefresh,
+    onEndReached,
+    onEndReachedThreshold = 0.5,
+    showLoadingFooter = false,
+    onScroll,
+    ListEmptyComponent,
+    ListHeaderComponent,
+    ListLoadingComponent,
+    contentContainerStyle,
+    keyExtractor = (recipe) => recipe.id,
+    renderRecipeCard,
+    contentInset,
+    contentOffset,
+    scrollIndicatorInsets,
+    progressViewOffset,
+  },
+  ref
+) {
   const { width } = useWindowDimensions();
+  const listRef = useRef<FlashListRef<Recipe>>(null);
+
+  // Expose scroll methods via ref
+  useImperativeHandle(
+    ref,
+    () => ({
+      scrollToTop: (animated = true) => {
+        listRef.current?.scrollToOffset({ offset: 0, animated });
+      },
+      scrollToOffset: (offset: number, animated = true) => {
+        listRef.current?.scrollToOffset({ offset, animated });
+      },
+    }),
+    []
+  );
 
   // Calculate number of columns based on device type and screen width
   const numColumns = useMemo(() => {
@@ -99,32 +135,71 @@ export function MasonryGrid({
   // Key extractor wrapped in useCallback
   const getItemKey = useCallback((item: Recipe) => keyExtractor(item), [keyExtractor]);
 
-  // Loading footer component
+  // Calculate skeleton card width based on screen width and columns
+  const skeletonCardWidth = useMemo(() => {
+    const horizontalPadding = 10; // 10px on each side from contentContainerStyle
+    const itemPadding = 10; // 8px on each side per item
+    const availableWidth = width - horizontalPadding;
+    return availableWidth / numColumns - itemPadding;
+  }, [width, numColumns]);
+
+  // Simple skeleton grid for loading state
+  const SkeletonGrid = useMemo(
+    () => (
+      <View style={{ flexDirection: "row", flexWrap: "wrap", width: width }}>
+        {Array.from({ length: numColumns * 3 }).map((_, i) => (
+          <View
+            key={i}
+            style={{ width: width / numColumns, paddingHorizontal: 10, paddingBottom: 10 }}
+          >
+            <RecipeCardSkeleton width={skeletonCardWidth} imageHeight={180} />
+          </View>
+        ))}
+      </View>
+    ),
+    [width, numColumns, skeletonCardWidth]
+  );
+
+  // Loading footer component - show when fetching next page OR initial loading with header
   const ListFooterComponent = useMemo(() => {
+    // Show skeleton grid when loading initial data (with header visible)
+    if (loading && recipes.length === 0 && ListHeaderComponent) {
+      return ListLoadingComponent ?? SkeletonGrid;
+    }
+    // Show small loader for pagination
     if (!showLoadingFooter) return null;
     return (
       <View className="py-4 items-center">
         <ActivityIndicator size="small" color="#334d43" />
       </View>
     );
-  }, [showLoadingFooter]);
+  }, [
+    showLoadingFooter,
+    loading,
+    recipes.length,
+    ListHeaderComponent,
+    ListLoadingComponent,
+    SkeletonGrid,
+  ]);
 
-  // Show loading state
-  if (loading && recipes.length === 0) {
+  // Show loading state only when there's no header to show
+  if (loading && recipes.length === 0 && !ListHeaderComponent) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#334d43" />
+      <View className="flex-1" style={{ paddingHorizontal: GRID_PADDING }}>
+        {ListLoadingComponent ?? SkeletonGrid}
       </View>
     );
   }
 
-  // Show empty state
-  if (recipes.length === 0 && ListEmptyComponent) {
+  // Show empty state only when not loading, no header, and we have an empty component
+  // (When we have a header, FlashList handles the empty state via ListEmptyComponent)
+  if (!loading && recipes.length === 0 && ListEmptyComponent && !ListHeaderComponent) {
     return <View className="flex-1">{ListEmptyComponent}</View>;
   }
 
   return (
     <ReanimatedFlashList
+      ref={listRef}
       data={recipes}
       renderItem={renderItem}
       keyExtractor={getItemKey}
@@ -144,6 +219,7 @@ export function MasonryGrid({
       ListHeaderComponentStyle={{
         marginHorizontal: -10, // Counteract contentContainerStyle padding
       }}
+      ListEmptyComponent={!loading ? ListEmptyComponent : undefined}
       ListFooterComponent={ListFooterComponent}
       refreshing={refreshing}
       onRefresh={onRefresh}
@@ -153,4 +229,4 @@ export function MasonryGrid({
       progressViewOffset={progressViewOffset}
     />
   );
-}
+});

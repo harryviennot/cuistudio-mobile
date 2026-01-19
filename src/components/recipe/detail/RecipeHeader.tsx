@@ -74,8 +74,12 @@ export const RecipeHeader = memo(function RecipeHeader({
           const { height } = event.nativeEvent.layout;
           onImageHeightChange?.(height);
         }}
+        pointerEvents="box-none"
       >
-        <Animated.View style={[{ width: "100%", height: "100%" }, imageAnimatedStyle]}>
+        <Animated.View
+          style={[{ width: "100%", height: "100%" }, imageAnimatedStyle]}
+          pointerEvents="none"
+        >
           {recipe?.image_url ? (
             <Image
               source={{ uri: recipe.image_url }}

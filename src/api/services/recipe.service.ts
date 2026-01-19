@@ -4,6 +4,7 @@
 import { api } from "../api-client";
 import type {
   Recipe,
+  RecipeUpdateRequest,
   RecipeTimingsUpdateRequest,
   RecipeTimingsUpdateResponse,
 } from "@/types/recipe";
@@ -53,7 +54,7 @@ export const recipeService = {
   /**
    * Update a recipe
    */
-  updateRecipe: async (recipeId: string, recipe: Partial<Recipe>): Promise<Recipe> => {
+  updateRecipe: async (recipeId: string, recipe: RecipeUpdateRequest): Promise<Recipe> => {
     const response = await api.put<Recipe>(`/recipes/${recipeId}`, recipe);
     return response.data;
   },
@@ -83,6 +84,48 @@ export const recipeService = {
     const response = await api.get<Recipe[]>("/recipes/search", {
       params: { q: query, limit, offset },
     });
+    return response.data;
+  },
+
+  /**
+   * Search recipes with filters and sorting
+   *
+   * @param query - Search query string
+   * @param options - Search options including filters and sorting
+   * @returns Array of matching recipes with applied filters and sort order
+   */
+  searchRecipesFiltered: async (
+    query: string,
+    options: {
+      limit?: number;
+      offset?: number;
+      difficulty?: "easy" | "medium" | "hard";
+      categorySlugs?: string[];
+      maxPrepTime?: number;
+      maxCookTime?: number;
+      maxRestTime?: number;
+      sortBy?: "relevance" | "recent" | "rating" | "cook_count" | "time";
+      libraryOnly?: boolean;
+    } = {}
+  ): Promise<Recipe[]> => {
+    const params: Record<string, any> = {
+      q: query,
+      limit: options.limit ?? 20,
+      offset: options.offset ?? 0,
+    };
+
+    // Add optional filter parameters
+    if (options.difficulty) params.difficulty = options.difficulty;
+    if (options.categorySlugs && options.categorySlugs.length > 0) {
+      params.category_slugs = options.categorySlugs.join(",");
+    }
+    if (options.maxPrepTime !== undefined) params.max_prep_time = options.maxPrepTime;
+    if (options.maxCookTime !== undefined) params.max_cook_time = options.maxCookTime;
+    if (options.maxRestTime !== undefined) params.max_rest_time = options.maxRestTime;
+    if (options.sortBy) params.sort_by = options.sortBy;
+    if (options.libraryOnly) params.library_only = options.libraryOnly;
+
+    const response = await api.get<Recipe[]>("/recipes/search", { params });
     return response.data;
   },
 

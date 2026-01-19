@@ -91,8 +91,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-splash-screen",
       {
-        image: "./assets/images/splash-icon.png",
-        imageWidth: 200,
+        image: "./assets/images/chef-toque.png",
+        imageWidth: 100,
         resizeMode: "contain",
         backgroundColor: "#334d43"
       }

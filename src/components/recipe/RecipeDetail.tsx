@@ -2,8 +2,8 @@
  * Refactored Recipe detail component with better architecture
  * Uses split components for better maintainability and performance
  */
-import React, { useState, useEffect, memo } from "react";
-import { View, Alert, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, memo, useCallback } from "react";
+import { View, Alert, TouchableOpacity, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   useAnimatedScrollHandler,
@@ -11,6 +11,8 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
   withTiming,
+  SharedValue,
+  Extrapolation,
 } from "react-native-reanimated";
 import {
   ShareNetworkIcon,
@@ -25,7 +27,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useDeleteRecipe } from "@/hooks/useRecipes";
 import { useToggleFavorite } from "@/hooks/useCollections";
 
-import type { Recipe } from "@/types/recipe";
+import type { Recipe, Category } from "@/types/recipe";
 import { UnifiedStickyHeader } from "@/components/ui/UnifiedStickyHeader";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -43,6 +45,62 @@ import {
 } from "@/components/recipe/detail";
 import { t } from "i18next";
 import { router } from "expo-router";
+import { RecipeCategoryBadge } from "@/components/home/CategoryChip";
+
+/**
+ * Floating Category Badge - sits above the ScrollView to receive touch events
+ * Animates with scroll to follow the parallax effect of the header image
+ */
+interface FloatingCategoryBadgeProps {
+  category: Category;
+  imageHeight: number;
+  scrollY: SharedValue<number>;
+  onPress: () => void;
+  isTablet: boolean;
+}
+
+const FloatingCategoryBadge = memo(function FloatingCategoryBadge({
+  category,
+  imageHeight,
+  scrollY,
+  onPress,
+  isTablet,
+}: FloatingCategoryBadgeProps) {
+  const { height: windowHeight } = useWindowDimensions();
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      scrollY.value,
+      [0, windowHeight],
+      [0, -windowHeight],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      transform: [{ translateY }],
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        {
+          position: "absolute",
+          top: imageHeight - 16 - 36, // 16px from bottom, ~36px badge height
+          right: isTablet ? 32 : 16,
+          zIndex: 10,
+        },
+        animatedStyle,
+      ]}
+    >
+      <RecipeCategoryBadge
+        slug={category.slug}
+        label={t(`categories.${category.slug}`, { defaultValue: category.slug })}
+        onPress={onPress}
+      />
+    </Animated.View>
+  );
+});
 
 interface RecipeDetailProps {
   recipe?: Recipe;
@@ -133,6 +191,23 @@ export const RecipeDetail = memo<RecipeDetailProps>(function RecipeDetail({
       scrollY.value = 0;
     }
   }, [isTabletLandscape, scrollY]);
+
+  // Handle category badge press - navigate to home with category filter
+  // Must be defined before early returns to follow rules of hooks
+  const handleCategoryPress = useCallback(() => {
+    console.log("[RecipeDetail] Category badge pressed");
+    console.log("[RecipeDetail] Category:", recipe?.category);
+    if (recipe?.category?.id) {
+      console.log("[RecipeDetail] Navigating to home with categoryId:", recipe.category.id);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      router.dismissTo({
+        pathname: "/(protected)/(tabs)",
+        params: { categoryId: recipe.category.id },
+      });
+    } else {
+      console.log("[RecipeDetail] No category id found, not navigating");
+    }
+  }, [recipe?.category]);
 
   // Handle error state
   if (error) {
@@ -388,6 +463,16 @@ export const RecipeDetail = memo<RecipeDetailProps>(function RecipeDetail({
                 onStartCooking={() => setIsCooking(true)}
               />
             )}
+            {/* Floating Category Badge for tablet landscape */}
+            {displayRecipe.category && !isDraft && !isEditing && imageHeight > 0 && (
+              <FloatingCategoryBadge
+                category={displayRecipe.category}
+                imageHeight={imageHeight}
+                scrollY={scrollY}
+                onPress={handleCategoryPress}
+                isTablet={isTablet}
+              />
+            )}
           </View>
         ) : (
           <View className="flex-1">
@@ -421,6 +506,16 @@ export const RecipeDetail = memo<RecipeDetailProps>(function RecipeDetail({
                 />
               )}
             </Animated.ScrollView>
+            {/* Floating Category Badge - positioned above ScrollView */}
+            {displayRecipe.category && !isDraft && !isEditing && imageHeight > 0 && (
+              <FloatingCategoryBadge
+                category={displayRecipe.category}
+                imageHeight={imageHeight}
+                scrollY={scrollY}
+                onPress={handleCategoryPress}
+                isTablet={isTablet}
+              />
+            )}
           </View>
         )}
       </Animated.View>

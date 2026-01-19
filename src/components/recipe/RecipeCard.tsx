@@ -26,6 +26,8 @@ interface RecipeCardProps {
   width?: number;
   imageHeight?: number;
   statsBadge?: StatsBadge;
+  /** Custom press handler - overrides default navigation to /recipe/[id] */
+  onPress?: () => void;
 }
 
 export const RecipeCard = memo(function RecipeCard({
@@ -33,6 +35,7 @@ export const RecipeCard = memo(function RecipeCard({
   width,
   imageHeight: fixedImageHeight,
   statsBadge,
+  onPress,
 }: RecipeCardProps) {
   const { t } = useTranslation();
   const [imageLoading, setImageLoading] = useState(true);
@@ -47,6 +50,10 @@ export const RecipeCard = memo(function RecipeCard({
   };
 
   const handlePress = () => {
+    if (onPress) {
+      onPress();
+      return;
+    }
     // Navigate to recipe detail page with optimistic data
     router.push({
       pathname: `/recipe/[id]` as const,
@@ -92,8 +99,10 @@ export const RecipeCard = memo(function RecipeCard({
 
   const imageHeight = fixedImageHeight ?? getImageHeight();
 
-  // Get category or first tag
-  const categoryLabel = recipe.categories?.[0] || recipe.tags?.[0] || t("recipe.card.recipeLabel");
+  // Get category label from i18n translations, fallback to 'Recipe'
+  const categoryLabel = recipe.category?.slug
+    ? t("categories." + recipe.category.slug, { defaultValue: recipe.category.slug })
+    : "RECIPE";
 
   // Get translated difficulty label
   const getDifficultyLabel = (difficulty?: string) => {

@@ -15,7 +15,7 @@ export const recipeMainInfoSchema = z.object({
     .max(1000, "Description must be less than 1000 characters")
     .optional()
     .or(z.literal("")),
-  image_url: z.string().url("Invalid image URL").optional().or(z.literal("")),
+  image_url: z.union([z.string().url("Invalid image URL"), z.literal("")]).optional(),
 });
 
 export type RecipeMainInfoFormData = z.infer<typeof recipeMainInfoSchema>;
@@ -37,6 +37,11 @@ export const recipeMetadataSchema = z.object({
     .int("Cook time must be a whole number")
     .min(0, "Cook time cannot be negative")
     .max(1440, "Cook time must be less than 24 hours"),
+  resting_time_minutes: z
+    .number()
+    .int("Resting time must be a whole number")
+    .min(0, "Resting time cannot be negative")
+    .max(1440, "Resting time must be less than 24 hours"),
   difficulty: z.nativeEnum(DifficultyLevel, {
     message: "Please select a difficulty level",
   }),
@@ -44,9 +49,9 @@ export const recipeMetadataSchema = z.object({
 
 export type RecipeMetadataFormData = z.infer<typeof recipeMetadataSchema>;
 
-// Categories and tags schema
+// Category and tags schema
 export const recipeCategoriesTagsSchema = z.object({
-  categories: z.array(z.string()).min(1, "Please select at least one category").max(5),
+  category_slug: z.string().nullable().optional(), // Single category slug
   tags: z.array(z.string()).max(10, "Maximum 10 tags allowed"),
 });
 
@@ -55,7 +60,7 @@ export type RecipeCategoriesTagsFormData = z.infer<typeof recipeCategoriesTagsSc
 // Ingredient schema
 export const ingredientSchema = z.object({
   name: z.string().min(1, "Ingredient name is required"),
-  quantity: z.union([z.string(), z.null(), z.undefined()]).optional(),
+  quantity: z.union([z.number(), z.null(), z.undefined()]).optional(),
   unit: z.union([z.string(), z.null(), z.undefined()]).optional(),
   notes: z.union([z.string(), z.null(), z.undefined()]).optional(),
   group: z.union([z.string(), z.null(), z.undefined()]).optional(),
@@ -82,15 +87,7 @@ export const instructionSchema = z.object({
     .min(1, "Instruction description is required")
     .max(2000, "Description must be less than 2000 characters"),
   timer_minutes: z
-    .union([
-      z
-        .number()
-        .int("Timer must be a whole number")
-        .min(0, "Timer cannot be negative")
-        .max(1440, "Timer must be less than 24 hours"),
-      z.null(),
-      z.undefined(),
-    ])
+    .union([z.number().min(0, "Timer cannot be negative"), z.null(), z.undefined()])
     .optional(),
   image_url: z
     .union([z.string().url("Invalid image URL"), z.literal(""), z.null(), z.undefined()])
@@ -116,7 +113,7 @@ export const recipeEditSchema = z.object({
     .max(1000, "Description must be less than 1000 characters")
     .optional()
     .or(z.literal("")),
-  image_url: z.string().url("Invalid image URL").optional().or(z.literal("")),
+  image_url: z.union([z.string().url("Invalid image URL"), z.literal("")]).optional(),
 
   // Metadata
   servings: z
@@ -127,19 +124,21 @@ export const recipeEditSchema = z.object({
   prep_time_minutes: z
     .number()
     .int("Prep time must be a whole number")
-    .min(0, "Prep time cannot be negative")
-    .max(1440, "Prep time must be less than 24 hours"),
+    .min(0, "Prep time cannot be negative"),
   cook_time_minutes: z
     .number()
     .int("Cook time must be a whole number")
-    .min(0, "Cook time cannot be negative")
-    .max(1440, "Cook time must be less than 24 hours"),
+    .min(0, "Cook time cannot be negative"),
+  resting_time_minutes: z
+    .number()
+    .int("Resting time must be a whole number")
+    .min(0, "Resting time cannot be negative"),
   difficulty: z.nativeEnum(DifficultyLevel, {
     message: "Please select a difficulty level",
   }),
 
-  // Categories and tags
-  categories: z.array(z.string()).min(1, "Please select at least one category").max(5),
+  // Category and tags
+  category_slug: z.string().nullable().optional(), // Single category slug
   tags: z.array(z.string()).max(10, "Maximum 10 tags allowed"),
 
   // Ingredients
