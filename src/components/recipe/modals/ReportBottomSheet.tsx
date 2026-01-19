@@ -115,7 +115,7 @@ export function ReportBottomSheet({
     <View className={`${isTablet ? "px-10" : "px-6"} gap-4`}>
       <Pressable
         onPress={() => setStep("content")}
-        className="flex-row items-center gap-4 rounded-2xl border-2 border-border bg-surface-elevated p-5 active:bg-surface"
+        className="flex-row items-center gap-4 rounded-2xl border border-border bg-surface-elevated p-5 active:bg-surface"
       >
         <View className="h-12 w-12 items-center justify-center rounded-xl bg-state-error/15">
           <Ionicons name="warning-outline" size={24} color="#c65d47" />
@@ -133,7 +133,7 @@ export function ReportBottomSheet({
 
       <Pressable
         onPress={() => setStep("extraction")}
-        className="flex-row items-center gap-4 rounded-2xl border-2 border-border bg-surface-elevated p-5 active:bg-surface"
+        className="flex-row items-center gap-4 rounded-2xl border border-border bg-surface-elevated p-5 active:bg-surface"
       >
         <View className="h-12 w-12 items-center justify-center rounded-xl bg-state-warning/30">
           <Ionicons name="construct-outline" size={24} color="#b8942d" />
@@ -151,15 +151,33 @@ export function ReportBottomSheet({
     </View>
   );
 
+  const getReportReasons = () => {
+    const values = reportReasonsData?.reasons?.map((r) => r.value) || defaultReportReasonValues;
+    return values.map((value) => ({
+      value,
+      label: t(`report.reasons.${value}.label` as never) as string,
+      description: t(`report.reasons.${value}.description` as never) as string,
+    }));
+  };
+
+  const getFeedbackCategories = () => {
+    const values = feedbackCategoriesData?.categories?.map((c) => c.value) || defaultFeedbackCategoryValues;
+    return values.map((value) => ({
+      value,
+      label: t(`report.feedback.${value}.label` as never) as string,
+      description: t(`report.feedback.${value}.description` as never) as string,
+    }));
+  };
+
   const renderContentReportStep = () => (
     <View className={`${isTablet ? "px-10" : "px-6"}`}>
       <ScrollView style={{ maxHeight: maxScrollHeight }} showsVerticalScrollIndicator={false}>
         <View className="gap-2 mb-4">
-          {(reportReasonsData?.reasons || defaultReportReasons).map((reason) => (
+          {getReportReasons().map((reason) => (
             <Pressable
               key={reason.value}
               onPress={() => setSelectedReason(reason.value as ContentReportReason)}
-              className={`flex-row items-center gap-3 rounded-xl border-2 p-4 ${selectedReason === reason.value
+              className={`flex-row items-center gap-3 rounded-xl border p-4 ${selectedReason === reason.value
                 ? "border-primary bg-primary/10"
                 : "border-border bg-surface-elevated"
                 }`}
@@ -190,7 +208,7 @@ export function ReportBottomSheet({
           placeholderTextColor="#a8a29e"
           multiline
           numberOfLines={4}
-          className="rounded-xl border-2 border-border bg-surface-elevated p-4 text-foreground-body min-h-[100px]"
+          className="rounded-xl border border-border bg-surface-elevated p-4 text-foreground-body min-h-[100px]"
           textAlignVertical="top"
         />
       </ScrollView>
@@ -223,11 +241,11 @@ export function ReportBottomSheet({
     <View className={`${isTablet ? "px-10" : "px-6"}`}>
       <ScrollView style={{ maxHeight: maxScrollHeight }} showsVerticalScrollIndicator={false}>
         <View className="gap-2 mb-4">
-          {(feedbackCategoriesData?.categories || defaultFeedbackCategories).map((category) => (
+          {getFeedbackCategories().map((category) => (
             <Pressable
               key={category.value}
               onPress={() => setSelectedCategory(category.value as ExtractionFeedbackCategory)}
-              className={`flex-row items-center gap-3 rounded-xl border-2 p-4 ${selectedCategory === category.value
+              className={`flex-row items-center gap-3 rounded-xl border p-4 ${selectedCategory === category.value
                 ? "border-primary bg-primary/10"
                 : "border-border bg-surface-elevated"
                 }`}
@@ -258,7 +276,7 @@ export function ReportBottomSheet({
           placeholderTextColor="#a8a29e"
           multiline
           numberOfLines={4}
-          className="rounded-xl border-2 border-border bg-surface-elevated p-4 text-foreground-body min-h-[100px]"
+          className="rounded-xl border border-border bg-surface-elevated p-4 text-foreground-body min-h-[100px]"
           textAlignVertical="top"
         />
       </ScrollView>
@@ -324,22 +342,22 @@ export function ReportBottomSheet({
   );
 }
 
-// Default options for offline/loading state
-const defaultReportReasons = [
-  { value: "inappropriate_content", label: "Inappropriate Content", description: "Explicit, violent, or otherwise inappropriate" },
-  { value: "hate_speech", label: "Hate Speech", description: "Hate speech or discrimination" },
-  { value: "copyright_violation", label: "Copyright Violation", description: "Copyrighted content without permission" },
-  { value: "spam_advertising", label: "Spam / Advertising", description: "Spam or advertising content" },
-  { value: "misinformation", label: "Dangerous Misinformation", description: "Dangerous cooking advice" },
-  { value: "other", label: "Other", description: "Other issue not listed" },
-];
+// Default options for offline/loading state - values only, labels come from translations
+const defaultReportReasonValues = [
+  "inappropriate_content",
+  "hate_speech",
+  "copyright_violation",
+  "spam_advertising",
+  "misinformation",
+  "other",
+] as const;
 
-const defaultFeedbackCategories = [
-  { value: "wrong_ingredients", label: "Wrong Ingredients", description: "Ingredients don't match source" },
-  { value: "missing_steps", label: "Missing Steps", description: "Instructions are incomplete" },
-  { value: "incorrect_steps", label: "Incorrect Steps", description: "Instructions are wrong" },
-  { value: "bad_formatting", label: "Bad Formatting", description: "Text is hard to read" },
-  { value: "wrong_measurements", label: "Wrong Measurements", description: "Quantities are incorrect" },
-  { value: "ai_hallucination", label: "AI Added Fake Content", description: "AI invented content" },
-  { value: "other", label: "Other", description: "Other issue not listed" },
-];
+const defaultFeedbackCategoryValues = [
+  "wrong_ingredients",
+  "missing_steps",
+  "incorrect_steps",
+  "bad_formatting",
+  "wrong_measurements",
+  "ai_hallucination",
+  "other",
+] as const;

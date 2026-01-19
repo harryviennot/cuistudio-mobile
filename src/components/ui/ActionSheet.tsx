@@ -61,11 +61,11 @@ export function ActionSheet({ visible, actions, onClose }: ActionSheetProps) {
       enablePanDownToClose
       onDismiss={handleClose}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: "#FEFCF8" }}
+      backgroundStyle={{ backgroundColor: "#f4f1e8" }}
       handleIndicatorStyle={{ backgroundColor: "#334d43", width: 40 }}
     >
       <BottomSheetView
-        className="flex-1 bg-surface-elevated px-4 pt-4"
+        className="flex-1 bg-surface px-4 pt-4"
         style={{ paddingBottom: bottom + 16 }}
       >
         <View className="gap-4">
@@ -75,16 +75,14 @@ export function ActionSheet({ visible, actions, onClose }: ActionSheetProps) {
               onPress={() => {
                 action.onPress();
               }}
-              className={`flex-row items-center gap-4 rounded-2xl border-2 p-6 active:bg-surface ${
-                action.variant === "destructive"
-                  ? "border-state-error/50 bg-state-error/15"
-                  : "border-border bg-surface-elevated"
-              }`}
+              className={`flex-row items-center gap-4 rounded-2xl border p-4 active:bg-surface ${action.variant === "destructive"
+                ? "border-state-error/50 bg-state-error/15"
+                : "border-border bg-surface-elevated"
+                }`}
             >
               <View
-                className={`h-12 w-12 items-center justify-center rounded-xl ${
-                  action.variant === "destructive" ? "bg-state-error/15" : "bg-primary/10"
-                }`}
+                className={`h-12 w-12 items-center justify-center rounded-xl ${action.variant === "destructive" ? "bg-state-error/15" : "bg-primary/10"
+                  }`}
               >
                 {action.icon}
               </View>
@@ -92,11 +90,10 @@ export function ActionSheet({ visible, actions, onClose }: ActionSheetProps) {
                 <Text className="text-lg font-medium text-foreground-heading">{action.label}</Text>
                 {action.description && (
                   <Text
-                    className={`text-sm mt-0.5 ${
-                      action.variant === "destructive"
-                        ? "text-state-error"
-                        : "text-foreground-muted"
-                    }`}
+                    className={`text-sm mt-0.5 ${action.variant === "destructive"
+                      ? "text-state-error"
+                      : "text-foreground-muted"
+                      }`}
                   >
                     {action.description}
                   </Text>

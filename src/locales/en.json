@@ -44,7 +44,9 @@
     "change": "Change",
     "seeAll": "See All",
     "all": "All",
-    "loadingMore": "Loading more..."
+    "loadingMore": "Loading more...",
+    "submit": "Submit",
+    "submitting": "Submitting..."
   },
   "app": {
     "title": "Cuisto",
@@ -255,7 +257,9 @@
       "shareDescription": "Share this recipe with your friends",
       "edit": "Edit Recipe",
       "delete": "Delete Recipe",
-      "deleteDescription": "This action cannot be undone"
+      "deleteDescription": "This action cannot be undone",
+      "report": "Report",
+      "reportDescription": "Report inappropriate content"
     },
     "quickInfo": {
       "tapToEdit": "Tap to edit"
@@ -1040,5 +1044,107 @@
     "snacks": "Snacks",
     "grilled": "Grilled",
     "bowls-grains": "Bowls & Grains"
+  },
+  "report": {
+    "title": "Report Recipe",
+    "additionalDetails": "Additional details (optional)",
+    "descriptionPlaceholder": "Describe the issue...",
+    "feedbackPlaceholder": "What's wrong with the extraction?",
+    "success": {
+      "title": "Report Submitted",
+      "description": "Thank you for helping keep Cuisto safe"
+    },
+    "error": {
+      "title": "Couldn't Submit Report",
+      "description": "Please try again later"
+    },
+    "content": {
+      "title": "Report Content",
+      "subtitle": "Inappropriate, offensive, or policy violation",
+      "description": "What's wrong with this content?"
+    },
+    "extraction": {
+      "title": "Report Extraction Issue",
+      "subtitle": "Wrong ingredients, missing steps, AI errors",
+      "description": "What's wrong with the extraction?"
+    },
+    "reasons": {
+      "inappropriate_content": {
+        "label": "Inappropriate Content",
+        "description": "Explicit, violent, or otherwise inappropriate"
+      },
+      "hate_speech": {
+        "label": "Hate Speech",
+        "description": "Hate speech or discrimination"
+      },
+      "copyright_violation": {
+        "label": "Copyright Violation",
+        "description": "Copyrighted content without permission"
+      },
+      "spam_advertising": {
+        "label": "Spam / Advertising",
+        "description": "Spam or advertising content"
+      },
+      "misinformation": {
+        "label": "Dangerous Misinformation",
+        "description": "Dangerous cooking advice"
+      },
+      "other": {
+        "label": "Other",
+        "description": "Other issue not listed"
+      }
+    },
+    "feedback": {
+      "wrong_ingredients": {
+        "label": "Wrong Ingredients",
+        "description": "Ingredients don't match source"
+      },
+      "missing_steps": {
+        "label": "Missing Steps",
+        "description": "Instructions are incomplete"
+      },
+      "incorrect_steps": {
+        "label": "Incorrect Steps",
+        "description": "Instructions are wrong"
+      },
+      "bad_formatting": {
+        "label": "Bad Formatting",
+        "description": "Text is hard to read"
+      },
+      "wrong_measurements": {
+        "label": "Wrong Measurements",
+        "description": "Quantities are incorrect"
+      },
+      "wrong_servings": {
+        "label": "Wrong Servings",
+        "description": "Number of servings is incorrect"
+      },
+      "wrong_title": {
+        "label": "Wrong Title",
+        "description": "Recipe title doesn't match source"
+      },
+      "wrong_image": {
+        "label": "Wrong Image",
+        "description": "Image doesn't match the recipe"
+      },
+      "ai_hallucination": {
+        "label": "AI Added Fake Content",
+        "description": "AI invented content"
+      },
+      "other": {
+        "label": "Other",
+        "description": "Other issue not listed"
+      }
+    }
+  },
+  "feedback": {
+    "success": {
+      "title": "Feedback Submitted",
+      "description": "Your feedback helps us improve"
+    },
+    "error": {
+      "title": "Couldn't Submit Feedback",
+      "description": "Please try again later"
+    }
   }
 }

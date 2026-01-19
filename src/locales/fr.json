@@ -42,7 +42,9 @@
     "seeAll": "Voir tout",
     "uploading": "Téléchargement...",
     "pleaseWait": "Veuillez patienter",
-    "change": "Modifier"
+    "change": "Modifier",
+    "submit": "Envoyer",
+    "submitting": "Envoi en cours..."
   },
   "app": {
     "title": "Cuisto",
@@ -254,7 +256,9 @@
       "shareDescription": "Partager cette recette avec vos amis",
       "edit": "Modifier la recette",
       "delete": "Supprimer la recette",
-      "deleteDescription": "Cette action ne peut pas être annulée"
+      "deleteDescription": "Cette action ne peut pas être annulée",
+      "report": "Signaler",
+      "reportDescription": "Signaler un contenu inapproprié"
     },
     "quickInfo": {
       "tapToEdit": "Appuyer pour modifier"
@@ -1036,5 +1040,107 @@
     "snacks": "Snacks",
     "grilled": "Grillades",
     "bowls-grains": "Bowls & Céréales"
+  },
+  "report": {
+    "title": "Signaler la recette",
+    "additionalDetails": "Détails supplémentaires (optionnel)",
+    "descriptionPlaceholder": "Décrivez le problème...",
+    "feedbackPlaceholder": "Quel est le problème avec l'extraction ?",
+    "success": {
+      "title": "Signalement envoyé",
+      "description": "Merci de contribuer à la sécurité de Cuisto"
+    },
+    "error": {
+      "title": "Impossible d'envoyer le signalement",
+      "description": "Veuillez réessayer plus tard"
+    },
+    "content": {
+      "title": "Signaler le contenu",
+      "subtitle": "Contenu inapproprié, offensant ou violation des règles",
+      "description": "Quel est le problème avec ce contenu ?"
+    },
+    "extraction": {
+      "title": "Signaler un problème d'extraction",
+      "subtitle": "Ingrédients erronés, étapes manquantes, erreurs IA",
+      "description": "Quel est le problème avec l'extraction ?"
+    },
+    "reasons": {
+      "inappropriate_content": {
+        "label": "Contenu inapproprié",
+        "description": "Explicite, violent ou autrement inapproprié"
+      },
+      "hate_speech": {
+        "label": "Discours haineux",
+        "description": "Discours haineux ou discrimination"
+      },
+      "copyright_violation": {
+        "label": "Violation de droits d'auteur",
+        "description": "Contenu protégé sans autorisation"
+      },
+      "spam_advertising": {
+        "label": "Spam / Publicité",
+        "description": "Contenu spam ou publicitaire"
+      },
+      "misinformation": {
+        "label": "Désinformation dangereuse",
+        "description": "Conseils culinaires dangereux"
+      },
+      "other": {
+        "label": "Autre",
+        "description": "Autre problème non listé"
+      }
+    },
+    "feedback": {
+      "wrong_ingredients": {
+        "label": "Ingrédients erronés",
+        "description": "Les ingrédients ne correspondent pas à la source"
+      },
+      "missing_steps": {
+        "label": "Étapes manquantes",
+        "description": "Les instructions sont incomplètes"
+      },
+      "incorrect_steps": {
+        "label": "Étapes incorrectes",
+        "description": "Les instructions sont fausses"
+      },
+      "bad_formatting": {
+        "label": "Mauvais formatage",
+        "description": "Le texte est difficile à lire"
+      },
+      "wrong_measurements": {
+        "label": "Mesures incorrectes",
+        "description": "Les quantités sont incorrectes"
+      },
+      "wrong_servings": {
+        "label": "Portions incorrectes",
+        "description": "Le nombre de portions est incorrect"
+      },
+      "wrong_title": {
+        "label": "Titre incorrect",
+        "description": "Le titre ne correspond pas à la source"
+      },
+      "wrong_image": {
+        "label": "Image incorrecte",
+        "description": "L'image ne correspond pas à la recette"
+      },
+      "ai_hallucination": {
+        "label": "Contenu inventé par l'IA",
+        "description": "L'IA a inventé du contenu"
+      },
+      "other": {
+        "label": "Autre",
+        "description": "Autre problème non listé"
+      }
+    }
+  },
+  "feedback": {
+    "success": {
+      "title": "Retour envoyé",
+      "description": "Votre retour nous aide à nous améliorer"
+    },
+    "error": {
+      "title": "Impossible d'envoyer le retour",
+      "description": "Veuillez réessayer plus tard"
+    }
   }
 }
