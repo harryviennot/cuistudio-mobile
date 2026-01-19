@@ -1,5 +1,5 @@
 import "@/global.css";
-import { View, Text, Pressable, TextInput, ScrollView } from "react-native";
+import { View, Text, Pressable, TextInput, ScrollView, useWindowDimensions } from "react-native";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -19,6 +19,7 @@ import {
   type ContentReportRequest,
   type ExtractionFeedbackRequest,
 } from "@/types/report";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ReportStep = "select" | "content" | "extraction";
 
@@ -38,8 +39,12 @@ export function ReportBottomSheet({
   onClose,
 }: ReportBottomSheetProps) {
   const { t } = useTranslation();
+  const { top } = useSafeAreaInsets();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const { isTablet } = useDeviceType();
+  const { height: screenHeight } = useWindowDimensions();
+  // Max scroll height: 50% of screen minus safe area, gives room for header + buttons
+  const maxScrollHeight = (screenHeight - top) * 0.65;
 
   const [step, setStep] = useState<ReportStep>("select");
   const [selectedReason, setSelectedReason] = useState<ContentReportReason | null>(null);
@@ -148,22 +153,20 @@ export function ReportBottomSheet({
 
   const renderContentReportStep = () => (
     <View className={`${isTablet ? "px-10" : "px-6"}`}>
-      <ScrollView className="max-h-96" showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ maxHeight: maxScrollHeight }} showsVerticalScrollIndicator={false}>
         <View className="gap-2 mb-4">
           {(reportReasonsData?.reasons || defaultReportReasons).map((reason) => (
             <Pressable
               key={reason.value}
               onPress={() => setSelectedReason(reason.value as ContentReportReason)}
-              className={`flex-row items-center gap-3 rounded-xl border-2 p-4 ${
-                selectedReason === reason.value
-                  ? "border-primary bg-primary/10"
-                  : "border-border bg-surface-elevated"
-              }`}
+              className={`flex-row items-center gap-3 rounded-xl border-2 p-4 ${selectedReason === reason.value
+                ? "border-primary bg-primary/10"
+                : "border-border bg-surface-elevated"
+                }`}
             >
               <View
-                className={`h-5 w-5 rounded-full border-2 items-center justify-center ${
-                  selectedReason === reason.value ? "border-primary bg-primary" : "border-border"
-                }`}
+                className={`h-5 w-5 rounded-full border-2 items-center justify-center ${selectedReason === reason.value ? "border-primary bg-primary" : "border-border"
+                  }`}
               >
                 {selectedReason === reason.value && (
                   <Ionicons name="checkmark" size={12} color="white" />
@@ -218,22 +221,20 @@ export function ReportBottomSheet({
 
   const renderExtractionFeedbackStep = () => (
     <View className={`${isTablet ? "px-10" : "px-6"}`}>
-      <ScrollView className="max-h-96" showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ maxHeight: maxScrollHeight }} showsVerticalScrollIndicator={false}>
         <View className="gap-2 mb-4">
           {(feedbackCategoriesData?.categories || defaultFeedbackCategories).map((category) => (
             <Pressable
               key={category.value}
               onPress={() => setSelectedCategory(category.value as ExtractionFeedbackCategory)}
-              className={`flex-row items-center gap-3 rounded-xl border-2 p-4 ${
-                selectedCategory === category.value
-                  ? "border-primary bg-primary/10"
-                  : "border-border bg-surface-elevated"
-              }`}
+              className={`flex-row items-center gap-3 rounded-xl border-2 p-4 ${selectedCategory === category.value
+                ? "border-primary bg-primary/10"
+                : "border-border bg-surface-elevated"
+                }`}
             >
               <View
-                className={`h-5 w-5 rounded-full border-2 items-center justify-center ${
-                  selectedCategory === category.value ? "border-primary bg-primary" : "border-border"
-                }`}
+                className={`h-5 w-5 rounded-full border-2 items-center justify-center ${selectedCategory === category.value ? "border-primary bg-primary" : "border-border"
+                  }`}
               >
                 {selectedCategory === category.value && (
                   <Ionicons name="checkmark" size={12} color="white" />
