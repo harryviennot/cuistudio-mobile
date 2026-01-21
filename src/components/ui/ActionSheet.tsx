@@ -61,11 +61,11 @@ export function ActionSheet({ visible, actions, onClose }: ActionSheetProps) {
       enablePanDownToClose
       onDismiss={handleClose}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: "#FEFCF8" }}
+      backgroundStyle={{ backgroundColor: "#f4f1e8" }}
       handleIndicatorStyle={{ backgroundColor: "#334d43", width: 40 }}
     >
       <BottomSheetView
-        className="flex-1 bg-surface-elevated px-4 pt-4"
+        className="flex-1 bg-surface px-4 pt-4"
         style={{ paddingBottom: bottom + 16 }}
       >
         <View className="gap-4">
@@ -75,7 +75,7 @@ export function ActionSheet({ visible, actions, onClose }: ActionSheetProps) {
               onPress={() => {
                 action.onPress();
               }}
-              className={`flex-row items-center gap-4 rounded-2xl border-2 p-6 active:bg-surface ${
+              className={`flex-row items-center gap-4 rounded-2xl border p-4 active:bg-surface ${
                 action.variant === "destructive"
                   ? "border-state-error/50 bg-state-error/15"
                   : "border-border bg-surface-elevated"

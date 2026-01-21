@@ -18,6 +18,7 @@ import { RecipeCard, RecipeCardSkeleton } from "@/components/recipe/RecipeCard";
 import { MasonryGrid } from "@/components/home/MasonryGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { addSearchTerm } from "@/utils/searchHistory";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import type { Recipe } from "@/types/recipe";
 import type { SearchFilters } from "@/types/search";
 
@@ -29,6 +30,7 @@ const MIN_LIBRARY_ITEMS = 1;
 export default function SearchScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { trackSearchPerformed, trackSearchResultClicked } = useAnalytics();
   const {
     searchQuery: contextQuery,
     setSearchQuery: setContextQuery,
@@ -82,9 +84,14 @@ export default function SearchScreen() {
       // Record search term in history
       if (q.trim()) {
         await addSearchTerm(q);
+        // Track search event
+        trackSearchPerformed({
+          query_length: q.trim().length,
+          has_filters: hasActiveFilters,
+        });
       }
     },
-    [setQuery, setContextQuery]
+    [setQuery, setContextQuery, trackSearchPerformed, hasActiveFilters]
   );
 
   const handleSeeAllLibrary = () => {
@@ -134,16 +141,26 @@ export default function SearchScreen() {
   );
 
   // Navigate to recipe within search stack
-  const handleRecipePress = useCallback((recipe: Recipe) => {
-    router.push({
-      pathname: "/search/[id]",
-      params: {
-        id: recipe.id,
-        title: recipe.title,
-        ...(recipe.image_url && { imageUrl: recipe.image_url }),
-      },
-    });
-  }, []);
+  const handleRecipePress = useCallback(
+    (recipe: Recipe, index?: number) => {
+      // Track search result click if we have a position
+      if (index !== undefined) {
+        trackSearchResultClicked({
+          result_position: index,
+          recipe_id: recipe.id,
+        });
+      }
+      router.push({
+        pathname: "/search/[id]",
+        params: {
+          id: recipe.id,
+          title: recipe.title,
+          ...(recipe.image_url && { imageUrl: recipe.image_url }),
+        },
+      });
+    },
+    [trackSearchResultClicked]
+  );
 
   // Calculate header height for scroll padding (with extra margin for spacing)
   const headerBaseHeight = insets.top + 8 + 40 + 12 + 16; // top padding + search row + bottom padding + extra margin
@@ -200,7 +217,7 @@ export default function SearchScreen() {
                 index={index}
                 width={LIBRARY_CARD_WIDTH}
                 imageHeight={LIBRARY_IMAGE_HEIGHT}
-                onPress={() => handleRecipePress(recipe)}
+                onPress={() => handleRecipePress(recipe, index)}
               />
             )}
             keyExtractor={(recipe) => recipe.id}
@@ -368,7 +385,7 @@ export default function SearchScreen() {
                 <RecipeCard
                   recipe={recipe}
                   index={index}
-                  onPress={() => handleRecipePress(recipe)}
+                  onPress={() => handleRecipePress(recipe, index)}
                 />
               )}
             />

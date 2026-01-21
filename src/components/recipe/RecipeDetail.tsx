@@ -20,6 +20,7 @@ import {
   TrashIcon,
   Bookmark,
   DotsThreeIcon,
+  FlagIcon,
 } from "phosphor-react-native";
 import * as Haptics from "expo-haptics";
 import { useDeviceType } from "@/hooks/useDeviceType";
@@ -43,6 +44,7 @@ import {
   RecipeContent,
   RecipeEditManager,
 } from "@/components/recipe/detail";
+import { ReportBottomSheet } from "@/components/recipe/modals/ReportBottomSheet";
 import { t } from "i18next";
 import { router } from "expo-router";
 import { RecipeCategoryBadge } from "@/components/home/CategoryChip";
@@ -148,6 +150,7 @@ export const RecipeDetail = memo<RecipeDetailProps>(function RecipeDetail({
   const [titleLayout, setTitleLayout] = useState({ y: 0, height: 0 });
 
   const [isActionsModalVisible, setIsActionsModalVisible] = useState(false);
+  const [isReportModalVisible, setIsReportModalVisible] = useState(false);
 
   // Animation values
   const scrollY = useSharedValue(0);
@@ -554,6 +557,15 @@ export const RecipeDetail = memo<RecipeDetailProps>(function RecipeDetail({
               setIsActionsModalVisible(false);
             },
           },
+          {
+            label: t("recipe.actions.report", "Report"),
+            description: t("recipe.actions.reportDescription", "Report inappropriate content"),
+            icon: <FlagIcon size={24} color="#334d43" />,
+            onPress: () => {
+              setIsActionsModalVisible(false);
+              setIsReportModalVisible(true);
+            },
+          },
           ...(isOwner
             ? [
                 {
@@ -580,6 +592,16 @@ export const RecipeDetail = memo<RecipeDetailProps>(function RecipeDetail({
             : []),
         ]}
       />
+
+      {/* Report Modal */}
+      {recipe && (
+        <ReportBottomSheet
+          visible={isReportModalVisible}
+          recipeId={recipe.id}
+          recipeTitle={recipe.title}
+          onClose={() => setIsReportModalVisible(false)}
+        />
+      )}
     </View>
   );
 });

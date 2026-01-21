@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useExtraction } from "@/contexts/ExtractionContext";
 import { CreditsBadge, CreditsBottomSheet } from "@/components/credits";
 import * as Haptics from "expo-haptics";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 type ExtractionMethod = "image" | "link" | "voice" | "text";
 
@@ -30,6 +31,7 @@ export default function NewRecipeScreen() {
   const { isTablet } = useDeviceType();
   const { canStartNewExtraction } = useExtraction();
   const creditsSheetRef = useRef<BottomSheetModal>(null);
+  const { trackExtractionStarted } = useAnalytics();
 
   const handleMethodSelect = (method: ExtractionMethod) => {
     // Check if user can start a new extraction (free users limited to 1 concurrent)
@@ -41,6 +43,10 @@ export default function NewRecipeScreen() {
       });
       return;
     }
+
+    // Track extraction started
+    trackExtractionStarted({ method });
+
     router.push(`/extraction/${method}`);
   };
 

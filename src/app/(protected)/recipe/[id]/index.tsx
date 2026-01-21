@@ -5,9 +5,12 @@
 import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { recipeService } from "@/api/services";
 import { RecipeDetail } from "@/components/recipe/RecipeDetail";
 import { useDeviceType } from "@/hooks/useDeviceType";
+import { useAnalytics } from "@/hooks/useAnalytics";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function RecipeDetailScreen() {
   const { id, title, imageUrl } = useLocalSearchParams<{
@@ -17,6 +20,9 @@ export default function RecipeDetailScreen() {
   }>();
   const router = useRouter();
   const { isTablet } = useDeviceType();
+  const { trackRecipeViewed } = useAnalytics();
+  const { user } = useAuth();
+  const hasTrackedView = useRef(false);
 
   const {
     data: recipe,
@@ -29,6 +35,18 @@ export default function RecipeDetailScreen() {
     enabled: !!id,
   });
 
+  // Track recipe view when recipe data is loaded
+  useEffect(() => {
+    if (recipe && !hasTrackedView.current) {
+      hasTrackedView.current = true;
+      trackRecipeViewed({
+        recipe_id: recipe.id,
+        source_type: recipe.source_type,
+        is_own_recipe: recipe.created_by === user?.id,
+      });
+    }
+  }, [recipe, trackRecipeViewed, user?.id]);
+
   if (!id) {
     return (
       <View className="flex-1 items-center justify-center bg-surface">
@@ -36,8 +54,6 @@ export default function RecipeDetailScreen() {
       </View>
     );
   }
-
-  console.log(recipe?.source_type, recipe?.source_url);
 
   return (
     <RecipeDetail
