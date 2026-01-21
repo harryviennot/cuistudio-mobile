@@ -4,6 +4,7 @@
  * Centralizes PostHog initialization and provides typed event tracking.
  * Analytics are disabled in development to avoid polluting data.
  */
+import type { PostHog } from "posthog-react-native";
 
 // PostHog API configuration from environment
 export const POSTHOG_API_KEY = process.env.EXPO_PUBLIC_POSTHOG_API_KEY || "";
@@ -130,7 +131,6 @@ export interface SubscriptionStartedProperties {
 // DIRECT TRACKING (for use outside React components)
 // ============================================================================
 
-import type { PostHog } from "posthog-react-native";
 
 // PostHog client reference - set by PostHogProvider, used for non-hook tracking
 let posthogClient: PostHog | null = null;
