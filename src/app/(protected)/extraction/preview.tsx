@@ -41,6 +41,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { recipeService } from "@/api/services/recipe.service";
 import { extractionService } from "@/api/services/extraction.service";
 import { useExtraction } from "@/contexts/ExtractionContext";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { ExtractionProgress } from "@/components/extraction/ExtractionProgress";
 import { ExtractionStatus, SourceType } from "@/types/extraction";
 import type { Recipe } from "@/types/recipe";
@@ -85,6 +86,7 @@ export default function UnifiedRecipePreviewScreen() {
 
   // Use extraction context for job state and minimize functionality
   const { getJob, minimizeJob, cancelJob, dismissJob } = useExtraction();
+  const { trackRecipeSaved } = useAnalytics();
 
   // Get job from context
   const job = jobId ? getJob(jobId) : undefined;
@@ -171,6 +173,12 @@ export default function UnifiedRecipePreviewScreen() {
       // Close the privacy sheet if open
       privacySheetRef.current?.dismiss();
 
+      // Track recipe saved
+      trackRecipeSaved({
+        is_public: isPublic,
+        source_type: recipe?.source_type || job?.source_type,
+      });
+
       // Dismiss job from context (cleanup SSE/polling)
       dismissJob(jobId);
 
@@ -202,7 +210,17 @@ export default function UnifiedRecipePreviewScreen() {
           });
         });
     },
-    [recipeId, jobId, dismissJob, router, queryClient, t]
+    [
+      recipeId,
+      jobId,
+      dismissJob,
+      router,
+      queryClient,
+      t,
+      trackRecipeSaved,
+      recipe?.source_type,
+      job?.source_type,
+    ]
   );
 
   /**

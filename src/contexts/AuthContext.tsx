@@ -29,6 +29,7 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import type { User, OnboardingData } from "@/types/auth";
 import { supabase } from "@/lib/supabase";
 import { authService } from "@/api/services/auth.service";
+import { identifyUser as posthogIdentify, resetUser as posthogReset } from "@/lib/posthog";
 
 // Detect if running in Expo Go (where native modules aren't available)
 const isExpoGo = Constants.executionEnvironment === "storeClient";
@@ -234,6 +235,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (userInfo) {
         setUser(userInfo);
+        // Identify user in PostHog for analytics
+        posthogIdentify(userInfo.id, {
+          email: userInfo.email,
+          created_at: userInfo.created_at,
+        });
       } else {
         // Fallback: create user from Supabase data
         setUser({
@@ -245,6 +251,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           is_new_user: true, // Safe default
           is_anonymous: false,
           unacknowledged_warnings: [],
+        });
+        // Identify user in PostHog for analytics
+        posthogIdentify(data.user.id, {
+          email: data.user.email ?? undefined,
+          created_at: data.user.created_at,
         });
       }
     } finally {
@@ -306,6 +317,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (userInfo) {
         setUser(userInfo);
+        // Identify user in PostHog for analytics
+        posthogIdentify(userInfo.id, {
+          email: userInfo.email,
+          created_at: userInfo.created_at,
+        });
       } else {
         // Fallback: create user from Supabase data
         setUser({
@@ -317,6 +333,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           is_new_user: true, // Safe default - will redirect to onboarding
           is_anonymous: false,
           unacknowledged_warnings: [],
+        });
+        // Identify user in PostHog for analytics
+        posthogIdentify(data.user.id, {
+          email: data.user.email ?? undefined,
+          created_at: data.user.created_at,
         });
       }
     } finally {
@@ -371,6 +392,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (userInfo) {
         setUser(userInfo);
+        // Identify user in PostHog for analytics
+        posthogIdentify(userInfo.id, {
+          email: userInfo.email,
+          created_at: userInfo.created_at,
+        });
       } else {
         // Fallback: create user from Supabase data
         setUser({
@@ -382,6 +408,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           is_new_user: true, // Safe default - will redirect to onboarding
           is_anonymous: false,
           unacknowledged_warnings: [],
+        });
+        // Identify user in PostHog for analytics
+        posthogIdentify(data.user.id, {
+          email: data.user.email ?? undefined,
+          created_at: data.user.created_at,
         });
       }
     } catch (error) {
@@ -446,6 +477,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Clear ALL React Query cache to prevent data leaking between accounts
       queryClient.clear();
+
+      // Reset PostHog user identity
+      posthogReset();
 
       setUser(null);
     } catch (error) {

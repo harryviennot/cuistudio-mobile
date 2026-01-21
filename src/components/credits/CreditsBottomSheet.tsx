@@ -46,8 +46,8 @@ export const CreditsBottomSheet = forwardRef<BottomSheetModal, CreditsBottomShee
     const handleUpgrade = useCallback(() => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       handleDismiss();
-      // Navigate to custom paywall screen
-      router.push("/paywall");
+      // Navigate to custom paywall screen with trigger
+      router.push({ pathname: "/paywall", params: { trigger: "credits_empty" } });
     }, [handleDismiss, router]);
 
     const handleRestore = useCallback(async () => {
