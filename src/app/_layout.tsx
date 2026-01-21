@@ -35,6 +35,8 @@ import {
 } from "@expo-google-fonts/playfair-display";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
+import { PostHogProvider, usePostHog } from "posthog-react-native";
+import { POSTHOG_API_KEY, posthogOptions, setPostHogClient } from "@/lib/posthog";
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -70,6 +72,20 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+/**
+ * PostHogClientInitializer
+ * Sets the PostHog client reference for use outside of React components
+ */
+function PostHogClientInitializer() {
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    setPostHogClient(posthog);
+  }, [posthog]);
+
+  return null;
+}
 
 /**
  * SplashScreenController
@@ -162,24 +178,27 @@ export function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#000000" }}>
-      <KeyboardProvider>
-        <QueryClientProvider client={queryClient}>
-          <BottomSheetModalProvider>
-            <AuthProvider>
-              <SubscriptionProvider>
-                <SearchProvider>
-                  <SplashScreenController />
-                  <RootNavigator />
-                  <WarningManager />
-                </SearchProvider>
-              </SubscriptionProvider>
-            </AuthProvider>
-            <StatusBar barStyle="dark-content" />
-          </BottomSheetModalProvider>
-        </QueryClientProvider>
-      </KeyboardProvider>
-      <Toast config={toastConfig} topOffset={insets.top} />
-    </GestureHandlerRootView>
+    <PostHogProvider apiKey={POSTHOG_API_KEY} options={posthogOptions}>
+      <PostHogClientInitializer />
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#000000" }}>
+        <KeyboardProvider>
+          <QueryClientProvider client={queryClient}>
+            <BottomSheetModalProvider>
+              <AuthProvider>
+                <SubscriptionProvider>
+                  <SearchProvider>
+                    <SplashScreenController />
+                    <RootNavigator />
+                    <WarningManager />
+                  </SearchProvider>
+                </SubscriptionProvider>
+              </AuthProvider>
+              <StatusBar barStyle="dark-content" />
+            </BottomSheetModalProvider>
+          </QueryClientProvider>
+        </KeyboardProvider>
+        <Toast config={toastConfig} topOffset={insets.top} />
+      </GestureHandlerRootView>
+    </PostHogProvider>
   );
 }

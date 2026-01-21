@@ -34,15 +34,22 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { usePrefetchDiscovery } from "@/hooks/useDiscovery";
 import { referralsService } from "@/api/services/referrals.service";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 export default function Onboarding() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { submitOnboarding } = useAuth();
   const { refreshCredits } = useSubscription();
+  const { trackOnboardingStarted, trackOnboardingStep, trackOnboardingCompleted } = useAnalytics();
 
   // Prefetch discovery data in background so it's ready when onboarding completes
   usePrefetchDiscovery();
+
+  // Track onboarding started on mount
+  useEffect(() => {
+    trackOnboardingStarted();
+  }, [trackOnboardingStarted]);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -127,6 +134,13 @@ export default function Onboarding() {
         age: ageNumber && !isNaN(ageNumber) ? ageNumber : undefined,
       });
 
+      // Track onboarding completion with key properties
+      trackOnboardingCompleted({
+        heard_from: formData.heard_from,
+        cooking_frequency: formData.cooking_frequency,
+        recipe_sources_count: formData.recipe_sources.length,
+      });
+
       Toast.show({
         type: "success",
         text1: t("common.welcome"),
@@ -148,7 +162,7 @@ export default function Onboarding() {
 
       setIsSubmitting(false);
     }
-  }, [formData, t, submitOnboarding, isReferralValid, refreshCredits]);
+  }, [formData, t, submitOnboarding, isReferralValid, refreshCredits, trackOnboardingCompleted]);
 
   // Check if current step can continue
   const canContinueCurrentStep = useCallback(() => {
@@ -183,8 +197,15 @@ export default function Onboarding() {
       return;
     }
 
+    // Track step completion before advancing
+    trackOnboardingStep({
+      step_name: stepId,
+      step_index: currentStep,
+      total_steps: TOTAL_QUESTION_STEPS,
+    });
+
     goToNextStep();
-  }, [currentStep, formData.recipe_sources, goToNextStep, t]);
+  }, [currentStep, formData.recipe_sources, goToNextStep, t, trackOnboardingStep]);
 
   // Trigger submit when reaching completion step
   useEffect(() => {

@@ -19,6 +19,10 @@ import { extractionService, SubmitExtractionRequest } from "@/api/services/extra
 import { videoDownloadService, VideoDownloadProgress } from "@/api/services/video-download.service";
 import type { ExtractionJob as BaseExtractionJob, ExtractionStatus } from "@/types/extraction";
 import { useSubscription } from "./SubscriptionContext";
+import {
+  trackExtractionCompleted as posthogTrackCompleted,
+  trackExtractionFailed as posthogTrackFailed,
+} from "@/lib/posthog";
 
 // ============================================================================
 // TYPES
@@ -330,6 +334,17 @@ export function ExtractionProvider({ children }: { children: React.ReactNode }) 
               // Refresh credits after extraction completes (credit was deducted server-side)
               if (data.status === "completed") {
                 refreshCredits();
+                // Track successful extraction
+                posthogTrackCompleted({
+                  method: data.source_type || "unknown",
+                  source_type: data.source_type,
+                });
+              } else if (data.status === "failed") {
+                // Track failed extraction
+                posthogTrackFailed({
+                  method: data.source_type || "unknown",
+                  error_message: data.error_message,
+                });
               }
             }
           } catch (err) {
