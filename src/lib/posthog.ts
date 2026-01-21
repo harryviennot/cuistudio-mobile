@@ -13,7 +13,7 @@ export const POSTHOG_HOST = "https://eu.i.posthog.com";
 export const posthogOptions = {
   host: POSTHOG_HOST,
   // Disable in development to keep data clean
-  disabled: !POSTHOG_API_KEY,
+  disabled: __DEV__ || !POSTHOG_API_KEY,
   // Track app lifecycle events (app opened, backgrounded) for retention metrics
   captureNativeAppLifecycleEvents: true,
 };
