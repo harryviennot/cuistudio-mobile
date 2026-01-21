@@ -39,7 +39,11 @@ import { PremiumSuccessScreen } from "./PremiumSuccessScreen";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { getOfferings, purchasePackage, restorePurchases } from "@/lib/revenuecat";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-import { trackPaywallViewed, trackSubscriptionStarted, type PaywallViewedProperties } from "@/lib/posthog";
+import {
+  trackPaywallViewed,
+  trackSubscriptionStarted,
+  type PaywallViewedProperties,
+} from "@/lib/posthog";
 
 interface PaywallScreenProps {
   trigger?: PaywallViewedProperties["trigger"];

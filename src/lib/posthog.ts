@@ -131,7 +131,6 @@ export interface SubscriptionStartedProperties {
 // DIRECT TRACKING (for use outside React components)
 // ============================================================================
 
-
 // PostHog client reference - set by PostHogProvider, used for non-hook tracking
 let posthogClient: PostHog | null = null;
 
@@ -145,10 +144,7 @@ export function setPostHogClient(client: PostHog) {
 /**
  * Identify user directly (for use in AuthContext)
  */
-export function identifyUser(
-  userId: string,
-  properties?: { email?: string; created_at?: string }
-) {
+export function identifyUser(userId: string, properties?: { email?: string; created_at?: string }) {
   if (posthogClient) {
     posthogClient.identify(userId, properties);
     console.log("[PostHog] User identified:", userId);

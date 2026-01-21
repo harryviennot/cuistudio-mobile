@@ -210,7 +210,17 @@ export default function UnifiedRecipePreviewScreen() {
           });
         });
     },
-    [recipeId, jobId, dismissJob, router, queryClient, t, trackRecipeSaved, recipe?.source_type, job?.source_type]
+    [
+      recipeId,
+      jobId,
+      dismissJob,
+      router,
+      queryClient,
+      t,
+      trackRecipeSaved,
+      recipe?.source_type,
+      job?.source_type,
+    ]
   );
 
   /**

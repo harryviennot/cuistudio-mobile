@@ -141,23 +141,26 @@ export default function SearchScreen() {
   );
 
   // Navigate to recipe within search stack
-  const handleRecipePress = useCallback((recipe: Recipe, index?: number) => {
-    // Track search result click if we have a position
-    if (index !== undefined) {
-      trackSearchResultClicked({
-        result_position: index,
-        recipe_id: recipe.id,
+  const handleRecipePress = useCallback(
+    (recipe: Recipe, index?: number) => {
+      // Track search result click if we have a position
+      if (index !== undefined) {
+        trackSearchResultClicked({
+          result_position: index,
+          recipe_id: recipe.id,
+        });
+      }
+      router.push({
+        pathname: "/search/[id]",
+        params: {
+          id: recipe.id,
+          title: recipe.title,
+          ...(recipe.image_url && { imageUrl: recipe.image_url }),
+        },
       });
-    }
-    router.push({
-      pathname: "/search/[id]",
-      params: {
-        id: recipe.id,
-        title: recipe.title,
-        ...(recipe.image_url && { imageUrl: recipe.image_url }),
-      },
-    });
-  }, [trackSearchResultClicked]);
+    },
+    [trackSearchResultClicked]
+  );
 
   // Calculate header height for scroll padding (with extra margin for spacing)
   const headerBaseHeight = insets.top + 8 + 40 + 12 + 16; // top padding + search row + bottom padding + extra margin

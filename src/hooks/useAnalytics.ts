@@ -76,7 +76,10 @@ export function useAnalytics() {
    */
   const trackOnboardingCompleted = useCallback(
     (properties?: OnboardingCompletedProperties) => {
-      posthog.capture(AnalyticsEvents.ONBOARDING_COMPLETED, properties ? { ...properties } : undefined);
+      posthog.capture(
+        AnalyticsEvents.ONBOARDING_COMPLETED,
+        properties ? { ...properties } : undefined
+      );
       console.log("[PostHog] Onboarding completed:", properties);
     },
     [posthog]

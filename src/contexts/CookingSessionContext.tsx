@@ -65,22 +65,25 @@ export function CookingSessionProvider({ children }: { children: React.ReactNode
     restoreSession();
   }, []);
 
-  const startSession = useCallback(async (recipeId: string, recipeTitle: string, servings?: number) => {
-    const session: CookingSession = {
-      recipeId,
-      recipeTitle,
-      startedAt: Date.now(),
-    };
+  const startSession = useCallback(
+    async (recipeId: string, recipeTitle: string, servings?: number) => {
+      const session: CookingSession = {
+        recipeId,
+        recipeTitle,
+        startedAt: Date.now(),
+      };
 
-    setActiveSession(session);
-    await saveCookingSession(session);
+      setActiveSession(session);
+      await saveCookingSession(session);
 
-    // Track cooking started event
-    posthogTrackCookingStarted({
-      recipe_id: recipeId,
-      servings,
-    });
-  }, []);
+      // Track cooking started event
+      posthogTrackCookingStarted({
+        recipe_id: recipeId,
+        servings,
+      });
+    },
+    []
+  );
 
   const endSession = useCallback(async (): Promise<number | null> => {
     if (!activeSession) {
