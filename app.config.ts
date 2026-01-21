@@ -64,6 +64,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     usesAppleSignIn: true,
     config: {
       usesNonExemptEncryption: false
+    },
+    entitlements: {
+      "com.apple.security.application-groups": [
+        `group.${getUniqueIdentifier()}`
+      ]
     }
   },
   android: {
@@ -109,6 +114,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "@react-native-google-signin/google-signin",
       {
         iosUrlScheme: `com.googleusercontent.apps.${getGoogleIosClientId()}`
+      }
+    ],
+    [
+      "expo-share-intent",
+      {
+        iosActivationRules: {
+          NSExtensionActivationSupportsWebURLWithMaxCount: 1,
+          NSExtensionActivationSupportsWebPageWithMaxCount: 1,
+          NSExtensionActivationSupportsImageWithMaxCount: 5,
+          NSExtensionActivationSupportsText: true
+        },
+        androidIntentFilters: ["text/*", "image/*"],
+        iosAppGroupIdentifier: `group.${getUniqueIdentifier()}`
       }
     ]
   ],

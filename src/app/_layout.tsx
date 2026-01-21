@@ -15,15 +15,18 @@ import { Stack } from "expo-router";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
+import { ExtractionProvider } from "@/contexts/ExtractionContext";
 import { StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import { ShareIntentProvider } from "expo-share-intent";
 import { configureReanimatedLogger, ReanimatedLogLevel } from "react-native-reanimated";
 import i18n from "@/locales/i18n";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/components/ui/ToastConfig";
 import { WarningManager } from "@/components/moderation";
+import { useShareIntentHandler } from "@/hooks/useShareIntentHandler";
 
 import {
   useFonts,
@@ -88,6 +91,16 @@ function SplashScreenController() {
     }
   }, [isLoading]);
 
+  return null;
+}
+
+/**
+ * ShareIntentHandler
+ * Handles incoming shared content (URLs, images) from share sheet.
+ * Must be inside AuthProvider and ExtractionProvider.
+ */
+function ShareIntentHandler() {
+  useShareIntentHandler();
   return null;
 }
 
@@ -162,24 +175,29 @@ export function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#000000" }}>
-      <KeyboardProvider>
-        <QueryClientProvider client={queryClient}>
-          <BottomSheetModalProvider>
-            <AuthProvider>
-              <SubscriptionProvider>
-                <SearchProvider>
-                  <SplashScreenController />
-                  <RootNavigator />
-                  <WarningManager />
-                </SearchProvider>
-              </SubscriptionProvider>
-            </AuthProvider>
-            <StatusBar barStyle="dark-content" />
-          </BottomSheetModalProvider>
-        </QueryClientProvider>
-      </KeyboardProvider>
-      <Toast config={toastConfig} topOffset={insets.top} />
-    </GestureHandlerRootView>
+    <ShareIntentProvider>
+      <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#000000" }}>
+        <KeyboardProvider>
+          <QueryClientProvider client={queryClient}>
+            <BottomSheetModalProvider>
+              <AuthProvider>
+                <SubscriptionProvider>
+                  <ExtractionProvider>
+                    <SearchProvider>
+                      <SplashScreenController />
+                      <ShareIntentHandler />
+                      <RootNavigator />
+                      <WarningManager />
+                    </SearchProvider>
+                  </ExtractionProvider>
+                </SubscriptionProvider>
+              </AuthProvider>
+              <StatusBar barStyle="dark-content" />
+            </BottomSheetModalProvider>
+          </QueryClientProvider>
+        </KeyboardProvider>
+        <Toast config={toastConfig} topOffset={insets.top} />
+      </GestureHandlerRootView>
+    </ShareIntentProvider>
   );
 }

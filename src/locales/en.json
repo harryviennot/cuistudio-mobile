@@ -58,6 +58,19 @@
     "english": "English",
     "french": "Français"
   },
+  "shareIntent": {
+    "recipeDetected": "Recipe detected!",
+    "textReceived": "Text received!",
+    "imagesReceived_one": "{{count}} image received!",
+    "imagesReceived_other": "{{count}} images received!",
+    "extractingInBackground": "Extracting in background...",
+    "extractionInProgress": "Extraction in progress",
+    "waitForCompletion": "Please wait for the current extraction to complete",
+    "unsupportedContent": "Unsupported content",
+    "tryDifferentContent": "Try sharing a recipe URL or image",
+    "extractionFailed": "Extraction failed",
+    "pleaseTryAgain": "Please try again"
+  },
   "extraction": {
     "addRecipe": "Add Recipe",
     "addRecipeFromImage": "Add Recipe from Image",

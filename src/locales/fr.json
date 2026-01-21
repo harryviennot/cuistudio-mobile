@@ -56,6 +56,19 @@
     "english": "English",
     "french": "Français"
   },
+  "shareIntent": {
+    "recipeDetected": "Recette détectée !",
+    "textReceived": "Texte reçu !",
+    "imagesReceived_one": "{{count}} image reçue !",
+    "imagesReceived_other": "{{count}} images reçues !",
+    "extractingInBackground": "Extraction en cours...",
+    "extractionInProgress": "Extraction en cours",
+    "waitForCompletion": "Veuillez attendre la fin de l'extraction en cours",
+    "unsupportedContent": "Contenu non supporté",
+    "tryDifferentContent": "Essayez de partager une URL ou une image de recette",
+    "extractionFailed": "Échec de l'extraction",
+    "pleaseTryAgain": "Veuillez réessayer"
+  },
   "extraction": {
     "addRecipe": "Ajouter une recette",
     "addRecipeFromImage": "Ajouter une recette depuis une image",
