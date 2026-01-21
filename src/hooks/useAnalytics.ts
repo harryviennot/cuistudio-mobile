@@ -14,6 +14,14 @@ import {
   type ExtractionCompletedProperties,
   type ExtractionFailedProperties,
   type RecipeSavedProperties,
+  type RecipeViewedProperties,
+  type RecipeSharedProperties,
+  type CookingStartedProperties,
+  type CookingCompletedProperties,
+  type SearchPerformedProperties,
+  type SearchResultClickedProperties,
+  type PaywallViewedProperties,
+  type SubscriptionStartedProperties,
 } from "@/lib/posthog";
 
 export function useAnalytics() {
@@ -126,6 +134,106 @@ export function useAnalytics() {
     [posthog]
   );
 
+  /**
+   * Track when user views a recipe detail
+   */
+  const trackRecipeViewed = useCallback(
+    (properties: RecipeViewedProperties) => {
+      posthog.capture(AnalyticsEvents.RECIPE_VIEWED, { ...properties });
+      console.log("[PostHog] Recipe viewed:", properties);
+    },
+    [posthog]
+  );
+
+  /**
+   * Track when user shares a recipe
+   */
+  const trackRecipeShared = useCallback(
+    (properties: RecipeSharedProperties) => {
+      posthog.capture(AnalyticsEvents.RECIPE_SHARED, { ...properties });
+      console.log("[PostHog] Recipe shared:", properties);
+    },
+    [posthog]
+  );
+
+  // ============================================================================
+  // COOKING EVENTS
+  // ============================================================================
+
+  /**
+   * Track when user starts cooking mode
+   */
+  const trackCookingStarted = useCallback(
+    (properties: CookingStartedProperties) => {
+      posthog.capture(AnalyticsEvents.COOKING_STARTED, { ...properties });
+      console.log("[PostHog] Cooking started:", properties);
+    },
+    [posthog]
+  );
+
+  /**
+   * Track when user completes cooking mode
+   */
+  const trackCookingCompleted = useCallback(
+    (properties: CookingCompletedProperties) => {
+      posthog.capture(AnalyticsEvents.COOKING_COMPLETED, { ...properties });
+      console.log("[PostHog] Cooking completed:", properties);
+    },
+    [posthog]
+  );
+
+  // ============================================================================
+  // SEARCH EVENTS
+  // ============================================================================
+
+  /**
+   * Track when user performs a search
+   */
+  const trackSearchPerformed = useCallback(
+    (properties: SearchPerformedProperties) => {
+      posthog.capture(AnalyticsEvents.SEARCH_PERFORMED, { ...properties });
+      console.log("[PostHog] Search performed:", properties);
+    },
+    [posthog]
+  );
+
+  /**
+   * Track when user clicks a search result
+   */
+  const trackSearchResultClicked = useCallback(
+    (properties: SearchResultClickedProperties) => {
+      posthog.capture(AnalyticsEvents.SEARCH_RESULT_CLICKED, { ...properties });
+      console.log("[PostHog] Search result clicked:", properties);
+    },
+    [posthog]
+  );
+
+  // ============================================================================
+  // PAYWALL/SUBSCRIPTION EVENTS
+  // ============================================================================
+
+  /**
+   * Track when user views the paywall
+   */
+  const trackPaywallViewed = useCallback(
+    (properties: PaywallViewedProperties) => {
+      posthog.capture(AnalyticsEvents.PAYWALL_VIEWED, { ...properties });
+      console.log("[PostHog] Paywall viewed:", properties);
+    },
+    [posthog]
+  );
+
+  /**
+   * Track when user starts a subscription
+   */
+  const trackSubscriptionStarted = useCallback(
+    (properties: SubscriptionStartedProperties) => {
+      posthog.capture(AnalyticsEvents.SUBSCRIPTION_STARTED, { ...properties });
+      console.log("[PostHog] Subscription started:", properties);
+    },
+    [posthog]
+  );
+
   return {
     // User identification
     identifyUser,
@@ -143,5 +251,19 @@ export function useAnalytics() {
 
     // Recipes
     trackRecipeSaved,
+    trackRecipeViewed,
+    trackRecipeShared,
+
+    // Cooking
+    trackCookingStarted,
+    trackCookingCompleted,
+
+    // Search
+    trackSearchPerformed,
+    trackSearchResultClicked,
+
+    // Paywall/Subscription
+    trackPaywallViewed,
+    trackSubscriptionStarted,
   };
 }

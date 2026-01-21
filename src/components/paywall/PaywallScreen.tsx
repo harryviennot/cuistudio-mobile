@@ -39,8 +39,13 @@ import { PremiumSuccessScreen } from "./PremiumSuccessScreen";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { getOfferings, purchasePackage, restorePurchases } from "@/lib/revenuecat";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { trackPaywallViewed, trackSubscriptionStarted, type PaywallViewedProperties } from "@/lib/posthog";
 
-export function PaywallScreen() {
+interface PaywallScreenProps {
+  trigger?: PaywallViewedProperties["trigger"];
+}
+
+export function PaywallScreen({ trigger = "other" }: PaywallScreenProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t } = useTranslation();
@@ -125,6 +130,13 @@ export function PaywallScreen() {
     try {
       const customerInfo = await purchasePackage(packageToPurchase);
       if (customerInfo) {
+        // Track subscription started
+        const introPrice = packageToPurchase.product.introPrice;
+        trackSubscriptionStarted({
+          plan: selectedPlan,
+          is_trial: !!introPrice && introPrice.price === 0,
+        });
+
         // Sync with backend
         await refreshSubscription();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -255,6 +267,9 @@ export function PaywallScreen() {
   useEffect(() => {
     setMounted(true);
     loadOfferings();
+
+    // Track paywall view
+    trackPaywallViewed({ trigger });
 
     // Gentle sparkle rotation
     sparkleRotation.value = withRepeat(

@@ -35,6 +35,20 @@ export const AnalyticsEvents = {
 
   // Recipe events
   RECIPE_SAVED: "recipe_saved",
+  RECIPE_VIEWED: "recipe_viewed",
+  RECIPE_SHARED: "recipe_shared",
+
+  // Cooking events
+  COOKING_STARTED: "cooking_started",
+  COOKING_COMPLETED: "cooking_completed",
+
+  // Search events
+  SEARCH_PERFORMED: "search_performed",
+  SEARCH_RESULT_CLICKED: "search_result_clicked",
+
+  // Paywall/Subscription events
+  PAYWALL_VIEWED: "paywall_viewed",
+  SUBSCRIPTION_STARTED: "subscription_started",
 } as const;
 
 // ============================================================================
@@ -70,6 +84,46 @@ export interface ExtractionFailedProperties {
 export interface RecipeSavedProperties {
   is_public: boolean;
   source_type?: string;
+}
+
+export interface RecipeViewedProperties {
+  recipe_id: string;
+  source_type?: string;
+  is_own_recipe: boolean;
+}
+
+export interface RecipeSharedProperties {
+  recipe_id: string;
+  share_method?: string;
+}
+
+export interface CookingStartedProperties {
+  recipe_id: string;
+  servings?: number;
+}
+
+export interface CookingCompletedProperties {
+  recipe_id: string;
+  duration_seconds: number;
+}
+
+export interface SearchPerformedProperties {
+  query_length: number;
+  has_filters: boolean;
+}
+
+export interface SearchResultClickedProperties {
+  result_position: number;
+  recipe_id: string;
+}
+
+export interface PaywallViewedProperties {
+  trigger: "credits_empty" | "feature_gate" | "settings" | "other";
+}
+
+export interface SubscriptionStartedProperties {
+  plan: "monthly" | "yearly";
+  is_trial: boolean;
 }
 
 // ============================================================================
@@ -128,5 +182,45 @@ export function trackExtractionFailed(properties: ExtractionFailedProperties) {
   if (posthogClient) {
     posthogClient.capture(AnalyticsEvents.EXTRACTION_FAILED, { ...properties });
     console.log("[PostHog] Extraction failed:", properties);
+  }
+}
+
+/**
+ * Track cooking started (for use in CookingSessionContext)
+ */
+export function trackCookingStarted(properties: CookingStartedProperties) {
+  if (posthogClient) {
+    posthogClient.capture(AnalyticsEvents.COOKING_STARTED, { ...properties });
+    console.log("[PostHog] Cooking started:", properties);
+  }
+}
+
+/**
+ * Track cooking completed (for use in CookingSessionContext)
+ */
+export function trackCookingCompleted(properties: CookingCompletedProperties) {
+  if (posthogClient) {
+    posthogClient.capture(AnalyticsEvents.COOKING_COMPLETED, { ...properties });
+    console.log("[PostHog] Cooking completed:", properties);
+  }
+}
+
+/**
+ * Track paywall viewed (for use in PaywallScreen)
+ */
+export function trackPaywallViewed(properties: PaywallViewedProperties) {
+  if (posthogClient) {
+    posthogClient.capture(AnalyticsEvents.PAYWALL_VIEWED, { ...properties });
+    console.log("[PostHog] Paywall viewed:", properties);
+  }
+}
+
+/**
+ * Track subscription started (for use in SubscriptionContext)
+ */
+export function trackSubscriptionStarted(properties: SubscriptionStartedProperties) {
+  if (posthogClient) {
+    posthogClient.capture(AnalyticsEvents.SUBSCRIPTION_STARTED, { ...properties });
+    console.log("[PostHog] Subscription started:", properties);
   }
 }

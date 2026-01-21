@@ -18,6 +18,10 @@ import {
   calculateElapsedMinutes,
   formatElapsedTime,
 } from "@/utils/cookingSession";
+import {
+  trackCookingStarted as posthogTrackCookingStarted,
+  trackCookingCompleted as posthogTrackCookingCompleted,
+} from "@/lib/posthog";
 
 interface CookingSessionContextType {
   /** Current active cooking session, if any */
@@ -27,7 +31,7 @@ interface CookingSessionContextType {
   isSessionActive: boolean;
 
   /** Start a new cooking session for a recipe */
-  startSession: (recipeId: string, recipeTitle: string) => Promise<void>;
+  startSession: (recipeId: string, recipeTitle: string, servings?: number) => Promise<void>;
 
   /**
    * End the current cooking session
@@ -61,7 +65,7 @@ export function CookingSessionProvider({ children }: { children: React.ReactNode
     restoreSession();
   }, []);
 
-  const startSession = useCallback(async (recipeId: string, recipeTitle: string) => {
+  const startSession = useCallback(async (recipeId: string, recipeTitle: string, servings?: number) => {
     const session: CookingSession = {
       recipeId,
       recipeTitle,
@@ -70,6 +74,12 @@ export function CookingSessionProvider({ children }: { children: React.ReactNode
 
     setActiveSession(session);
     await saveCookingSession(session);
+
+    // Track cooking started event
+    posthogTrackCookingStarted({
+      recipe_id: recipeId,
+      servings,
+    });
   }, []);
 
   const endSession = useCallback(async (): Promise<number | null> => {
@@ -78,6 +88,13 @@ export function CookingSessionProvider({ children }: { children: React.ReactNode
     }
 
     const durationMinutes = calculateElapsedMinutes(activeSession.startedAt);
+    const durationSeconds = Math.round((Date.now() - activeSession.startedAt) / 1000);
+
+    // Track cooking completed event
+    posthogTrackCookingCompleted({
+      recipe_id: activeSession.recipeId,
+      duration_seconds: durationSeconds,
+    });
 
     // Clear the session
     setActiveSession(null);

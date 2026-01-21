@@ -48,8 +48,8 @@ export const SubscriptionBottomSheet = forwardRef<BottomSheetModal, Subscription
     const handleUpgrade = useCallback(() => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       handleDismiss();
-      // Navigate to custom paywall screen
-      router.push("/paywall");
+      // Navigate to custom paywall screen with trigger
+      router.push({ pathname: "/paywall", params: { trigger: "settings" } });
     }, [handleDismiss, router]);
 
     const handleManageSubscription = useCallback(() => {
