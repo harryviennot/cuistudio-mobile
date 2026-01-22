@@ -843,6 +843,11 @@
       "message": "Vous avez utilisé toutes vos extractions gratuites cette semaine. Les crédits se réinitialisent lundi.",
       "upgrade": "Passer à Premium"
     },
+    "lowCredits": {
+      "title": "1 extraction restante",
+      "message": "Passez Pro pour des recettes illimitées",
+      "upgrade": "Go Pro"
+    },
     "reset": {
       "title": "Crédits réinitialisés",
       "message": "Vos crédits hebdomadaires ont été rechargés"

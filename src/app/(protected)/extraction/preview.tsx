@@ -47,6 +47,7 @@ import { ExtractionStatus, SourceType } from "@/types/extraction";
 import type { Recipe } from "@/types/recipe";
 import { RecipeDetail } from "@/components/recipe/RecipeDetail";
 import { PremiumBottomSheet } from "@/components/ui/PremiumBottomSheet";
+import { recordExtraction, maybeRequestReview } from "@/lib/storeReview";
 
 /**
  * Check if source type requires privacy prompt (private/personal content)
@@ -167,7 +168,7 @@ export default function UnifiedRecipePreviewScreen() {
    * Uses optimistic UI - navigates immediately and saves in background.
    */
   const executeSave = useCallback(
-    (isPublic: boolean) => {
+    async (isPublic: boolean) => {
       if (!recipeId || !jobId) return;
 
       // Close the privacy sheet if open
@@ -178,6 +179,10 @@ export default function UnifiedRecipePreviewScreen() {
         is_public: isPublic,
         source_type: recipe?.source_type || job?.source_type,
       });
+
+      // Record extraction for App Store review tracking
+      // This must happen BEFORE maybeRequestReview checks the count
+      await recordExtraction();
 
       // Dismiss job from context (cleanup SSE/polling)
       dismissJob(jobId);
@@ -195,11 +200,25 @@ export default function UnifiedRecipePreviewScreen() {
       // Save in background (fire and forget)
       extractionService
         .saveRecipe(recipeId, { isPublic })
-        .then(() => {
+        .then(async () => {
           // Invalidate queries in background for fresh data
           queryClient.invalidateQueries({ queryKey: ["recipes"] });
           queryClient.invalidateQueries({ queryKey: ["collections", "counts"] });
           queryClient.invalidateQueries({ queryKey: ["collections", "by-slug", "extracted"] });
+
+          // Request App Store review if this is the first successful save
+          // Small delay to let the UI settle after navigation
+          setTimeout(async () => {
+            try {
+              const requested = await maybeRequestReview();
+              if (requested) {
+                console.log("[Preview] App Store review requested after first save");
+              }
+            } catch (error) {
+              // Non-critical - just log and continue
+              console.warn("[Preview] Failed to request review:", error);
+            }
+          }, 1500);
         })
         .catch(() => {
           // Show error toast if save fails in background
