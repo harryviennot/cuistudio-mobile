@@ -37,6 +37,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
 import { PostHogProvider, usePostHog } from "posthog-react-native";
 import { POSTHOG_API_KEY, posthogOptions, setPostHogClient } from "@/lib/posthog";
+import { recordAppInstall, incrementSessionCount } from "@/lib/storeReview";
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -170,6 +171,14 @@ export function RootLayout() {
 
       return () => clearInterval(checkI18n);
     }
+  }, []);
+
+  // Initialize App Store review tracking
+  useEffect(() => {
+    // Record install date (only sets once)
+    recordAppInstall();
+    // Increment session count on each app launch
+    incrementSessionCount();
   }, []);
 
   // Don't render anything until fonts and i18n are ready

@@ -845,6 +845,11 @@
       "message": "You've used all your free extractions this week. Credits reset on Monday.",
       "upgrade": "Upgrade to Premium"
     },
+    "lowCredits": {
+      "title": "1 extraction left",
+      "message": "Upgrade for unlimited recipes",
+      "upgrade": "Go Pro"
+    },
     "reset": {
       "title": "Credits reset",
       "message": "Your weekly credits have been refreshed"

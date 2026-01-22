@@ -50,6 +50,13 @@ export const AnalyticsEvents = {
   // Paywall/Subscription events
   PAYWALL_VIEWED: "paywall_viewed",
   SUBSCRIPTION_STARTED: "subscription_started",
+
+  // App rating events
+  APP_RATING_REQUESTED: "app_rating_requested",
+
+  // Soft paywall events
+  SOFT_PAYWALL_SHOWN: "soft_paywall_shown",
+  SOFT_PAYWALL_DISMISSED: "soft_paywall_dismissed",
 } as const;
 
 // ============================================================================
@@ -125,6 +132,21 @@ export interface PaywallViewedProperties {
 export interface SubscriptionStartedProperties {
   plan: "monthly" | "yearly";
   is_trial: boolean;
+}
+
+export interface AppRatingRequestedProperties {
+  extraction_count: number;
+  trigger: "first_save" | "manual";
+}
+
+export interface SoftPaywallShownProperties {
+  trigger: "low_credits" | "credits_exhausted" | "extraction_limit";
+  credits_remaining: number;
+}
+
+export interface SoftPaywallDismissedProperties {
+  trigger: "low_credits" | "credits_exhausted" | "extraction_limit";
+  action: "dismissed" | "upgrade_clicked";
 }
 
 // ============================================================================
@@ -218,5 +240,35 @@ export function trackSubscriptionStarted(properties: SubscriptionStartedProperti
   if (posthogClient) {
     posthogClient.capture(AnalyticsEvents.SUBSCRIPTION_STARTED, { ...properties });
     console.log("[PostHog] Subscription started:", properties);
+  }
+}
+
+/**
+ * Track app rating requested (for use in storeReview.ts)
+ */
+export function trackAppRatingRequested(properties: AppRatingRequestedProperties) {
+  if (posthogClient) {
+    posthogClient.capture(AnalyticsEvents.APP_RATING_REQUESTED, { ...properties });
+    console.log("[PostHog] App rating requested:", properties);
+  }
+}
+
+/**
+ * Track soft paywall shown (for use in credits warning UI)
+ */
+export function trackSoftPaywallShown(properties: SoftPaywallShownProperties) {
+  if (posthogClient) {
+    posthogClient.capture(AnalyticsEvents.SOFT_PAYWALL_SHOWN, { ...properties });
+    console.log("[PostHog] Soft paywall shown:", properties);
+  }
+}
+
+/**
+ * Track soft paywall dismissed (for use in credits warning UI)
+ */
+export function trackSoftPaywallDismissed(properties: SoftPaywallDismissedProperties) {
+  if (posthogClient) {
+    posthogClient.capture(AnalyticsEvents.SOFT_PAYWALL_DISMISSED, { ...properties });
+    console.log("[PostHog] Soft paywall dismissed:", properties);
   }
 }

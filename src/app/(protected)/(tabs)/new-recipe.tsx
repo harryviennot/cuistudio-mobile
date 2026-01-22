@@ -18,7 +18,7 @@ import { useDeviceType } from "@/hooks/useDeviceType";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
 import { useExtraction } from "@/contexts/ExtractionContext";
-import { CreditsBadge, CreditsBottomSheet } from "@/components/credits";
+import { CreditsBadge, CreditsBottomSheet, LowCreditsBanner } from "@/components/credits";
 import * as Haptics from "expo-haptics";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
@@ -82,6 +82,9 @@ export default function NewRecipeScreen() {
             <CreditsBadge onPress={handleCreditsPress} />
           </View>
         </View>
+
+        {/* Low Credits Warning Banner */}
+        <LowCreditsBanner className="mb-4" />
 
         <View className="flex-1 gap-4">
           {/* HERO CARD: Photo/Camera - flex-3 */}
