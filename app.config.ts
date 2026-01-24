@@ -110,6 +110,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         iosUrlScheme: `com.googleusercontent.apps.${getGoogleIosClientId()}`
       }
+    ],
+    [
+      "expo-notifications",
+      {
+        color: "#334d43",
+        sounds: []
+      }
     ]
   ],
   experiments: {

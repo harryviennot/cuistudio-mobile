@@ -832,6 +832,16 @@
       "bonusInfo": "Both you and your friend will receive 5 bonus extraction credits!",
       "redeemed": "Referral code redeemed!",
       "creditsAwarded": "You received {{count}} bonus credits"
+    },
+    "notifications": {
+      "title": "Stay in the loop",
+      "description": "Get notified when your credits refresh, your recipes are ready, and more.",
+      "benefit1": "Weekly credit refresh reminders",
+      "benefit2": "Recipe extraction updates",
+      "benefit3": "Cooking inspiration at the right time",
+      "enable": "Enable Notifications",
+      "enabled": "Notifications Enabled",
+      "skip": "Maybe later"
     }
   },
   "credits": {
@@ -992,6 +1002,41 @@
       "stats": {
         "friendsReferred": "Friends referred",
         "creditsEarned": "Credits earned"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Manage push notifications",
+      "subtitle": "Push Notifications",
+      "categories": "Notification Types",
+      "masterToggle": {
+        "title": "Enable Notifications",
+        "description": "Receive push notifications from Cuisto",
+        "permissionRequired": "Tap to enable notifications in device settings"
+      },
+      "weeklyCredits": {
+        "title": "Weekly Credits",
+        "description": "Get notified when your free credits refresh on Monday"
+      },
+      "referral": {
+        "title": "Referral Bonus",
+        "description": "Know when someone joins using your referral code"
+      },
+      "cookTonight": {
+        "title": "Cook Tonight",
+        "description": "Daily recipe suggestions based on your collection"
+      },
+      "cookingStreak": {
+        "title": "Cooking Streak",
+        "description": "Celebrate your cooking milestones"
+      },
+      "missYou": {
+        "title": "Come Back",
+        "description": "Gentle reminders when we haven't seen you in a while"
+      },
+      "firstRecipe": {
+        "title": "First Recipe",
+        "description": "Get started with your first recipe extraction"
       }
     },
     "feedback": {

@@ -25,6 +25,7 @@ import {
   HeardFromStep,
   CookingFrequencyStep,
   RecipeSourcesStep,
+  NotificationsStep,
   useOnboardingAnimations,
   STEPS,
   TOTAL_QUESTION_STEPS,
@@ -32,6 +33,7 @@ import {
 import type { OnboardingFormData } from "@/components/onboarding";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { useNotifications } from "@/contexts/NotificationsContext";
 import { usePrefetchDiscovery } from "@/hooks/useDiscovery";
 import { referralsService } from "@/api/services/referrals.service";
 import { useAnalytics } from "@/hooks/useAnalytics";
@@ -42,9 +44,13 @@ export default function Onboarding() {
   const { submitOnboarding } = useAuth();
   const { refreshCredits } = useSubscription();
   const { trackOnboardingStarted, trackOnboardingStep, trackOnboardingCompleted } = useAnalytics();
+  const { requestPermission, isPermissionGranted } = useNotifications();
 
   // Prefetch discovery data in background so it's ready when onboarding completes
   usePrefetchDiscovery();
+
+  // Track notification permission request state
+  const [isRequestingNotifications, setIsRequestingNotifications] = useState(false);
 
   // Track onboarding started on mount
   useEffect(() => {
@@ -164,6 +170,21 @@ export default function Onboarding() {
     }
   }, [formData, t, submitOnboarding, isReferralValid, refreshCredits, trackOnboardingCompleted]);
 
+  // Handle notification permission request
+  const handleEnableNotifications = useCallback(async () => {
+    setIsRequestingNotifications(true);
+    try {
+      await requestPermission();
+    } finally {
+      setIsRequestingNotifications(false);
+    }
+  }, [requestPermission]);
+
+  // Handle skip notifications
+  const handleSkipNotifications = useCallback(() => {
+    goToNextStep();
+  }, [goToNextStep]);
+
   // Check if current step can continue
   const canContinueCurrentStep = useCallback(() => {
     const stepId = STEPS[currentStep];
@@ -179,6 +200,9 @@ export default function Onboarding() {
         return formData.cooking_frequency !== "";
       case "recipeSources":
         return formData.recipe_sources.length > 0;
+      case "notifications":
+        // Always allow continuing (notifications are optional)
+        return true;
       default:
         return true;
     }
@@ -261,6 +285,16 @@ export default function Onboarding() {
             selectedValues={formData.recipe_sources}
             onToggle={handleMultiSelect}
             isAnimating={isAnimating}
+          />
+        );
+
+      case "notifications":
+        return (
+          <NotificationsStep
+            isEnabled={isPermissionGranted}
+            onEnable={handleEnableNotifications}
+            onSkip={handleSkipNotifications}
+            isLoading={isRequestingNotifications}
           />
         );
 

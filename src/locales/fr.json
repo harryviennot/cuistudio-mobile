@@ -830,6 +830,16 @@
       "bonusInfo": "Vous et votre ami recevrez chacun 5 crédits d'extraction bonus !",
       "redeemed": "Code de parrainage utilisé !",
       "creditsAwarded": "Vous avez reçu {{count}} crédits bonus"
+    },
+    "notifications": {
+      "title": "Restez informé",
+      "description": "Recevez des notifications pour le rechargement de vos crédits, vos recettes prêtes, et plus encore.",
+      "benefit1": "Rappels de rechargement des crédits hebdomadaires",
+      "benefit2": "Mises à jour d'extraction de recettes",
+      "benefit3": "Inspiration culinaire au bon moment",
+      "enable": "Activer les notifications",
+      "enabled": "Notifications activées",
+      "skip": "Plus tard"
     }
   },
   "credits": {
@@ -988,6 +998,41 @@
       "stats": {
         "friendsReferred": "Amis parrainés",
         "creditsEarned": "Crédits gagnés"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Gérer les notifications push",
+      "subtitle": "Notifications Push",
+      "categories": "Types de notifications",
+      "masterToggle": {
+        "title": "Activer les notifications",
+        "description": "Recevoir les notifications push de Cuisto",
+        "permissionRequired": "Appuyez pour activer les notifications dans les paramètres"
+      },
+      "weeklyCredits": {
+        "title": "Crédits hebdomadaires",
+        "description": "Soyez notifié quand vos crédits gratuits se rechargent le lundi"
+      },
+      "referral": {
+        "title": "Bonus de parrainage",
+        "description": "Sachez quand quelqu'un rejoint avec votre code"
+      },
+      "cookTonight": {
+        "title": "Cuisiner ce soir",
+        "description": "Suggestions de recettes quotidiennes basées sur votre collection"
+      },
+      "cookingStreak": {
+        "title": "Série de cuisine",
+        "description": "Célébrez vos étapes culinaires"
+      },
+      "missYou": {
+        "title": "Revenez",
+        "description": "Rappels doux quand on ne vous a pas vu depuis un moment"
+      },
+      "firstRecipe": {
+        "title": "Première recette",
+        "description": "Commencez avec votre première extraction de recette"
       }
     },
     "feedback": {

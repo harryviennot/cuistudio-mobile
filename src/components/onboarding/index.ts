@@ -12,6 +12,7 @@ export {
   HeardFromStep,
   CookingFrequencyStep,
   RecipeSourcesStep,
+  NotificationsStep,
 } from "./steps";
 
 // Types and constants

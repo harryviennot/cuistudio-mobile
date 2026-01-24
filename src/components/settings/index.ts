@@ -6,3 +6,4 @@ export * from "./ChangeEmailBottomSheet";
 export * from "./AboutBottomSheet";
 export * from "./ReferralBottomSheet";
 export * from "./SubscriptionBottomSheet";
+export * from "./NotificationPreferencesBottomSheet";

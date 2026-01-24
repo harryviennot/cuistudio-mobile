@@ -6,6 +6,7 @@ export type StepId =
   | "heardFrom"
   | "cookingFrequency"
   | "recipeSources"
+  | "notifications"
   | "completion";
 
 export interface OnboardingFormData {

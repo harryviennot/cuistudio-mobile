@@ -15,6 +15,7 @@ import { Stack } from "expo-router";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { SearchProvider } from "@/contexts/SearchContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
+import { NotificationsProvider } from "@/contexts/NotificationsContext";
 import { StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -195,11 +196,13 @@ export function RootLayout() {
             <BottomSheetModalProvider>
               <AuthProvider>
                 <SubscriptionProvider>
-                  <SearchProvider>
-                    <SplashScreenController />
-                    <RootNavigator />
-                    <WarningManager />
-                  </SearchProvider>
+                  <NotificationsProvider>
+                    <SearchProvider>
+                      <SplashScreenController />
+                      <RootNavigator />
+                      <WarningManager />
+                    </SearchProvider>
+                  </NotificationsProvider>
                 </SubscriptionProvider>
               </AuthProvider>
               <StatusBar barStyle="dark-content" />
