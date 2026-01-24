@@ -833,13 +833,13 @@
     },
     "notifications": {
       "title": "Restez informé",
+      "subtitle": "Recevez des notifications quand vos recettes sont prêtes",
       "description": "Recevez des notifications pour le rechargement de vos crédits, vos recettes prêtes, et plus encore.",
-      "benefit1": "Rappels de rechargement des crédits hebdomadaires",
-      "benefit2": "Mises à jour d'extraction de recettes",
-      "benefit3": "Inspiration culinaire au bon moment",
+      "benefits": "Alertes de crédits, mises à jour de recettes et inspiration culinaire.",
       "enable": "Activer les notifications",
       "enabled": "Notifications activées",
-      "skip": "Plus tard"
+      "skip": "Non merci, plus tard",
+      "hint": "Vous pouvez personnaliser vos préférences de notifications à tout moment dans les paramètres."
     }
   },
   "credits": {
@@ -1004,35 +1004,29 @@
       "title": "Notifications",
       "description": "Gérer les notifications push",
       "subtitle": "Notifications Push",
-      "categories": "Types de notifications",
-      "masterToggle": {
-        "title": "Activer les notifications",
-        "description": "Recevoir les notifications push de Cuisto",
-        "permissionRequired": "Appuyez pour activer les notifications dans les paramètres"
+      "frequencySection": "Fréquence des notifications",
+      "referralSection": "Notifications de parrainage",
+      "packages": {
+        "frequent": {
+          "title": "Fréquentes",
+          "description": "Toutes les notifications incluant les rappels quotidiens"
+        },
+        "medium": {
+          "title": "Modérées",
+          "description": "Mises à jour hebdomadaires et célébrations"
+        },
+        "low": {
+          "title": "Minimales",
+          "description": "Uniquement le rechargement hebdomadaire des crédits"
+        }
       },
-      "weeklyCredits": {
-        "title": "Crédits hebdomadaires",
-        "description": "Soyez notifié quand vos crédits gratuits se rechargent le lundi"
-      },
-      "referral": {
+      "referralToggle": {
         "title": "Bonus de parrainage",
-        "description": "Sachez quand quelqu'un rejoint avec votre code"
+        "description": "Soyez informé quand vos amis utilisent votre code"
       },
-      "cookTonight": {
-        "title": "Cuisiner ce soir",
-        "description": "Suggestions de recettes quotidiennes basées sur votre collection"
-      },
-      "cookingStreak": {
-        "title": "Série de cuisine",
-        "description": "Célébrez vos étapes culinaires"
-      },
-      "missYou": {
-        "title": "Revenez",
-        "description": "Rappels doux quand on ne vous a pas vu depuis un moment"
-      },
-      "firstRecipe": {
-        "title": "Première recette",
-        "description": "Commencez avec votre première extraction de recette"
+      "permissionBanner": {
+        "title": "Notifications désactivées",
+        "description": "Appuyez pour activer dans les paramètres"
       }
     },
     "feedback": {
