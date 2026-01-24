@@ -1,199 +1,288 @@
-import React, { forwardRef, useCallback } from "react";
-import { View, Text, Switch, ActivityIndicator, Linking, Platform } from "react-native";
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { View, Text, Switch, ActivityIndicator, Linking, Platform, Pressable } from "react-native";
 import { BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 import {
   BellIcon,
+  BellRingingIcon,
+  BellSimpleSlashIcon,
   GiftIcon,
-  ChefHatIcon,
-  FireIcon,
-  ClockIcon,
-  SparkleIcon,
+  CheckIcon,
 } from "phosphor-react-native";
 
 import { PremiumBottomSheet } from "@/components/ui/PremiumBottomSheet";
 import { useNotifications } from "@/contexts/NotificationsContext";
+import { NotificationPreferences } from "@/api/services/notifications.service";
+import { ShadowItem } from "../ShadowedSection";
 
-interface PreferenceToggleProps {
+// Notification frequency package types
+type NotificationFrequency = "frequent" | "medium" | "low";
+
+interface FrequencyPackageCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
-  value: boolean;
-  onValueChange: (value: boolean) => void;
+  isSelected: boolean;
+  onSelect: () => void;
   disabled?: boolean;
 }
 
-function PreferenceToggle({
+function FrequencyPackageCard({
   icon,
   title,
   description,
-  value,
-  onValueChange,
+  isSelected,
+  onSelect,
   disabled,
-}: PreferenceToggleProps) {
-  const handleToggle = (newValue: boolean) => {
+}: FrequencyPackageCardProps) {
+  const handlePress = () => {
+    if (disabled) return;
     Haptics.selectionAsync();
-    onValueChange(newValue);
+    onSelect();
   };
 
   return (
-    <View
-      className={`flex-row items-start py-4 px-4 rounded-xl mb-3 bg-surface-elevated ${
-        disabled ? "opacity-50" : ""
-      }`}
+    <Pressable
+      onPress={handlePress}
+      disabled={disabled}
+      className={`flex-row items-center py-4 px-4 rounded-2xl mb-3 border ${isSelected
+        ? "bg-primary/5 border-primary/20"
+        : "bg-transparent border-transparent active:bg-surface-elevated"
+        } ${disabled ? "opacity-50" : ""}`}
     >
-      <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center mr-3">
+      <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center mr-4">
         {icon}
       </View>
-      <View className="flex-1 mr-3">
-        <Text className="text-base font-medium text-foreground-heading">{title}</Text>
+      <View className="flex-1">
+        <Text
+          className={`text-base font-medium ${isSelected ? "text-primary-dark" : "text-foreground-heading"
+            }`}
+        >
+          {title}
+        </Text>
         <Text className="text-sm text-foreground-muted mt-0.5">{description}</Text>
       </View>
-      <Switch
-        value={value}
-        onValueChange={handleToggle}
-        disabled={disabled}
-        trackColor={{ false: "#3e3e3e", true: "#334d43" }}
-        thumbColor={value ? "#fff" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-      />
-    </View>
+      {isSelected && (
+        <View className="bg-primary rounded-full p-1">
+          <CheckIcon size={14} color="#fff" weight="bold" />
+        </View>
+      )}
+    </Pressable>
   );
+}
+
+/**
+ * Map a frequency package to individual preference flags
+ */
+function mapFrequencyToPreferences(
+  frequency: NotificationFrequency
+): Partial<NotificationPreferences> {
+  switch (frequency) {
+    case "frequent":
+      return {
+        cook_tonight: true,
+        cooking_streak: true,
+        miss_you: true,
+        first_recipe_nudge: true,
+        weekly_credits_refresh: true,
+      };
+    case "medium":
+      return {
+        cook_tonight: false,
+        cooking_streak: true,
+        miss_you: true,
+        first_recipe_nudge: true,
+        weekly_credits_refresh: true,
+      };
+    case "low":
+      return {
+        cook_tonight: false,
+        cooking_streak: false,
+        miss_you: false,
+        first_recipe_nudge: false,
+        weekly_credits_refresh: true,
+      };
+  }
 }
 
 export const NotificationPreferencesBottomSheet = forwardRef<BottomSheetModal>(
   function NotificationPreferencesBottomSheet(_props, ref) {
     const { t } = useTranslation();
     const {
-      preferences,
       isLoadingPreferences: isLoading,
-      updatePreference,
+      updatePreferences,
       isPermissionGranted,
       requestPermission,
     } = useNotifications();
 
-    const handleDismiss = () => {
+    // Local state - default to "frequent" when enabled
+    const [selectedFrequency, setSelectedFrequency] = useState<NotificationFrequency>("frequent");
+    const [referralEnabled, setReferralEnabled] = useState(true);
+
+    // Track if changes were made (for batch save on dismiss)
+    const hasChangesRef = useRef(false);
+    const initialValuesRef = useRef({ frequency: "frequent" as NotificationFrequency, referral: true });
+
+    // Reset to defaults when sheet opens (if notifications are enabled)
+    useEffect(() => {
+      if (isPermissionGranted) {
+        setSelectedFrequency("frequent");
+        setReferralEnabled(true);
+        initialValuesRef.current = { frequency: "frequent", referral: true };
+        hasChangesRef.current = false;
+      }
+    }, [isPermissionGranted]);
+
+    const handleDismiss = useCallback(async () => {
+      // Save changes on dismiss if any were made
+      if (hasChangesRef.current && isPermissionGranted) {
+        try {
+          const frequencyPrefs = mapFrequencyToPreferences(selectedFrequency);
+          await updatePreferences({
+            ...frequencyPrefs,
+            referral_activated: referralEnabled,
+          });
+        } catch (error) {
+          console.error("[NotificationPreferences] Failed to save preferences:", error);
+        }
+      }
+
       if (ref && "current" in ref && ref.current) {
         ref.current.dismiss();
       }
-    };
+    }, [ref, selectedFrequency, referralEnabled, updatePreferences, isPermissionGranted]);
 
-    const handleMasterToggle = useCallback(
-      async (value: boolean) => {
-        if (value && !isPermissionGranted) {
-          // Need to request permission first
-          const granted = await requestPermission();
-          if (!granted) {
-            // Open settings if permission was denied
-            if (Platform.OS === "ios") {
-              Linking.openURL("app-settings:");
-            } else {
-              Linking.openSettings();
-            }
-            return;
-          }
+    const handleFrequencyChange = useCallback((newFrequency: NotificationFrequency) => {
+      setSelectedFrequency(newFrequency);
+      hasChangesRef.current = true;
+    }, []);
+
+    const handleReferralToggle = useCallback((newValue: boolean) => {
+      Haptics.selectionAsync();
+      setReferralEnabled(newValue);
+      hasChangesRef.current = true;
+    }, []);
+
+    const handleEnableNotifications = useCallback(async () => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      const granted = await requestPermission();
+      if (!granted) {
+        // Open settings if permission was denied
+        if (Platform.OS === "ios") {
+          Linking.openURL("app-settings:");
+        } else {
+          Linking.openSettings();
         }
-        await updatePreference("notifications_enabled", value);
-      },
-      [isPermissionGranted, requestPermission, updatePreference]
-    );
+      }
+    }, [requestPermission]);
 
-    const masterEnabled = preferences?.notifications_enabled ?? true;
+    const notificationsDisabled = !isPermissionGranted;
 
     return (
       <PremiumBottomSheet
         ref={ref}
-        snapPoints={["85%"]}
         title={t("settings.notifications.title")}
         subtitle={t("settings.notifications.subtitle")}
         onClose={handleDismiss}
       >
-        <BottomSheetScrollView className="flex-1">
-          <View className="px-6 pb-8">
-            {isLoading ? (
-              <View className="py-8 items-center">
-                <ActivityIndicator size="large" color="#334d43" />
-              </View>
-            ) : (
-              <>
-                {/* Master toggle */}
-                <View className="mb-6">
-                  <PreferenceToggle
-                    icon={<BellIcon size={20} color="#334d43" weight="fill" />}
-                    title={t("settings.notifications.masterToggle.title")}
-                    description={
-                      isPermissionGranted
-                        ? t("settings.notifications.masterToggle.description")
-                        : t("settings.notifications.masterToggle.permissionRequired")
-                    }
-                    value={masterEnabled && isPermissionGranted}
-                    onValueChange={handleMasterToggle}
-                  />
-                </View>
+        <View className="px-6 pb-8">
+          {isLoading ? (
+            <View className="py-8 items-center">
+              <ActivityIndicator size="large" color="#334d43" />
+            </View>
+          ) : (
+            <>
+              {/* Permission banner if notifications disabled */}
+              {notificationsDisabled && (
+                <Pressable
+                  onPress={handleEnableNotifications}
+                  className="flex-row items-center py-4 px-5 rounded-2xl mb-4 bg-primary/10 border border-primary/20 active:opacity-80"
+                >
+                  <View className="w-10 h-10 rounded-full bg-primary/20 items-center justify-center mr-3">
+                    <BellSimpleSlashIcon size={20} color="#334d43" weight="fill" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-medium text-primary-dark">
+                      {t("settings.notifications.permissionBanner.title")}
+                    </Text>
+                    <Text className="text-sm text-foreground-muted mt-0.5">
+                      {t("settings.notifications.permissionBanner.description")}
+                    </Text>
+                  </View>
+                </Pressable>
+              )}
 
-                {/* Individual preferences */}
-                <Text className="text-sm font-semibold text-foreground-muted uppercase tracking-wide mb-3">
-                  {t("settings.notifications.categories")}
+              {/* Disabled instructions */}
+              {notificationsDisabled && (
+                <Text className="text-sm text-foreground-muted  mb-6 px-4">
+                  {t("settings.notifications.disabledInstructions")}
                 </Text>
+              )}
 
-                <PreferenceToggle
-                  icon={<SparkleIcon size={20} color="#334d43" weight="fill" />}
-                  title={t("settings.notifications.weeklyCredits.title")}
-                  description={t("settings.notifications.weeklyCredits.description")}
-                  value={preferences?.weekly_credits_refresh ?? true}
-                  onValueChange={(v) => updatePreference("weekly_credits_refresh", v)}
-                  disabled={!masterEnabled}
-                />
+              {/* Frequency section */}
+              <Text className="text-sm font-semibold text-foreground-muted uppercase tracking-wide mb-3">
+                {t("settings.notifications.frequencySection")}
+              </Text>
 
-                <PreferenceToggle
-                  icon={<GiftIcon size={20} color="#334d43" weight="fill" />}
-                  title={t("settings.notifications.referral.title")}
-                  description={t("settings.notifications.referral.description")}
-                  value={preferences?.referral_activated ?? true}
-                  onValueChange={(v) => updatePreference("referral_activated", v)}
-                  disabled={!masterEnabled}
-                />
+              <FrequencyPackageCard
+                icon={<BellRingingIcon size={20} color="#334d43" weight="fill" />}
+                title={t("settings.notifications.packages.frequent.title")}
+                description={t("settings.notifications.packages.frequent.description")}
+                isSelected={!notificationsDisabled && selectedFrequency === "frequent"}
+                onSelect={() => handleFrequencyChange("frequent")}
+                disabled={notificationsDisabled}
+              />
 
-                <PreferenceToggle
-                  icon={<ChefHatIcon size={20} color="#334d43" weight="fill" />}
-                  title={t("settings.notifications.cookTonight.title")}
-                  description={t("settings.notifications.cookTonight.description")}
-                  value={preferences?.cook_tonight ?? true}
-                  onValueChange={(v) => updatePreference("cook_tonight", v)}
-                  disabled={!masterEnabled}
-                />
+              <FrequencyPackageCard
+                icon={<BellIcon size={20} color="#334d43" weight="fill" />}
+                title={t("settings.notifications.packages.medium.title")}
+                description={t("settings.notifications.packages.medium.description")}
+                isSelected={!notificationsDisabled && selectedFrequency === "medium"}
+                onSelect={() => handleFrequencyChange("medium")}
+                disabled={notificationsDisabled}
+              />
 
-                <PreferenceToggle
-                  icon={<FireIcon size={20} color="#334d43" weight="fill" />}
-                  title={t("settings.notifications.cookingStreak.title")}
-                  description={t("settings.notifications.cookingStreak.description")}
-                  value={preferences?.cooking_streak ?? true}
-                  onValueChange={(v) => updatePreference("cooking_streak", v)}
-                  disabled={!masterEnabled}
-                />
+              <FrequencyPackageCard
+                icon={<BellIcon size={20} color="#334d43" weight="duotone" />}
+                title={t("settings.notifications.packages.low.title")}
+                description={t("settings.notifications.packages.low.description")}
+                isSelected={!notificationsDisabled && selectedFrequency === "low"}
+                onSelect={() => handleFrequencyChange("low")}
+                disabled={notificationsDisabled}
+              />
 
-                <PreferenceToggle
-                  icon={<ClockIcon size={20} color="#334d43" weight="fill" />}
-                  title={t("settings.notifications.missYou.title")}
-                  description={t("settings.notifications.missYou.description")}
-                  value={preferences?.miss_you ?? true}
-                  onValueChange={(v) => updatePreference("miss_you", v)}
-                  disabled={!masterEnabled}
-                />
+              {/* Referral section */}
+              <Text className="text-sm font-semibold text-foreground-muted uppercase tracking-wide mb-3 mt-6">
+                {t("settings.notifications.referralSection")}
+              </Text>
 
-                <PreferenceToggle
-                  icon={<BellIcon size={20} color="#334d43" weight="fill" />}
-                  title={t("settings.notifications.firstRecipe.title")}
-                  description={t("settings.notifications.firstRecipe.description")}
-                  value={preferences?.first_recipe_nudge ?? true}
-                  onValueChange={(v) => updatePreference("first_recipe_nudge", v)}
-                  disabled={!masterEnabled}
+              <ShadowItem
+                className={`flex-row items-center py-4 px-4 rounded-2xl bg-surface-elevated ${notificationsDisabled ? "opacity-50" : ""
+                  }`}
+              >
+                <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center mr-4">
+                  <GiftIcon size={20} color="#334d43" weight="fill" />
+                </View>
+                <View className="flex-1 mr-3">
+                  <Text className="text-base font-medium text-foreground-heading">
+                    {t("settings.notifications.referralToggle.title")}
+                  </Text>
+                  <Text className="text-sm text-foreground-muted mt-0.5">
+                    {t("settings.notifications.referralToggle.description")}
+                  </Text>
+                </View>
+                <Switch
+                  value={notificationsDisabled ? false : referralEnabled}
+                  onValueChange={handleReferralToggle}
+                  disabled={notificationsDisabled}
+                  trackColor={{ false: "#3e3e3e", true: "#334d43" }}
+                  thumbColor={referralEnabled && !notificationsDisabled ? "#fff" : "#f4f3f4"}
                 />
-              </>
-            )}
-          </View>
-        </BottomSheetScrollView>
+              </ShadowItem>
+            </>
+          )}
+        </View>
       </PremiumBottomSheet>
     );
   }

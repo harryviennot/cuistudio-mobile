@@ -1031,7 +1031,8 @@
       "permissionBanner": {
         "title": "Notifications Disabled",
         "description": "Tap to enable notifications in device settings"
-      }
+      },
+      "disabledInstructions": "To re-enable notifications, go to Settings → Cuisto → Notifications"
     },
     "feedback": {
       "title": "Give Feedback",

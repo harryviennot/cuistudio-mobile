@@ -168,6 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             is_new_user: true, // Safe default - will redirect to onboarding
             is_anonymous: false,
             unacknowledged_warnings: [],
+            has_registered_push_token: false,
           });
         }
       } else {
@@ -251,6 +252,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           is_new_user: true, // Safe default
           is_anonymous: false,
           unacknowledged_warnings: [],
+          has_registered_push_token: false,
         });
         // Identify user in PostHog for analytics
         posthogIdentify(data.user.id, {
@@ -333,6 +335,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           is_new_user: true, // Safe default - will redirect to onboarding
           is_anonymous: false,
           unacknowledged_warnings: [],
+          has_registered_push_token: false,
         });
         // Identify user in PostHog for analytics
         posthogIdentify(data.user.id, {
@@ -408,6 +411,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           is_new_user: true, // Safe default - will redirect to onboarding
           is_anonymous: false,
           unacknowledged_warnings: [],
+          has_registered_push_token: false,
         });
         // Identify user in PostHog for analytics
         posthogIdentify(data.user.id, {

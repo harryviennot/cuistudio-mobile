@@ -1027,7 +1027,8 @@
       "permissionBanner": {
         "title": "Notifications désactivées",
         "description": "Appuyez pour activer dans les paramètres"
-      }
+      },
+      "disabledInstructions": "Pour réactiver les notifications, allez dans Réglages → Cuisto → Notifications"
     },
     "feedback": {
       "title": "Donner un avis",

@@ -40,6 +40,9 @@ export interface NotificationsContextType {
     key: keyof NotificationPreferences,
     value: boolean | string
   ) => Promise<void>;
+  updatePreferences: (
+    preferences: Partial<NotificationPreferences>
+  ) => Promise<void>;
   refreshPreferences: () => Promise<void>;
   refreshActivityStats: () => Promise<void>;
 }
@@ -106,6 +109,16 @@ export function NotificationsProvider({
   );
 
   /**
+   * Update multiple preferences at once (for batch/package updates)
+   */
+  const updatePreferences = useCallback(
+    async (newPreferences: Partial<NotificationPreferences>) => {
+      await updatePreferenceMutation.mutateAsync(newPreferences);
+    },
+    [updatePreferenceMutation]
+  );
+
+  /**
    * Refresh preferences from server
    */
   const refreshPreferences = useCallback(async () => {
@@ -144,6 +157,7 @@ export function NotificationsProvider({
     requestPermission,
     unregisterToken,
     updatePreference,
+    updatePreferences,
     refreshPreferences,
     refreshActivityStats,
   };
