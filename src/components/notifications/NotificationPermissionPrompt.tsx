@@ -109,11 +109,7 @@ export function NotificationPermissionPrompt() {
   }
 
   return (
-    <PremiumBottomSheet
-      ref={bottomSheetRef}
-      onClose={handleClose}
-      onDismiss={markPromptAsSeen}
-    >
+    <PremiumBottomSheet ref={bottomSheetRef} onClose={handleClose} onDismiss={markPromptAsSeen}>
       <View className="px-6 pb-6">
         {/* Icon */}
         <View className="items-center mb-6">
@@ -160,9 +156,7 @@ export function NotificationPermissionPrompt() {
               disabled={isLoading}
             >
               <Text className="text-white font-semibold text-lg">
-                {isLoading
-                  ? t("common.loading")
-                  : t("onboarding.notifications.enable")}
+                {isLoading ? t("common.loading") : t("onboarding.notifications.enable")}
               </Text>
             </Pressable>
           )}

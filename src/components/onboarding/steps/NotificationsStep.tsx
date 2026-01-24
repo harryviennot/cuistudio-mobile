@@ -83,7 +83,6 @@ export function NotificationsStep({
         </Pressable>
       )}
 
-
       {/* Info box - customize later hint */}
       <View className="mt-6 rounded-xl bg-primary/5 p-4">
         <Text className="text-center text-sm text-foreground-secondary">

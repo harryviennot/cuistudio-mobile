@@ -37,15 +37,12 @@ export const notificationsService = {
     deviceId?: string,
     appVersion?: string
   ): Promise<RegisterTokenResponse> {
-    const response = await api.post<RegisterTokenResponse>(
-      "/notifications/register-token",
-      {
-        expo_push_token: expoPushToken,
-        platform,
-        device_id: deviceId,
-        app_version: appVersion,
-      }
-    );
+    const response = await api.post<RegisterTokenResponse>("/notifications/register-token", {
+      expo_push_token: expoPushToken,
+      platform,
+      device_id: deviceId,
+      app_version: appVersion,
+    });
     return response.data;
   },
 
@@ -53,12 +50,9 @@ export const notificationsService = {
    * Unregister a push notification token (e.g., on logout)
    */
   async unregisterToken(expoPushToken: string): Promise<RegisterTokenResponse> {
-    const response = await api.post<RegisterTokenResponse>(
-      "/notifications/unregister-token",
-      {
-        expo_push_token: expoPushToken,
-      }
-    );
+    const response = await api.post<RegisterTokenResponse>("/notifications/unregister-token", {
+      expo_push_token: expoPushToken,
+    });
     return response.data;
   },
 
@@ -66,9 +60,7 @@ export const notificationsService = {
    * Get notification preferences
    */
   async getPreferences(): Promise<NotificationPreferences> {
-    const response = await api.get<NotificationPreferences>(
-      "/notifications/preferences"
-    );
+    const response = await api.get<NotificationPreferences>("/notifications/preferences");
     return response.data;
   },
 
@@ -89,9 +81,7 @@ export const notificationsService = {
    * Get activity statistics including cooking streaks
    */
   async getActivityStats(): Promise<ActivityStats> {
-    const response = await api.get<ActivityStats>(
-      "/notifications/activity-stats"
-    );
+    const response = await api.get<ActivityStats>("/notifications/activity-stats");
     return response.data;
   },
 };

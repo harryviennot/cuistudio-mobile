@@ -37,17 +37,20 @@ interface NotificationData {
 export function usePushNotifications() {
   const { isAuthenticated, user } = useAuth();
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-  const [permissionStatus, setPermissionStatus] =
-    useState<Notifications.PermissionStatus | null>(null);
-  const notificationListener = useRef<ReturnType<typeof Notifications.addNotificationReceivedListener> | null>(null);
-  const responseListener = useRef<ReturnType<typeof Notifications.addNotificationResponseReceivedListener> | null>(null);
+  const [permissionStatus, setPermissionStatus] = useState<Notifications.PermissionStatus | null>(
+    null
+  );
+  const notificationListener = useRef<ReturnType<
+    typeof Notifications.addNotificationReceivedListener
+  > | null>(null);
+  const responseListener = useRef<ReturnType<
+    typeof Notifications.addNotificationResponseReceivedListener
+  > | null>(null);
 
   /**
    * Request notification permissions and get Expo push token
    */
-  const registerForPushNotifications = useCallback(async (): Promise<
-    string | null
-  > => {
+  const registerForPushNotifications = useCallback(async (): Promise<string | null> => {
     // Push notifications require a physical device
     if (!Device.isDevice) {
       if (__DEV__) {
@@ -58,8 +61,7 @@ export function usePushNotifications() {
 
     try {
       // Check current permission status
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
 
       // Request permission if not already granted
@@ -79,7 +81,9 @@ export function usePushNotifications() {
       const projectId = Constants.expoConfig?.extra?.eas?.projectId;
       if (!projectId) {
         if (__DEV__) {
-          console.log("[Push] EAS project ID not found - ensure you have eas.projectId in app.config.ts");
+          console.log(
+            "[Push] EAS project ID not found - ensure you have eas.projectId in app.config.ts"
+          );
         }
         return null;
       }
@@ -104,7 +108,9 @@ export function usePushNotifications() {
       const errorMessage = error instanceof Error ? error.message : String(error);
       if (errorMessage.includes("aps-environment") || errorMessage.includes("entitlement")) {
         if (__DEV__) {
-          console.log("[Push] Skipping - app not built with push notification entitlements (use npx expo run:ios --device for testing)");
+          console.log(
+            "[Push] Skipping - app not built with push notification entitlements (use npx expo run:ios --device for testing)"
+          );
         }
         return null;
       }
@@ -117,42 +123,38 @@ export function usePushNotifications() {
   /**
    * Handle notification tap - deep link to appropriate screen
    */
-  const handleNotificationResponse = useCallback(
-    (response: Notifications.NotificationResponse) => {
-      const data = response.notification.request.content
-        .data as NotificationData;
+  const handleNotificationResponse = useCallback((response: Notifications.NotificationResponse) => {
+    const data = response.notification.request.content.data as NotificationData;
 
-      if (!data?.screen) {
-        return;
-      }
+    if (!data?.screen) {
+      return;
+    }
 
-      if (__DEV__) {
-        console.log("[Push] Handling notification tap:", data.screen);
-      }
+    if (__DEV__) {
+      console.log("[Push] Handling notification tap:", data.screen);
+    }
 
-      switch (data.screen) {
-        case "recipe":
-          if (data.recipe_id) {
-            router.push(`/recipe/${data.recipe_id}`);
-          }
-          break;
-        case "new-recipe":
-          router.push("/(protected)/(tabs)/new-recipe");
-          break;
-        case "library":
-          router.push("/(protected)/(tabs)/library");
-          break;
-        case "settings":
-          router.push("/(protected)/settings");
-          break;
-        default:
-          if (__DEV__) {
-            console.log("[Push] Unknown notification screen:", data.screen);
-          }
-      }
-    },
-    []
-  );
+    switch (data.screen) {
+      case "recipe":
+        if (data.recipe_id) {
+          router.push(`/recipe/${data.recipe_id}`);
+        }
+        break;
+      case "new-recipe":
+        router.push("/(protected)/(tabs)/new-recipe");
+        break;
+      case "library":
+        router.push("/(protected)/(tabs)/library");
+        break;
+      case "settings":
+        router.push("/(protected)/settings");
+        break;
+      default:
+        if (__DEV__) {
+          console.log("[Push] Unknown notification screen:", data.screen);
+        }
+    }
+  }, []);
 
   /**
    * Check existing permission status on mount (without requesting)
@@ -210,18 +212,16 @@ export function usePushNotifications() {
     }
 
     // Listen for notifications received while app is foregrounded
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        if (__DEV__) {
-          console.log("[Push] Notification received:", notification.request.content.title);
-        }
-      });
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      if (__DEV__) {
+        console.log("[Push] Notification received:", notification.request.content.title);
+      }
+    });
 
     // Listen for notification taps (user interaction)
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener(
-        handleNotificationResponse
-      );
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      handleNotificationResponse
+    );
 
     return () => {
       // Use .remove() method on subscription objects (removeNotificationSubscription was deprecated)

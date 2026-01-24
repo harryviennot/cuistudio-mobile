@@ -1,6 +1,6 @@
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { View, Text, Switch, ActivityIndicator, Linking, Platform, Pressable } from "react-native";
-import { BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 import {
@@ -46,18 +46,20 @@ function FrequencyPackageCard({
     <Pressable
       onPress={handlePress}
       disabled={disabled}
-      className={`flex-row items-center py-4 px-4 rounded-2xl mb-3 border ${isSelected
-        ? "bg-primary/5 border-primary/20"
-        : "bg-transparent border-transparent active:bg-surface-elevated"
-        } ${disabled ? "opacity-50" : ""}`}
+      className={`flex-row items-center py-4 px-4 rounded-2xl mb-3 border ${
+        isSelected
+          ? "bg-primary/5 border-primary/20"
+          : "bg-transparent border-transparent active:bg-surface-elevated"
+      } ${disabled ? "opacity-50" : ""}`}
     >
       <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center mr-4">
         {icon}
       </View>
       <View className="flex-1">
         <Text
-          className={`text-base font-medium ${isSelected ? "text-primary-dark" : "text-foreground-heading"
-            }`}
+          className={`text-base font-medium ${
+            isSelected ? "text-primary-dark" : "text-foreground-heading"
+          }`}
         >
           {title}
         </Text>
@@ -122,7 +124,10 @@ export const NotificationPreferencesBottomSheet = forwardRef<BottomSheetModal>(
 
     // Track if changes were made (for batch save on dismiss)
     const hasChangesRef = useRef(false);
-    const initialValuesRef = useRef({ frequency: "frequent" as NotificationFrequency, referral: true });
+    const initialValuesRef = useRef({
+      frequency: "frequent" as NotificationFrequency,
+      referral: true,
+    });
 
     // Reset to defaults when sheet opens (if notifications are enabled)
     useEffect(() => {
@@ -258,8 +263,9 @@ export const NotificationPreferencesBottomSheet = forwardRef<BottomSheetModal>(
               </Text>
 
               <ShadowItem
-                className={`flex-row items-center py-4 px-4 rounded-2xl bg-surface-elevated ${notificationsDisabled ? "opacity-50" : ""
-                  }`}
+                className={`flex-row items-center py-4 px-4 rounded-2xl bg-surface-elevated ${
+                  notificationsDisabled ? "opacity-50" : ""
+                }`}
               >
                 <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center mr-4">
                   <GiftIcon size={20} color="#334d43" weight="fill" />

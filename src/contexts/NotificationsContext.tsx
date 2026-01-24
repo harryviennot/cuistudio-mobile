@@ -4,13 +4,7 @@
  * Provides notification state and preferences management to the app.
  * Wraps the usePushNotifications hook with React Query for preferences caching.
  */
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createContext, useContext, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import {
@@ -36,26 +30,15 @@ export interface NotificationsContextType {
   // Actions
   requestPermission: () => Promise<boolean>;
   unregisterToken: () => Promise<void>;
-  updatePreference: (
-    key: keyof NotificationPreferences,
-    value: boolean | string
-  ) => Promise<void>;
-  updatePreferences: (
-    preferences: Partial<NotificationPreferences>
-  ) => Promise<void>;
+  updatePreference: (key: keyof NotificationPreferences, value: boolean | string) => Promise<void>;
+  updatePreferences: (preferences: Partial<NotificationPreferences>) => Promise<void>;
   refreshPreferences: () => Promise<void>;
   refreshActivityStats: () => Promise<void>;
 }
 
-const NotificationsContext = createContext<
-  NotificationsContextType | undefined
->(undefined);
+const NotificationsContext = createContext<NotificationsContextType | undefined>(undefined);
 
-export function NotificationsProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function NotificationsProvider({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
@@ -162,19 +145,13 @@ export function NotificationsProvider({
     refreshActivityStats,
   };
 
-  return (
-    <NotificationsContext.Provider value={value}>
-      {children}
-    </NotificationsContext.Provider>
-  );
+  return <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>;
 }
 
 export function useNotifications() {
   const context = useContext(NotificationsContext);
   if (context === undefined) {
-    throw new Error(
-      "useNotifications must be used within a NotificationsProvider"
-    );
+    throw new Error("useNotifications must be used within a NotificationsProvider");
   }
   return context;
 }
