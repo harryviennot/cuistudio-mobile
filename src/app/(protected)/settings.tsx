@@ -99,6 +99,15 @@ export default function SettingsScreen() {
       Haptics.selectionAsync();
       await i18n.changeLanguage(lang);
       await AsyncStorage.setItem("user-language", lang);
+
+      // Sync language preference to backend for localized notifications
+      try {
+        await authService.updateLanguage(lang);
+      } catch (error) {
+        // Non-critical: log but don't block the language change
+        console.error("Failed to sync language to backend:", error);
+      }
+
       languageSheetRef.current?.dismiss();
     },
     [i18n]
