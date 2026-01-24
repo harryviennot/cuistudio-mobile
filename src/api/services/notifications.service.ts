@@ -20,17 +20,11 @@ export interface ActivityStats {
   current_cooking_streak: number;
   longest_cooking_streak: number;
   last_cook_date: string | null;
-  total_app_opens: number;
-  preferred_notification_hour: number | null;
 }
 
 interface RegisterTokenResponse {
   success: boolean;
   message: string;
-}
-
-interface TrackAppOpenResponse {
-  success: boolean;
 }
 
 export const notificationsService = {
@@ -87,18 +81,6 @@ export const notificationsService = {
     const response = await api.patch<NotificationPreferences>(
       "/notifications/preferences",
       preferences
-    );
-    return response.data;
-  },
-
-  /**
-   * Track app open for smart timing algorithm
-   */
-  async trackAppOpen(hour: number): Promise<TrackAppOpenResponse> {
-    const response = await api.post<TrackAppOpenResponse>(
-      "/notifications/track-app-open",
-      { hour },
-      { silent: true } // Don't show error toasts for tracking
     );
     return response.data;
   },

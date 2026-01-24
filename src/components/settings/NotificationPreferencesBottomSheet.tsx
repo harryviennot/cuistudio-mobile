@@ -67,7 +67,7 @@ export const NotificationPreferencesBottomSheet = forwardRef<BottomSheetModal>(
     const { t } = useTranslation();
     const {
       preferences,
-      isLoading,
+      isLoadingPreferences: isLoading,
       updatePreference,
       isPermissionGranted,
       requestPermission,

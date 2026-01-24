@@ -4,9 +4,9 @@
  * Asks users to enable push notifications during onboarding.
  * Shows value proposition and allows skipping.
  */
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Bell, BellSlash } from "phosphor-react-native";
+import { Bell } from "phosphor-react-native";
 import * as Haptics from "expo-haptics";
 
 interface NotificationsStepProps {
@@ -35,7 +35,7 @@ export function NotificationsStep({
   };
 
   return (
-    <View className="flex-1 px-6 py-6">
+    <ScrollView contentContainerStyle={{ padding: 24 }} showsVerticalScrollIndicator={false}>
       {/* Icon */}
       <View className="items-center mb-6">
         <View className="rounded-full bg-primary/15 p-5">
@@ -68,7 +68,7 @@ export function NotificationsStep({
       </View>
 
       {/* Buttons */}
-      <View className="gap-3 mt-auto">
+      <View className="gap-3">
         {isEnabled ? (
           <View className="flex-row items-center justify-center gap-2 py-4 px-6 rounded-xl bg-primary/10">
             <Bell size={20} color="#334d43" weight="fill" />
@@ -102,7 +102,7 @@ export function NotificationsStep({
           </Pressable>
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

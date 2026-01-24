@@ -8,6 +8,7 @@
 import { Stack, useRouter } from "expo-router";
 import { ExtractionProvider, useExtraction } from "@/contexts/ExtractionContext";
 import { ExtractionWidget } from "@/components/extraction/ExtractionWidget";
+import { NotificationPermissionPrompt } from "@/components/notifications";
 
 /**
  * Inner component that uses the extraction context
@@ -76,6 +77,9 @@ function ProtectedContent() {
 
       {/* Extraction widget for minimized jobs */}
       {hasMinimizedJobs && <ExtractionWidget jobs={minimizedJobs} onExpand={handleExpandJob} />}
+
+      {/* One-time notification permission prompt for existing users */}
+      <NotificationPermissionPrompt />
     </>
   );
 }
