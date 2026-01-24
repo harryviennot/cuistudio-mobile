@@ -50,6 +50,7 @@ export const STEPS: StepId[] = [
   "heardFrom",
   "cookingFrequency",
   "recipeSources",
+  "notifications",
   "completion",
 ];
 

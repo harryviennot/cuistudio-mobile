@@ -27,6 +27,7 @@ export interface User {
   is_new_user: boolean;
   is_anonymous: boolean;
   unacknowledged_warnings: UserWarning[];
+  has_registered_push_token: boolean;
 }
 
 export interface AuthResponse {

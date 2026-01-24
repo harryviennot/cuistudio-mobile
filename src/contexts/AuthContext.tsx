@@ -24,6 +24,7 @@ import React, {
 } from "react";
 import { Platform } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import * as AppleAuthentication from "expo-apple-authentication";
 import type { User, OnboardingData } from "@/types/auth";
@@ -168,6 +169,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             is_new_user: true, // Safe default - will redirect to onboarding
             is_anonymous: false,
             unacknowledged_warnings: [],
+            has_registered_push_token: false,
           });
         }
       } else {
@@ -251,6 +253,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           is_new_user: true, // Safe default
           is_anonymous: false,
           unacknowledged_warnings: [],
+          has_registered_push_token: false,
         });
         // Identify user in PostHog for analytics
         posthogIdentify(data.user.id, {
@@ -333,6 +336,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           is_new_user: true, // Safe default - will redirect to onboarding
           is_anonymous: false,
           unacknowledged_warnings: [],
+          has_registered_push_token: false,
         });
         // Identify user in PostHog for analytics
         posthogIdentify(data.user.id, {
@@ -408,6 +412,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           is_new_user: true, // Safe default - will redirect to onboarding
           is_anonymous: false,
           unacknowledged_warnings: [],
+          has_registered_push_token: false,
         });
         // Identify user in PostHog for analytics
         posthogIdentify(data.user.id, {
@@ -477,6 +482,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Clear ALL React Query cache to prevent data leaking between accounts
       queryClient.clear();
+
+      // Clear notification prompt flag so new user on same device sees the prompt
+      await AsyncStorage.removeItem("notification-prompt-shown");
 
       // Reset PostHog user identity
       posthogReset();

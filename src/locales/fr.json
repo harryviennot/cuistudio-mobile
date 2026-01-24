@@ -830,6 +830,16 @@
       "bonusInfo": "Vous et votre ami recevrez chacun 5 crédits d'extraction bonus !",
       "redeemed": "Code de parrainage utilisé !",
       "creditsAwarded": "Vous avez reçu {{count}} crédits bonus"
+    },
+    "notifications": {
+      "title": "Restez informé",
+      "subtitle": "Recevez des notifications quand vos recettes sont prêtes",
+      "description": "Recevez des notifications pour le rechargement de vos crédits, vos recettes prêtes, et plus encore.",
+      "benefits": "Alertes de crédits, mises à jour de recettes et inspiration culinaire.",
+      "enable": "Activer les notifications",
+      "enabled": "Notifications activées",
+      "skip": "Non merci, plus tard",
+      "hint": "Vous pouvez personnaliser vos préférences de notifications à tout moment dans les paramètres."
     }
   },
   "credits": {
@@ -989,6 +999,36 @@
         "friendsReferred": "Amis parrainés",
         "creditsEarned": "Crédits gagnés"
       }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Gérer les notifications push",
+      "subtitle": "Notifications Push",
+      "frequencySection": "Fréquence des notifications",
+      "referralSection": "Notifications de parrainage",
+      "packages": {
+        "frequent": {
+          "title": "Fréquentes",
+          "description": "Toutes les notifications incluant les rappels quotidiens"
+        },
+        "medium": {
+          "title": "Modérées",
+          "description": "Mises à jour hebdomadaires et célébrations"
+        },
+        "low": {
+          "title": "Minimales",
+          "description": "Uniquement le rechargement hebdomadaire des crédits"
+        }
+      },
+      "referralToggle": {
+        "title": "Bonus de parrainage",
+        "description": "Soyez informé quand vos amis utilisent votre code"
+      },
+      "permissionBanner": {
+        "title": "Notifications désactivées",
+        "description": "Appuyez pour activer dans les paramètres"
+      },
+      "disabledInstructions": "Pour réactiver les notifications, allez dans Réglages → Cuisto → Notifications"
     },
     "feedback": {
       "title": "Donner un avis",

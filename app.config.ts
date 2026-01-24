@@ -110,6 +110,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         iosUrlScheme: `com.googleusercontent.apps.${getGoogleIosClientId()}`
       }
+    ],
+    [
+      "expo-notifications",
+      {
+        color: "#334d43",
+        sounds: []
+      }
     ]
   ],
   experiments: {
@@ -119,6 +126,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     router: {},
     googleIosClientId: `${getGoogleIosClientId()}.apps.googleusercontent.com`,
+    appVariant: process.env.APP_VARIANT || 'production',
     eas: {
       projectId: "1ec87d29-438e-494a-87aa-d1b1ed577f15"
     }

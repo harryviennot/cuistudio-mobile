@@ -5,16 +5,21 @@
  * Analytics are disabled in development to avoid polluting data.
  */
 import type { PostHog } from "posthog-react-native";
+import Constants from "expo-constants";
 
 // PostHog API configuration from environment
 export const POSTHOG_API_KEY = process.env.EXPO_PUBLIC_POSTHOG_API_KEY || "";
 export const POSTHOG_HOST = "https://eu.i.posthog.com";
 
+// Check if this is a development or preview build (based on APP_VARIANT set at build time)
+const appVariant = Constants.expoConfig?.extra?.appVariant || "production";
+const isDevOrPreviewBuild = appVariant === "development" || appVariant === "preview";
+
 // PostHog provider options
 export const posthogOptions = {
   host: POSTHOG_HOST,
-  // Disable in development to keep data clean
-  disabled: __DEV__ || !POSTHOG_API_KEY,
+  // Disable in dev/preview builds to keep production data clean
+  disabled: isDevOrPreviewBuild || !POSTHOG_API_KEY || __DEV__,
   // Track app lifecycle events (app opened, backgrounded) for retention metrics
   captureNativeAppLifecycleEvents: true,
 };
@@ -167,108 +172,75 @@ export function setPostHogClient(client: PostHog) {
  * Identify user directly (for use in AuthContext)
  */
 export function identifyUser(userId: string, properties?: { email?: string; created_at?: string }) {
-  if (posthogClient) {
-    posthogClient.identify(userId, properties);
-    console.log("[PostHog] User identified:", userId);
-  }
+  posthogClient?.identify(userId, properties);
 }
 
 /**
  * Reset user identity (for use in AuthContext on sign out)
  */
 export function resetUser() {
-  if (posthogClient) {
-    posthogClient.reset();
-    console.log("[PostHog] User reset");
-  }
+  posthogClient?.reset();
 }
 
 /**
  * Track extraction completed (for use in ExtractionContext)
  */
 export function trackExtractionCompleted(properties: ExtractionCompletedProperties) {
-  if (posthogClient) {
-    posthogClient.capture(AnalyticsEvents.EXTRACTION_COMPLETED, { ...properties });
-    console.log("[PostHog] Extraction completed:", properties);
-  }
+  posthogClient?.capture(AnalyticsEvents.EXTRACTION_COMPLETED, { ...properties });
 }
 
 /**
  * Track extraction failed (for use in ExtractionContext)
  */
 export function trackExtractionFailed(properties: ExtractionFailedProperties) {
-  if (posthogClient) {
-    posthogClient.capture(AnalyticsEvents.EXTRACTION_FAILED, { ...properties });
-    console.log("[PostHog] Extraction failed:", properties);
-  }
+  posthogClient?.capture(AnalyticsEvents.EXTRACTION_FAILED, { ...properties });
 }
 
 /**
  * Track cooking started (for use in CookingSessionContext)
  */
 export function trackCookingStarted(properties: CookingStartedProperties) {
-  if (posthogClient) {
-    posthogClient.capture(AnalyticsEvents.COOKING_STARTED, { ...properties });
-    console.log("[PostHog] Cooking started:", properties);
-  }
+  posthogClient?.capture(AnalyticsEvents.COOKING_STARTED, { ...properties });
 }
 
 /**
  * Track cooking completed (for use in CookingSessionContext)
  */
 export function trackCookingCompleted(properties: CookingCompletedProperties) {
-  if (posthogClient) {
-    posthogClient.capture(AnalyticsEvents.COOKING_COMPLETED, { ...properties });
-    console.log("[PostHog] Cooking completed:", properties);
-  }
+  posthogClient?.capture(AnalyticsEvents.COOKING_COMPLETED, { ...properties });
 }
 
 /**
  * Track paywall viewed (for use in PaywallScreen)
  */
 export function trackPaywallViewed(properties: PaywallViewedProperties) {
-  if (posthogClient) {
-    posthogClient.capture(AnalyticsEvents.PAYWALL_VIEWED, { ...properties });
-    console.log("[PostHog] Paywall viewed:", properties);
-  }
+  posthogClient?.capture(AnalyticsEvents.PAYWALL_VIEWED, { ...properties });
 }
 
 /**
  * Track subscription started (for use in SubscriptionContext)
  */
 export function trackSubscriptionStarted(properties: SubscriptionStartedProperties) {
-  if (posthogClient) {
-    posthogClient.capture(AnalyticsEvents.SUBSCRIPTION_STARTED, { ...properties });
-    console.log("[PostHog] Subscription started:", properties);
-  }
+  posthogClient?.capture(AnalyticsEvents.SUBSCRIPTION_STARTED, { ...properties });
 }
 
 /**
  * Track app rating requested (for use in storeReview.ts)
  */
 export function trackAppRatingRequested(properties: AppRatingRequestedProperties) {
-  if (posthogClient) {
-    posthogClient.capture(AnalyticsEvents.APP_RATING_REQUESTED, { ...properties });
-    console.log("[PostHog] App rating requested:", properties);
-  }
+  posthogClient?.capture(AnalyticsEvents.APP_RATING_REQUESTED, { ...properties });
 }
 
 /**
  * Track soft paywall shown (for use in credits warning UI)
  */
 export function trackSoftPaywallShown(properties: SoftPaywallShownProperties) {
-  if (posthogClient) {
-    posthogClient.capture(AnalyticsEvents.SOFT_PAYWALL_SHOWN, { ...properties });
-    console.log("[PostHog] Soft paywall shown:", properties);
-  }
+  posthogClient?.capture(AnalyticsEvents.SOFT_PAYWALL_SHOWN, { ...properties });
 }
 
 /**
  * Track soft paywall dismissed (for use in credits warning UI)
  */
 export function trackSoftPaywallDismissed(properties: SoftPaywallDismissedProperties) {
-  if (posthogClient) {
-    posthogClient.capture(AnalyticsEvents.SOFT_PAYWALL_DISMISSED, { ...properties });
-    console.log("[PostHog] Soft paywall dismissed:", properties);
-  }
+  posthogClient?.capture(AnalyticsEvents.SOFT_PAYWALL_DISMISSED, { ...properties });
 }

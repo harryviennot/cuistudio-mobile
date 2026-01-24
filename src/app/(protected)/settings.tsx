@@ -19,6 +19,7 @@ import {
   SignOutIcon,
   TrashIcon,
   GiftIcon,
+  BellIcon,
 } from "phosphor-react-native";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,6 +34,7 @@ import {
   AboutBottomSheet,
   ReferralBottomSheet,
   SubscriptionBottomSheet,
+  NotificationPreferencesBottomSheet,
 } from "@/components/settings";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { PremiumPlanCard } from "@/components/credits";
@@ -84,6 +86,7 @@ export default function SettingsScreen() {
   const aboutSheetRef = useRef<BottomSheetModal>(null);
   const referralSheetRef = useRef<BottomSheetModal>(null);
   const subscriptionSheetRef = useRef<BottomSheetModal>(null);
+  const notificationsSheetRef = useRef<BottomSheetModal>(null);
 
   const appVersion = Constants.expoConfig?.version || "1.0.7";
 
@@ -96,6 +99,15 @@ export default function SettingsScreen() {
       Haptics.selectionAsync();
       await i18n.changeLanguage(lang);
       await AsyncStorage.setItem("user-language", lang);
+
+      // Sync language preference to backend for localized notifications
+      try {
+        await authService.updateLanguage(lang);
+      } catch (error) {
+        // Non-critical: log but don't block the language change
+        console.error("Failed to sync language to backend:", error);
+      }
+
       languageSheetRef.current?.dismiss();
     },
     [i18n]
@@ -216,6 +228,16 @@ export default function SettingsScreen() {
       onPress: () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         referralSheetRef.current?.present();
+      },
+    },
+    {
+      id: "notifications",
+      icon: <BellIcon size={24} color="white" weight="fill" />,
+      title: t("settings.notifications.title"),
+      description: t("settings.notifications.description"),
+      onPress: () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        notificationsSheetRef.current?.present();
       },
     },
   ];
@@ -348,6 +370,8 @@ export default function SettingsScreen() {
       <ReferralBottomSheet ref={referralSheetRef} />
 
       <SubscriptionBottomSheet ref={subscriptionSheetRef} />
+
+      <NotificationPreferencesBottomSheet ref={notificationsSheetRef} />
     </View>
   );
 }

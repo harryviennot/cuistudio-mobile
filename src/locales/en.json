@@ -832,6 +832,16 @@
       "bonusInfo": "Both you and your friend will receive 5 bonus extraction credits!",
       "redeemed": "Referral code redeemed!",
       "creditsAwarded": "You received {{count}} bonus credits"
+    },
+    "notifications": {
+      "title": "Stay in the loop",
+      "subtitle": "Get notified when recipes are ready and more",
+      "description": "Get notified when your credits refresh, your recipes are ready, and more.",
+      "benefits": "Credit alerts, recipe updates & cooking tips.",
+      "enable": "Enable Notifications",
+      "enabled": "Notifications Enabled",
+      "skip": "No thanks, maybe later",
+      "hint": "You can customize your notification preferences anytime in the settings page."
     }
   },
   "credits": {
@@ -993,6 +1003,36 @@
         "friendsReferred": "Friends referred",
         "creditsEarned": "Credits earned"
       }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Manage push notifications",
+      "subtitle": "Push Notifications",
+      "frequencySection": "Notification Frequency",
+      "referralSection": "Referral Notifications",
+      "packages": {
+        "frequent": {
+          "title": "Frequent",
+          "description": "All notifications including daily cooking reminders"
+        },
+        "medium": {
+          "title": "Medium",
+          "description": "Weekly updates & milestone celebrations"
+        },
+        "low": {
+          "title": "Minimal",
+          "description": "Only weekly credit refresh"
+        }
+      },
+      "referralToggle": {
+        "title": "Referral Bonus",
+        "description": "Know when friends use your referral code"
+      },
+      "permissionBanner": {
+        "title": "Notifications Disabled",
+        "description": "Tap to enable notifications in device settings"
+      },
+      "disabledInstructions": "To re-enable notifications, go to Settings → Cuisto → Notifications"
     },
     "feedback": {
       "title": "Give Feedback",

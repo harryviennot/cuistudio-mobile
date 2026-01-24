@@ -86,4 +86,15 @@ export const authService = {
     const response = await api.post<{ message: string }>(`/auth/warnings/${warningId}/acknowledge`);
     return response.data;
   },
+
+  /**
+   * Update user's preferred language (authenticated endpoint)
+   * Syncs the app language preference to the backend for localized notifications
+   */
+  updateLanguage: async (language: string) => {
+    const response = await api.patch<{ message: string }>("/auth/me/language", {
+      language,
+    });
+    return response.data;
+  },
 };
