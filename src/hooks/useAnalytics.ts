@@ -2,7 +2,7 @@
  * Analytics Hook
  *
  * Provides typed methods for tracking PostHog events and identifying users.
- * All tracking methods are safe to call - they no-op if PostHog is disabled.
+ * PostHog is disabled in dev/preview builds via posthogOptions.disabled.
  */
 import { usePostHog } from "posthog-react-native";
 import { useCallback } from "react";
@@ -57,7 +57,6 @@ export function useAnalytics() {
    */
   const trackOnboardingStarted = useCallback(() => {
     posthog.capture(AnalyticsEvents.ONBOARDING_STARTED);
-    console.log("[PostHog] Onboarding started");
   }, [posthog]);
 
   /**
@@ -66,7 +65,6 @@ export function useAnalytics() {
   const trackOnboardingStep = useCallback(
     (properties: OnboardingStepProperties) => {
       posthog.capture(AnalyticsEvents.ONBOARDING_STEP_COMPLETED, { ...properties });
-      console.log("[PostHog] Onboarding step completed:", properties);
     },
     [posthog]
   );
@@ -80,7 +78,6 @@ export function useAnalytics() {
         AnalyticsEvents.ONBOARDING_COMPLETED,
         properties ? { ...properties } : undefined
       );
-      console.log("[PostHog] Onboarding completed:", properties);
     },
     [posthog]
   );
@@ -95,7 +92,6 @@ export function useAnalytics() {
   const trackExtractionStarted = useCallback(
     (properties: ExtractionStartedProperties) => {
       posthog.capture(AnalyticsEvents.EXTRACTION_STARTED, { ...properties });
-      console.log("[PostHog] Extraction started:", properties);
     },
     [posthog]
   );
@@ -106,7 +102,6 @@ export function useAnalytics() {
   const trackExtractionCompleted = useCallback(
     (properties: ExtractionCompletedProperties) => {
       posthog.capture(AnalyticsEvents.EXTRACTION_COMPLETED, { ...properties });
-      console.log("[PostHog] Extraction completed:", properties);
     },
     [posthog]
   );
@@ -117,7 +112,6 @@ export function useAnalytics() {
   const trackExtractionFailed = useCallback(
     (properties: ExtractionFailedProperties) => {
       posthog.capture(AnalyticsEvents.EXTRACTION_FAILED, { ...properties });
-      console.log("[PostHog] Extraction failed:", properties);
     },
     [posthog]
   );
@@ -132,7 +126,6 @@ export function useAnalytics() {
   const trackRecipeSaved = useCallback(
     (properties: RecipeSavedProperties) => {
       posthog.capture(AnalyticsEvents.RECIPE_SAVED, { ...properties });
-      console.log("[PostHog] Recipe saved:", properties);
     },
     [posthog]
   );
@@ -143,7 +136,6 @@ export function useAnalytics() {
   const trackRecipeViewed = useCallback(
     (properties: RecipeViewedProperties) => {
       posthog.capture(AnalyticsEvents.RECIPE_VIEWED, { ...properties });
-      console.log("[PostHog] Recipe viewed:", properties);
     },
     [posthog]
   );
@@ -154,7 +146,6 @@ export function useAnalytics() {
   const trackRecipeShared = useCallback(
     (properties: RecipeSharedProperties) => {
       posthog.capture(AnalyticsEvents.RECIPE_SHARED, { ...properties });
-      console.log("[PostHog] Recipe shared:", properties);
     },
     [posthog]
   );
@@ -169,7 +160,6 @@ export function useAnalytics() {
   const trackCookingStarted = useCallback(
     (properties: CookingStartedProperties) => {
       posthog.capture(AnalyticsEvents.COOKING_STARTED, { ...properties });
-      console.log("[PostHog] Cooking started:", properties);
     },
     [posthog]
   );
@@ -180,7 +170,6 @@ export function useAnalytics() {
   const trackCookingCompleted = useCallback(
     (properties: CookingCompletedProperties) => {
       posthog.capture(AnalyticsEvents.COOKING_COMPLETED, { ...properties });
-      console.log("[PostHog] Cooking completed:", properties);
     },
     [posthog]
   );
@@ -195,7 +184,6 @@ export function useAnalytics() {
   const trackSearchPerformed = useCallback(
     (properties: SearchPerformedProperties) => {
       posthog.capture(AnalyticsEvents.SEARCH_PERFORMED, { ...properties });
-      console.log("[PostHog] Search performed:", properties);
     },
     [posthog]
   );
@@ -206,7 +194,6 @@ export function useAnalytics() {
   const trackSearchResultClicked = useCallback(
     (properties: SearchResultClickedProperties) => {
       posthog.capture(AnalyticsEvents.SEARCH_RESULT_CLICKED, { ...properties });
-      console.log("[PostHog] Search result clicked:", properties);
     },
     [posthog]
   );
@@ -221,7 +208,6 @@ export function useAnalytics() {
   const trackPaywallViewed = useCallback(
     (properties: PaywallViewedProperties) => {
       posthog.capture(AnalyticsEvents.PAYWALL_VIEWED, { ...properties });
-      console.log("[PostHog] Paywall viewed:", properties);
     },
     [posthog]
   );
@@ -232,7 +218,6 @@ export function useAnalytics() {
   const trackSubscriptionStarted = useCallback(
     (properties: SubscriptionStartedProperties) => {
       posthog.capture(AnalyticsEvents.SUBSCRIPTION_STARTED, { ...properties });
-      console.log("[PostHog] Subscription started:", properties);
     },
     [posthog]
   );
