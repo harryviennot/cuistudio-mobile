@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
+import { KeyboardToolbar } from "react-native-keyboard-controller";
 
 import {
   OnboardingProgress,
@@ -314,6 +315,10 @@ export default function Onboarding() {
     );
   }
 
+  // Show keyboard toolbar only for steps with text inputs
+  const showKeyboardToolbar = stepId === "basicInfo" || stepId === "referralCode";
+  const showArrows = stepId === "basicInfo"; // Only basicInfo has multiple inputs
+
   return (
     <View className="flex-1 bg-black">
       <StatusBar style="light" />
@@ -346,6 +351,9 @@ export default function Onboarding() {
           isLastStep={isLastQuestionStep}
         />
       </View>
+
+      {/* Keyboard toolbar for text input steps */}
+      {showKeyboardToolbar && <KeyboardToolbar doneText="Done" showArrows={showArrows} />}
     </View>
   );
 }

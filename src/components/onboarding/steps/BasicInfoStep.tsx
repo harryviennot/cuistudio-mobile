@@ -16,7 +16,6 @@ export function BasicInfoStep({ formData, onFormDataChange }: BasicInfoStepProps
 
   return (
     <KeyboardAwareScrollView
-      // bottomOffset={48}
       contentContainerStyle={{ padding: 24 }}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
