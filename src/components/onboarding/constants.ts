@@ -1,47 +1,47 @@
 import {
-  Megaphone,
-  Storefront,
-  Article,
-  MagnifyingGlass,
-  DotsThree,
-  CookingPot,
-  Timer,
-  CalendarBlank,
-  Fire,
-  TiktokLogo,
-  InstagramLogo,
-  YoutubeLogo,
-  BookOpen,
-  BookBookmark,
-  UsersThree,
+  MegaphoneIcon,
+  StorefrontIcon,
+  ArticleIcon,
+  MagnifyingGlassIcon,
+  DotsThreeIcon,
+  CookingPotIcon,
+  TimerIcon,
+  CalendarBlankIcon,
+  FireIcon,
+  TiktokLogoIcon,
+  InstagramLogoIcon,
+  YoutubeLogoIcon,
+  BookOpenIcon,
+  BookBookmarkIcon,
+  UsersThreeIcon,
 } from "phosphor-react-native";
 
 import type { StepId, OptionConfig } from "./types";
 
 export const HEARD_FROM_OPTIONS: OptionConfig[] = [
-  { value: "social_media", icon: Megaphone },
-  { value: "friend", icon: UsersThree },
-  { value: "app_store", icon: Storefront },
-  { value: "blog", icon: Article },
-  { value: "search_engine", icon: MagnifyingGlass },
-  { value: "other", icon: DotsThree },
+  { value: "social_media", icon: MegaphoneIcon },
+  { value: "friend", icon: UsersThreeIcon },
+  { value: "app_store", icon: StorefrontIcon },
+  { value: "blog", icon: ArticleIcon },
+  { value: "search_engine", icon: MagnifyingGlassIcon },
+  { value: "other", icon: DotsThreeIcon },
 ];
 
 export const COOKING_FREQUENCY_OPTIONS: OptionConfig[] = [
-  { value: "rarely", icon: CalendarBlank },
-  { value: "occasionally", icon: Timer },
-  { value: "regularly", icon: CookingPot },
-  { value: "almost_daily", icon: Fire },
+  { value: "rarely", icon: CalendarBlankIcon },
+  { value: "occasionally", icon: TimerIcon },
+  { value: "regularly", icon: CookingPotIcon },
+  { value: "almost_daily", icon: FireIcon },
 ];
 
 export const RECIPE_SOURCES_OPTIONS: OptionConfig[] = [
-  { value: "tiktok", icon: TiktokLogo },
-  { value: "instagram", icon: InstagramLogo },
-  { value: "youtube", icon: YoutubeLogo },
-  { value: "blogs", icon: Article },
-  { value: "cookbooks", icon: BookBookmark },
-  { value: "family", icon: UsersThree },
-  { value: "other", icon: BookOpen },
+  { value: "tiktok", icon: TiktokLogoIcon },
+  { value: "instagram", icon: InstagramLogoIcon },
+  { value: "youtube", icon: YoutubeLogoIcon },
+  { value: "blogs", icon: ArticleIcon },
+  { value: "cookbooks", icon: BookBookmarkIcon },
+  { value: "family", icon: UsersThreeIcon },
+  { value: "other", icon: BookOpenIcon },
 ];
 
 export const STEPS: StepId[] = [

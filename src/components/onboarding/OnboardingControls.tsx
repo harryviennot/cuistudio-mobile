@@ -5,7 +5,7 @@
  */
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import { CaretLeft, CaretRight } from "phosphor-react-native";
+import { CaretLeftIcon, CaretRightIcon } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -44,21 +44,20 @@ export const OnboardingControls: React.FC<OnboardingControlsProps> = ({
         disabled={isFirstStep || isAnimating}
         className={`h-16 w-16 items-center justify-center rounded-2xl bg-white/10 active:scale-95 ${isFirstStep ? "opacity-20" : "opacity-100"}`}
       >
-        <CaretLeft size={28} color="white" />
+        <CaretLeftIcon size={28} color="white" />
       </Pressable>
 
       {/* Next/Continue/Finish button */}
       <Pressable
         onPress={onNext}
         disabled={!canContinue || isAnimating}
-        className={`h-16 flex-1 flex-row items-center justify-center gap-2 rounded-2xl shadow-lg active:scale-95 ${
-          canContinue ? "bg-white" : "bg-white/30"
-        }`}
+        className={`h-16 flex-1 flex-row items-center justify-center gap-2 rounded-2xl shadow-lg active:scale-95 ${canContinue ? "bg-white" : "bg-white/30"
+          }`}
       >
         <Text className={`text-lg font-bold ${canContinue ? "text-primary" : "text-white/50"}`}>
           {isLastStep ? t("common.finish") : t("onboarding.continue")}
         </Text>
-        <CaretRight
+        <CaretRightIcon
           size={24}
           color={canContinue ? "#334d43" : "rgba(255,255,255,0.5)"}
           weight="bold"

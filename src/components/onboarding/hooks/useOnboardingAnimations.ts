@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import { useSharedValue, withTiming, runOnJS, Easing, SharedValue } from "react-native-reanimated";
+import { useSharedValue, withTiming, Easing, SharedValue } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 import * as Haptics from "expo-haptics";
 import { STEPS } from "../constants";
 
@@ -37,7 +38,7 @@ export function useOnboardingAnimations({
       nextStep,
       { duration: 300, easing: Easing.out(Easing.cubic) },
       () => {
-        runOnJS(setIsAnimating)(false);
+        scheduleOnRN(setIsAnimating, false);
       }
     );
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
@@ -56,7 +57,7 @@ export function useOnboardingAnimations({
       prevStep,
       { duration: 300, easing: Easing.out(Easing.cubic) },
       () => {
-        runOnJS(setIsAnimating)(false);
+        scheduleOnRN(setIsAnimating, false);
       }
     );
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);

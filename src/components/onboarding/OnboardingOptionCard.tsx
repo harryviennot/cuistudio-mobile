@@ -6,7 +6,7 @@
 import React from "react";
 import { Pressable, View, Text } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
-import { Check } from "phosphor-react-native";
+import { CheckIcon } from "phosphor-react-native";
 import type { Icon } from "phosphor-react-native";
 import { cn } from "@/utils/cn";
 
@@ -30,7 +30,7 @@ export function OnboardingOptionCard({
   onPress,
   disabled = false,
   className,
-}: OnboardingOptionCardProps) {
+}: Readonly<OnboardingOptionCardProps>) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -91,7 +91,7 @@ export function OnboardingOptionCard({
           isSelected ? "bg-primary" : "border-2 border-border"
         )}
       >
-        {isSelected && <Check size={14} weight="bold" color="#ffffff" />}
+        {isSelected && <CheckIcon size={14} weight="bold" color="#ffffff" />}
       </View>
     </AnimatedPressable>
   );

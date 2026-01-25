@@ -14,7 +14,7 @@ export function CookingFrequencyStep({
   selectedValue,
   onSelect,
   isAnimating,
-}: CookingFrequencyStepProps) {
+}: Readonly<CookingFrequencyStepProps>) {
   const { t } = useTranslation();
 
   return (

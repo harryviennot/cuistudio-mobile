@@ -6,7 +6,7 @@
  */
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
-import { Bell } from "phosphor-react-native";
+import { BellIcon } from "phosphor-react-native";
 import * as Haptics from "expo-haptics";
 
 interface NotificationsStepProps {
@@ -21,7 +21,7 @@ export function NotificationsStep({
   onEnable,
   onSkip,
   isLoading,
-}: NotificationsStepProps) {
+}: Readonly<NotificationsStepProps>) {
   const { t } = useTranslation();
 
   const handleEnable = async () => {
@@ -57,7 +57,7 @@ export function NotificationsStep({
       {/* Primary Action Button or Enabled State */}
       {isEnabled ? (
         <View className="mb-4 flex-row items-center justify-center gap-2 rounded-xl bg-primary/10 px-6 py-4">
-          <Bell size={20} color="#2D5A27" weight="fill" />
+          <BellIcon size={20} color="#2D5A27" weight="fill" />
           <Text className="text-base font-semibold text-primary">
             {t("onboarding.notifications.enabled")}
           </Text>

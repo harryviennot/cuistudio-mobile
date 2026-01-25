@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text } from "react-native";
-import * as Haptics from "expo-haptics";
 import { useTranslation } from "react-i18next";
 import { AuthCard } from "./AuthCard";
 import { AuthButton } from "./AuthButton";

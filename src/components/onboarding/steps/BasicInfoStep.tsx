@@ -11,7 +11,7 @@ interface BasicInfoStepProps {
   onFormDataChange: (data: Partial<OnboardingFormData>) => void;
 }
 
-export function BasicInfoStep({ formData, onFormDataChange }: BasicInfoStepProps) {
+export function BasicInfoStep({ formData, onFormDataChange }: Readonly<BasicInfoStepProps>) {
   const { t } = useTranslation();
 
   return (

@@ -110,7 +110,7 @@ export default function Onboarding() {
     setIsSubmitting(true);
 
     try {
-      const ageNumber = formData.age ? parseInt(formData.age, 10) : undefined;
+      const ageNumber = formData.age ? Number.parseInt(formData.age, 10) : undefined;
 
       // Redeem referral code if provided and valid
       if (formData.referral_code && isReferralValid) {
@@ -138,7 +138,7 @@ export default function Onboarding() {
         cooking_frequency: formData.cooking_frequency,
         recipe_sources: formData.recipe_sources,
         display_name: formData.display_name.trim() || undefined,
-        age: ageNumber && !isNaN(ageNumber) ? ageNumber : undefined,
+        age: ageNumber && !Number.isNaN(ageNumber) ? ageNumber : undefined,
       });
 
       // Track onboarding completion with key properties

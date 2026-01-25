@@ -8,7 +8,7 @@ import { useState, useCallback, useEffect } from "react";
 import { View, Text, ActivityIndicator, TextInput, Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { GiftIcon, CheckCircleIcon, XCircleIcon } from "phosphor-react-native";
+import { CheckCircleIcon, XCircleIcon } from "phosphor-react-native";
 
 import { referralsService } from "@/api/services/referrals.service";
 import { cn } from "@/utils/cn";
@@ -23,7 +23,7 @@ export function ReferralCodeStep({
   referralCode,
   onReferralCodeChange,
   onValidationChange,
-}: ReferralCodeStepProps) {
+}: Readonly<ReferralCodeStepProps>) {
   const { t } = useTranslation();
   const [isValidating, setIsValidating] = useState(false);
   const [lastValidatedCode, setLastValidatedCode] = useState<string | null>(null);
@@ -112,19 +112,22 @@ export function ReferralCodeStep({
     }
   };
 
+  const getInputBorderColor = () => {
+    if (validationResult?.isValid) {
+      return "border-state-success";
+    }
+    if (validationResult && !validationResult.isValid) {
+      return "border-state-error";
+    }
+    return "border-border";
+  };
+
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={{ padding: 24 }}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
-      {/* Icon */}
-      {/* <View className="mb-4 ">
-        <View className="h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-          <GiftIcon size={32} color="#2D5A27" weight="duotone" />
-        </View>
-      </View> */}
-
       {/* Title */}
       <Text
         className="mb-2  text-3xl text-foreground-heading"
@@ -140,14 +143,7 @@ export function ReferralCodeStep({
       <View className="mb-2">
         <View className="relative">
           <TextInput
-            className={cn(
-              "border-2",
-              validationResult?.isValid
-                ? "border-state-success"
-                : validationResult && !validationResult.isValid
-                  ? "border-state-error"
-                  : "border-border"
-            )}
+            className={cn("border-2", getInputBorderColor())}
             style={{
               backgroundColor: "white",
               borderRadius: 12,
@@ -194,11 +190,6 @@ export function ReferralCodeStep({
           {getValidationMessage()}
         </Text>
       )}
-
-      {/* Skip hint
-      <Text className="mt-4 text-sm text-foreground-muted">
-        {t("onboarding.referral.skipHint")}
-      </Text> */}
 
       {/* Bonus info */}
       <View className="mt-6 rounded-2xl bg-primary/5 p-4">

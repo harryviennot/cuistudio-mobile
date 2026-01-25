@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { View, Text, StatusBar, Pressable } from "react-native";
+import { View, Text, StatusBar, Pressable, Linking } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArrowLeftIcon } from "phosphor-react-native";
@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
 import { AuthBackground, EmailStepCard, OTPStepCard } from "@/components/auth";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 
 type AuthStep = "email" | "otp";
 
@@ -30,20 +30,26 @@ export default function AuthScreen() {
   const [otpError, setOtpError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [canResend, setCanResend] = useState(false);
+  const [otpSentAt, setOtpSentAt] = useState<number | null>(null);
   const [resendTimer, setResendTimer] = useState(60);
 
-  // Resend timer countdown
-  useEffect(() => {
-    if (currentStep !== "otp") return;
+  const RESEND_COOLDOWN = 60; // seconds
+  const canResend = resendTimer === 0;
 
-    if (resendTimer > 0 && !canResend) {
-      const timer = setTimeout(() => setResendTimer((prev) => prev - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (resendTimer === 0) {
-      setCanResend(true);
-    }
-  }, [resendTimer, canResend, currentStep]);
+  // Resend timer countdown - uses timestamp to handle background correctly
+  useEffect(() => {
+    if (currentStep !== "otp" || !otpSentAt) return;
+
+    const updateTimer = () => {
+      const elapsed = Math.floor((Date.now() - otpSentAt) / 1000);
+      const remaining = Math.max(0, RESEND_COOLDOWN - elapsed);
+      setResendTimer(remaining);
+    };
+
+    updateTimer(); // Update immediately
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [currentStep, otpSentAt]);
 
   const validateEmail = (emailValue: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -77,8 +83,7 @@ export default function AuthScreen() {
       });
 
       setCurrentStep("otp");
-      setCanResend(false);
-      setResendTimer(60);
+      setOtpSentAt(Date.now());
     } catch (err: any) {
       console.error("Send OTP error:", err);
 
@@ -174,8 +179,7 @@ export default function AuthScreen() {
       });
 
       setOtpCode("");
-      setCanResend(false);
-      setResendTimer(60);
+      setOtpSentAt(Date.now());
     } catch (err: any) {
       console.error("Resend OTP error:", err);
 
@@ -194,6 +198,16 @@ export default function AuthScreen() {
     setOtpCode("");
     setOtpError("");
   };
+
+  const handlePrivacyPolicy = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Linking.openURL("https://cuisto.app/privacy");
+  }, []);
+
+  const handleTermsOfService = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Linking.openURL("https://cuisto.app/terms");
+  }, []);
 
   return (
     <AuthBackground>
@@ -256,13 +270,13 @@ export default function AuthScreen() {
           {currentStep === "email" ? (
             <Text className="text-xs text-white/30 text-center leading-5">
               {t("auth.footer.termsPrefix")}
-              <Link href="https://cuisto.app/terms" className="text-white/50 underline">
+              <Text onPress={handleTermsOfService} className="text-white/50 underline">
                 {t("auth.footer.termsOfService")}
-              </Link>
+              </Text>
               {t("auth.footer.and")}
-              <Link href="https://cuisto.app/privacy" className="text-white/50 underline">
+              <Text onPress={handlePrivacyPolicy} className="text-white/50 underline">
                 {t("auth.footer.privacyPolicy")}
-              </Link>
+              </Text>
               .
             </Text>
           ) : (
