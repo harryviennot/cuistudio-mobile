@@ -119,25 +119,25 @@ export function ReferralCodeStep({
       showsVerticalScrollIndicator={false}
     >
       {/* Icon */}
-      <View className="mb-4 items-center">
+      {/* <View className="mb-4 ">
         <View className="h-16 w-16 items-center justify-center rounded-full bg-primary/10">
           <GiftIcon size={32} color="#2D5A27" weight="duotone" />
         </View>
-      </View>
+      </View> */}
 
       {/* Title */}
       <Text
-        className="mb-2 text-center text-3xl text-foreground-heading"
+        className="mb-2  text-3xl text-foreground-heading"
         style={{ fontFamily: "PlayfairDisplay_700Bold" }}
       >
         {t("onboarding.referral.title")}
       </Text>
-      <Text className="mb-8 text-center text-base text-foreground-muted">
+      <Text className="mb-8  text-base text-foreground-muted">
         {t("onboarding.referral.subtitle")}
       </Text>
 
       {/* Input */}
-      <View className="mb-4">
+      <View className="mb-2">
         <View className="relative">
           <TextInput
             className={cn(
@@ -153,7 +153,7 @@ export function ReferralCodeStep({
               borderRadius: 12,
 
               padding: 16,
-              textAlign: "center",
+              textAlign: "left",
               fontSize: 16,
               fontWeight: "normal",
               letterSpacing: 2,
@@ -187,7 +187,7 @@ export function ReferralCodeStep({
       {validationResult && (
         <Text
           className={cn(
-            "mb-4 text-center text-sm",
+            "text-sm",
             validationResult.isValid ? "text-state-success" : "text-state-error"
           )}
         >
@@ -195,14 +195,14 @@ export function ReferralCodeStep({
         </Text>
       )}
 
-      {/* Skip hint */}
-      <Text className="text-center text-sm text-foreground-muted">
+      {/* Skip hint
+      <Text className="mt-4 text-sm text-foreground-muted">
         {t("onboarding.referral.skipHint")}
-      </Text>
+      </Text> */}
 
       {/* Bonus info */}
-      <View className="mt-6 rounded-xl bg-primary/5 p-4">
-        <Text className="text-center text-sm text-foreground-secondary">
+      <View className="mt-6 rounded-2xl bg-primary/5 p-4">
+        <Text className=" text-sm text-foreground-secondary">
           {t("onboarding.referral.bonusInfo")}
         </Text>
       </View>

@@ -713,7 +713,8 @@
       "nameLabel": "What should we call you?",
       "namePlaceholder": "Your name",
       "ageLabel": "How old are you?",
-      "agePlaceholder": "Your age"
+      "agePlaceholder": "Your age",
+      "ageInfo": "You must be at least 13 years old to use the app"
     },
     "heardFrom": {
       "title": "How did you hear about us?",
@@ -813,13 +814,12 @@
     },
     "referral": {
       "title": "Got a referral code?",
-      "subtitle": "Enter it below to get bonus credits",
+      "subtitle": "If you don't have a code, you can skip this step.",
       "placeholder": "ENTER CODE",
       "skip": "I don't have a code",
       "skipHint": "No code? No problem! You can skip this step.",
       "checking": "Checking...",
-      "valid": "Valid! From {{name}}",
-      "validCode": "Valid! From {{name}}",
+      "validCode": "Code from {{name}} is valid!",
       "validUnknown": "Valid code!",
       "invalid": "Code not found",
       "codeNotFound": "This code doesn't exist",

@@ -49,23 +49,30 @@ export function BasicInfoStep({ formData, onFormDataChange }: BasicInfoStepProps
       </View>
 
       {/* Age input */}
-      <View>
+      <View className="mb-4">
         <Text className="mb-2 text-sm font-medium text-foreground-secondary">
           {t("onboarding.basicInfo.ageLabel")}
         </Text>
         <FixedTextInput
-          className="rounded-xl border-2 border-border bg-white px-4 py-4 mb-4"
+          className="rounded-xl border-2 border-border bg-white px-4 py-4 "
           placeholder={t("onboarding.basicInfo.agePlaceholder")}
           placeholderTextColor="#a8a29e"
           value={formData.age}
           onChangeText={(text) => {
             // Only allow numbers
-            const numericText = text.replace(/[^0-9]/g, "");
+            const numericText = text.replaceAll(/\D/g, "");
             onFormDataChange({ age: numericText });
           }}
           keyboardType="number-pad"
           maxLength={3}
         />
+      </View>
+
+      {/* Info box - customize later hint */}
+      <View className="mt-2 rounded-2xl bg-primary/5 p-4">
+        <Text className="text-sm text-foreground-secondary">
+          {t("onboarding.basicInfo.ageInfo")}
+        </Text>
       </View>
     </KeyboardAwareScrollView>
   );

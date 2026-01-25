@@ -191,7 +191,7 @@ export default function Onboarding() {
     const stepId = STEPS[currentStep];
     switch (stepId) {
       case "basicInfo":
-        return formData.display_name.trim().length > 0;
+        return formData.display_name.trim().length > 0 && formData.age.trim().length > 0 && Number(formData.age) >= 13;
       case "referralCode":
         // Referral is optional, but if provided must be valid
         return isReferralValid;
