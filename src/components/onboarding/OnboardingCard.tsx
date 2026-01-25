@@ -13,7 +13,11 @@ interface OnboardingCardProps {
   children: ReactNode;
 }
 
-export function OnboardingCard({ stepIndex, animatedStep, children }: Readonly<OnboardingCardProps>) {
+export function OnboardingCard({
+  stepIndex,
+  animatedStep,
+  children,
+}: Readonly<OnboardingCardProps>) {
   const { width } = useWindowDimensions();
 
   const animatedStyle = useAnimatedStyle(() => {

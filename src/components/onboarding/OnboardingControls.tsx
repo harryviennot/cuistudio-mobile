@@ -51,8 +51,9 @@ export const OnboardingControls: React.FC<OnboardingControlsProps> = ({
       <Pressable
         onPress={onNext}
         disabled={!canContinue || isAnimating}
-        className={`h-16 flex-1 flex-row items-center justify-center gap-2 rounded-2xl shadow-lg active:scale-95 ${canContinue ? "bg-white" : "bg-white/30"
-          }`}
+        className={`h-16 flex-1 flex-row items-center justify-center gap-2 rounded-2xl shadow-lg active:scale-95 ${
+          canContinue ? "bg-white" : "bg-white/30"
+        }`}
       >
         <Text className={`text-lg font-bold ${canContinue ? "text-primary" : "text-white/50"}`}>
           {isLastStep ? t("common.finish") : t("onboarding.continue")}
