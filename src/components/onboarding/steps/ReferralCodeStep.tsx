@@ -5,10 +5,10 @@
  * Both the referrer and referee get 5 bonus credits.
  */
 import { useState, useCallback, useEffect } from "react";
-import { View, Text, ActivityIndicator, TextInput } from "react-native";
+import { View, Text, ActivityIndicator, TextInput, Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { GiftIcon, CheckCircleIcon, XCircleIcon } from "phosphor-react-native";
+import { CheckCircleIcon, XCircleIcon } from "phosphor-react-native";
 
 import { referralsService } from "@/api/services/referrals.service";
 import { cn } from "@/utils/cn";
@@ -23,35 +23,48 @@ export function ReferralCodeStep({
   referralCode,
   onReferralCodeChange,
   onValidationChange,
-}: ReferralCodeStepProps) {
+}: Readonly<ReferralCodeStepProps>) {
   const { t } = useTranslation();
   const [isValidating, setIsValidating] = useState(false);
+  const [lastValidatedCode, setLastValidatedCode] = useState<string | null>(null);
   const [validationResult, setValidationResult] = useState<{
     isValid: boolean;
     message: string;
     referrerName?: string;
   } | null>(null);
 
-  // Debounced validation
+  // Validate when code reaches 8 characters and is different from last check
   useEffect(() => {
-    if (!referralCode || referralCode.length < 3) {
+    // Reset validation if code changes and doesn't match last validated
+    if (referralCode !== lastValidatedCode) {
       setValidationResult(null);
-      onValidationChange(true); // Empty is valid (optional field)
+    }
+
+    // Empty or partial code is valid (optional field)
+    if (referralCode.length < 8) {
+      onValidationChange(true);
       return;
     }
 
-    const timer = setTimeout(async () => {
+    // Skip if we already validated this exact code
+    if (referralCode === lastValidatedCode) {
+      return;
+    }
+
+    const validate = async () => {
       setIsValidating(true);
-      console.log("[ReferralCodeStep] Validating code:", referralCode);
+      setLastValidatedCode(referralCode);
       try {
         const result = await referralsService.validate(referralCode);
-        console.log("[ReferralCodeStep] Validation result:", result);
         setValidationResult({
           isValid: result.is_valid,
           message: result.message,
           referrerName: result.referrer_name ?? undefined,
         });
-        onValidationChange(result.is_valid || !referralCode, result.referrer_name ?? undefined);
+        onValidationChange(result.is_valid, result.referrer_name ?? undefined);
+        if (result.is_valid) {
+          Keyboard.dismiss();
+        }
       } catch (error) {
         console.error("[ReferralCodeStep] Validation error:", error);
         setValidationResult({
@@ -62,15 +75,15 @@ export function ReferralCodeStep({
       } finally {
         setIsValidating(false);
       }
-    }, 500);
+    };
 
-    return () => clearTimeout(timer);
-  }, [referralCode, onValidationChange]);
+    validate();
+  }, [referralCode, lastValidatedCode, onValidationChange]);
 
   const handleCodeChange = useCallback(
     (text: string) => {
       // Uppercase and remove spaces
-      const cleanedCode = text.toUpperCase().replace(/\s/g, "");
+      const cleanedCode = text.toUpperCase().replaceAll(/\s/g, "");
       onReferralCodeChange(cleanedCode);
     },
     [onReferralCodeChange]
@@ -99,48 +112,44 @@ export function ReferralCodeStep({
     }
   };
 
+  const getInputBorderColor = () => {
+    if (validationResult?.isValid) {
+      return "border-state-success";
+    }
+    if (validationResult && !validationResult.isValid) {
+      return "border-state-error";
+    }
+    return "border-border";
+  };
+
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={{ padding: 24 }}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
-      {/* Icon */}
-      <View className="mb-4 items-center">
-        <View className="h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-          <GiftIcon size={32} color="#2D5A27" weight="duotone" />
-        </View>
-      </View>
-
       {/* Title */}
       <Text
-        className="mb-2 text-center text-3xl text-foreground-heading"
+        className="mb-2  text-3xl text-foreground-heading"
         style={{ fontFamily: "PlayfairDisplay_700Bold" }}
       >
         {t("onboarding.referral.title")}
       </Text>
-      <Text className="mb-8 text-center text-base text-foreground-muted">
+      <Text className="mb-8  text-base text-foreground-muted">
         {t("onboarding.referral.subtitle")}
       </Text>
 
       {/* Input */}
-      <View className="mb-4">
+      <View className="mb-2">
         <View className="relative">
           <TextInput
-            className={cn(
-              "border-2",
-              validationResult?.isValid
-                ? "border-state-success"
-                : validationResult && !validationResult.isValid
-                  ? "border-state-error"
-                  : "border-border"
-            )}
+            className={cn("border-2", getInputBorderColor())}
             style={{
               backgroundColor: "white",
               borderRadius: 12,
 
               padding: 16,
-              textAlign: "center",
+              textAlign: "left",
               fontSize: 16,
               fontWeight: "normal",
               letterSpacing: 2,
@@ -174,7 +183,7 @@ export function ReferralCodeStep({
       {validationResult && (
         <Text
           className={cn(
-            "mb-4 text-center text-sm",
+            "text-sm",
             validationResult.isValid ? "text-state-success" : "text-state-error"
           )}
         >
@@ -182,14 +191,9 @@ export function ReferralCodeStep({
         </Text>
       )}
 
-      {/* Skip hint */}
-      <Text className="text-center text-sm text-foreground-muted">
-        {t("onboarding.referral.skipHint")}
-      </Text>
-
       {/* Bonus info */}
-      <View className="mt-6 rounded-xl bg-primary/5 p-4">
-        <Text className="text-center text-sm text-foreground-secondary">
+      <View className="mt-6 rounded-2xl bg-primary/5 p-4">
+        <Text className=" text-sm text-foreground-secondary">
           {t("onboarding.referral.bonusInfo")}
         </Text>
       </View>

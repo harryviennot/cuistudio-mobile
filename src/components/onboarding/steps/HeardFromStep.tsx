@@ -10,7 +10,11 @@ interface HeardFromStepProps {
   isAnimating: boolean;
 }
 
-export function HeardFromStep({ selectedValue, onSelect, isAnimating }: HeardFromStepProps) {
+export function HeardFromStep({
+  selectedValue,
+  onSelect,
+  isAnimating,
+}: Readonly<HeardFromStepProps>) {
   const { t } = useTranslation();
 
   return (

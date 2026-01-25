@@ -15,14 +15,14 @@ import Animated, {
   withSequence,
   Easing,
 } from "react-native-reanimated";
-import { ChefHat } from "phosphor-react-native";
+import { ChefHatIcon } from "phosphor-react-native";
 import { useTranslation } from "react-i18next";
 
 interface OnboardingCompleteProps {
   displayName?: string;
 }
 
-export function OnboardingComplete({ displayName }: OnboardingCompleteProps) {
+export function OnboardingComplete({ displayName }: Readonly<OnboardingCompleteProps>) {
   const { t } = useTranslation();
 
   // Animation values
@@ -89,7 +89,7 @@ export function OnboardingComplete({ displayName }: OnboardingCompleteProps) {
           <View className="absolute -inset-4 rounded-full bg-primary/20 blur-xl" />
           {/* Icon container */}
           <View className="h-24 w-24 items-center justify-center rounded-full border border-white/20 bg-white/10">
-            <ChefHat size={48} weight="duotone" color="#ffffff" />
+            <ChefHatIcon size={48} weight="duotone" color="#ffffff" />
           </View>
         </View>
       </Animated.View>

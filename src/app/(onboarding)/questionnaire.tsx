@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
+import { KeyboardToolbar } from "react-native-keyboard-controller";
 
 import {
   OnboardingProgress,
@@ -109,7 +110,7 @@ export default function Onboarding() {
     setIsSubmitting(true);
 
     try {
-      const ageNumber = formData.age ? parseInt(formData.age, 10) : undefined;
+      const ageNumber = formData.age ? Number.parseInt(formData.age, 10) : undefined;
 
       // Redeem referral code if provided and valid
       if (formData.referral_code && isReferralValid) {
@@ -137,7 +138,7 @@ export default function Onboarding() {
         cooking_frequency: formData.cooking_frequency,
         recipe_sources: formData.recipe_sources,
         display_name: formData.display_name.trim() || undefined,
-        age: ageNumber && !isNaN(ageNumber) ? ageNumber : undefined,
+        age: ageNumber && !Number.isNaN(ageNumber) ? ageNumber : undefined,
       });
 
       // Track onboarding completion with key properties
@@ -190,7 +191,11 @@ export default function Onboarding() {
     const stepId = STEPS[currentStep];
     switch (stepId) {
       case "basicInfo":
-        return formData.display_name.trim().length > 0;
+        return (
+          formData.display_name.trim().length > 0 &&
+          formData.age.trim().length > 0 &&
+          Number(formData.age) >= 13
+        );
       case "referralCode":
         // Referral is optional, but if provided must be valid
         return isReferralValid;
@@ -314,6 +319,10 @@ export default function Onboarding() {
     );
   }
 
+  // Show keyboard toolbar only for steps with text inputs
+  const showKeyboardToolbar = stepId === "basicInfo" || stepId === "referralCode";
+  const showArrows = stepId === "basicInfo"; // Only basicInfo has multiple inputs
+
   return (
     <View className="flex-1 bg-black">
       <StatusBar style="light" />
@@ -346,6 +355,9 @@ export default function Onboarding() {
           isLastStep={isLastQuestionStep}
         />
       </View>
+
+      {/* Keyboard toolbar for text input steps */}
+      {showKeyboardToolbar && <KeyboardToolbar doneText="Done" showArrows={showArrows} />}
     </View>
   );
 }

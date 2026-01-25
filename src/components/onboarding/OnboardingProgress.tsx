@@ -18,7 +18,7 @@ interface OnboardingProgressProps {
   totalSteps: number;
 }
 
-export function OnboardingProgress({ currentStep, totalSteps }: OnboardingProgressProps) {
+export function OnboardingProgress({ currentStep, totalSteps }: Readonly<OnboardingProgressProps>) {
   const { t } = useTranslation();
 
   // Animated progress value for smooth transitions

@@ -14,7 +14,7 @@ export function RecipeSourcesStep({
   selectedValues,
   onToggle,
   isAnimating,
-}: RecipeSourcesStepProps) {
+}: Readonly<RecipeSourcesStepProps>) {
   const { t } = useTranslation();
 
   return (

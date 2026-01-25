@@ -711,7 +711,8 @@
       "nameLabel": "Comment devons-nous vous appeler ?",
       "namePlaceholder": "Votre prénom",
       "ageLabel": "Quel âge avez-vous ?",
-      "agePlaceholder": "Votre âge"
+      "agePlaceholder": "Votre âge",
+      "ageInfo": "Vous devez avoir au moins 13 ans pour utiliser l'application"
     },
     "heardFrom": {
       "title": "Comment nous avez-vous découvert ?",
@@ -811,13 +812,12 @@
     },
     "referral": {
       "title": "Vous avez un code de parrainage ?",
-      "subtitle": "Entrez-le ci-dessous pour recevoir des crédits bonus",
-      "placeholder": "ENTRER LE CODE",
+      "subtitle": "Si vous n'avez pas de code, vous pouvez passer cette étape.",
+      "placeholder": "ENTREZ LE CODE",
       "skip": "Je n'ai pas de code",
       "skipHint": "Pas de code ? Pas de problème ! Vous pouvez passer cette étape.",
       "checking": "Vérification...",
-      "valid": "Valide ! De {{name}}",
-      "validCode": "Valide ! De {{name}}",
+      "validCode": "Code de {{name}} valide !",
       "validUnknown": "Code valide !",
       "invalid": "Code non trouvé",
       "codeNotFound": "Ce code n'existe pas",

@@ -30,7 +30,7 @@ export function OnboardingBackground({
   step,
   blurIntensity = 30,
   imageOpacity = 0.4,
-}: OnboardingBackgroundProps) {
+}: Readonly<OnboardingBackgroundProps>) {
   // Clamp step to valid range
   const imageIndex = Math.min(Math.max(step, 0), ONBOARDING_IMAGES.length - 1);
   const imageSource = ONBOARDING_IMAGES[imageIndex];

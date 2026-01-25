@@ -44,9 +44,9 @@ Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   enabled: !__DEV__,
   // Capture 100% of errors - with 30 users you want to see everything
-  sampleRate: 1.0,
+  sampleRate: 1,
   // Performance monitoring - 100% is fine for small user base
-  tracesSampleRate: 1.0,
+  tracesSampleRate: 1,
   // Attach screenshots on crash (helps debug UI issues)
   attachScreenshot: true,
   // Track user sessions to see crash-free rate

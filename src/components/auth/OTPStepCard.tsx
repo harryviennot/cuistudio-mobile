@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text } from "react-native";
-import * as Haptics from "expo-haptics";
 import { useTranslation } from "react-i18next";
 import { AuthCard } from "./AuthCard";
 import { AuthButton } from "./AuthButton";
@@ -26,12 +25,7 @@ export const OTPStepCard: React.FC<OTPStepCardProps> = ({
   const { t } = useTranslation();
 
   const handleOtpInput = (text: string) => {
-    const numericText = text.replace(/[^0-9]/g, "").slice(0, 6);
-
-    if (numericText.length > otpCode.length) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-
+    const numericText = text.replaceAll(/\D/g, "").slice(0, 6);
     setOtpCode(numericText);
   };
 
