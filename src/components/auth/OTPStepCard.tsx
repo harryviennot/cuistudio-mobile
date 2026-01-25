@@ -26,12 +26,7 @@ export const OTPStepCard: React.FC<OTPStepCardProps> = ({
   const { t } = useTranslation();
 
   const handleOtpInput = (text: string) => {
-    const numericText = text.replace(/[^0-9]/g, "").slice(0, 6);
-
-    if (numericText.length > otpCode.length) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-
+    const numericText = text.replaceAll(/\D/g, "").slice(0, 6);
     setOtpCode(numericText);
   };
 
