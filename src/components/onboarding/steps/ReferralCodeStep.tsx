@@ -5,7 +5,7 @@
  * Both the referrer and referee get 5 bonus credits.
  */
 import { useState, useCallback, useEffect } from "react";
-import { View, Text, ActivityIndicator, TextInput } from "react-native";
+import { View, Text, ActivityIndicator, TextInput, Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { GiftIcon, CheckCircleIcon, XCircleIcon } from "phosphor-react-native";
@@ -26,32 +26,45 @@ export function ReferralCodeStep({
 }: ReferralCodeStepProps) {
   const { t } = useTranslation();
   const [isValidating, setIsValidating] = useState(false);
+  const [lastValidatedCode, setLastValidatedCode] = useState<string | null>(null);
   const [validationResult, setValidationResult] = useState<{
     isValid: boolean;
     message: string;
     referrerName?: string;
   } | null>(null);
 
-  // Debounced validation
+  // Validate when code reaches 8 characters and is different from last check
   useEffect(() => {
-    if (!referralCode || referralCode.length < 3) {
+    // Reset validation if code changes and doesn't match last validated
+    if (referralCode !== lastValidatedCode) {
       setValidationResult(null);
-      onValidationChange(true); // Empty is valid (optional field)
+    }
+
+    // Empty or partial code is valid (optional field)
+    if (referralCode.length < 8) {
+      onValidationChange(true);
       return;
     }
 
-    const timer = setTimeout(async () => {
+    // Skip if we already validated this exact code
+    if (referralCode === lastValidatedCode) {
+      return;
+    }
+
+    const validate = async () => {
       setIsValidating(true);
-      console.log("[ReferralCodeStep] Validating code:", referralCode);
+      setLastValidatedCode(referralCode);
       try {
         const result = await referralsService.validate(referralCode);
-        console.log("[ReferralCodeStep] Validation result:", result);
         setValidationResult({
           isValid: result.is_valid,
           message: result.message,
           referrerName: result.referrer_name ?? undefined,
         });
-        onValidationChange(result.is_valid || !referralCode, result.referrer_name ?? undefined);
+        onValidationChange(result.is_valid, result.referrer_name ?? undefined);
+        if (result.is_valid) {
+          Keyboard.dismiss();
+        }
       } catch (error) {
         console.error("[ReferralCodeStep] Validation error:", error);
         setValidationResult({
@@ -62,15 +75,15 @@ export function ReferralCodeStep({
       } finally {
         setIsValidating(false);
       }
-    }, 500);
+    };
 
-    return () => clearTimeout(timer);
-  }, [referralCode, onValidationChange]);
+    validate();
+  }, [referralCode, lastValidatedCode, onValidationChange]);
 
   const handleCodeChange = useCallback(
     (text: string) => {
       // Uppercase and remove spaces
-      const cleanedCode = text.toUpperCase().replace(/\s/g, "");
+      const cleanedCode = text.toUpperCase().replaceAll(/\s/g, "");
       onReferralCodeChange(cleanedCode);
     },
     [onReferralCodeChange]
