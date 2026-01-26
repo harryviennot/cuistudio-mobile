@@ -15,6 +15,7 @@ import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 import { notificationsService } from "@/api/services/notifications.service";
+import i18n from "@/locales/i18n";
 
 // Configure notification behavior when app is in foreground
 Notifications.setNotificationHandler({
@@ -181,7 +182,8 @@ export function usePushNotifications() {
                 tokenResponse.data,
                 Platform.OS as "ios" | "android",
                 undefined,
-                Constants.expoConfig?.version
+                Constants.expoConfig?.version,
+                i18n.language || "en"
               );
               if (__DEV__) {
                 console.log("[Push] Token registered with backend");
@@ -247,7 +249,8 @@ export function usePushNotifications() {
             token,
             Platform.OS as "ios" | "android",
             undefined,
-            Constants.expoConfig?.version
+            Constants.expoConfig?.version,
+            i18n.language || "en"
           );
         } catch (error) {
           console.error("Failed to register token:", error);

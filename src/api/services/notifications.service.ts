@@ -35,13 +35,15 @@ export const notificationsService = {
     expoPushToken: string,
     platform: "ios" | "android",
     deviceId?: string,
-    appVersion?: string
+    appVersion?: string,
+    language?: string
   ): Promise<RegisterTokenResponse> {
     const response = await api.post<RegisterTokenResponse>("/notifications/register-token", {
       expo_push_token: expoPushToken,
       platform,
       device_id: deviceId,
       app_version: appVersion,
+      language,
     });
     return response.data;
   },
