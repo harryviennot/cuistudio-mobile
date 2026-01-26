@@ -1,8 +1,15 @@
 /**
  * Notification Permission Prompt
  *
- * Shows a one-time modal to existing users who haven't granted notification permissions.
+ * Shows a modal to users who haven't granted notification permissions.
  * Uses PremiumBottomSheet for consistent styling.
+ *
+ * The prompt is shown when:
+ * 1. Permission status is "undetermined" (never asked on this device - e.g., after reinstall)
+ * 2. OR: user hasn't seen the prompt AND permission not granted AND no previous token registered
+ *
+ * This handles the reinstall case where the backend has old token records but the
+ * device permission has been reset.
  */
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { View, Text, Pressable } from "react-native";
@@ -21,7 +28,7 @@ const PROMPT_SHOWN_KEY = "notification-prompt-shown";
 export function NotificationPermissionPrompt() {
   const { t } = useTranslation();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const { isPermissionGranted, requestPermission } = useNotifications();
+  const { isPermissionGranted, permissionStatus, requestPermission } = useNotifications();
   const { user } = useAuth();
 
   const [hasSeenPrompt, setHasSeenPrompt] = useState<boolean | null>(null);
@@ -37,22 +44,35 @@ export function NotificationPermissionPrompt() {
 
   // Show prompt if conditions are met
   useEffect(() => {
-    // Wait until we know the hasSeenPrompt state
-    if (hasSeenPrompt === null) return;
+    // Wait until we know the hasSeenPrompt state and permission status
+    if (hasSeenPrompt === null || permissionStatus === null) return;
 
-    // Don't show if user has previously registered a push token
-    // This means they consciously disabled notifications - respect their choice
-    if (user?.has_registered_push_token) return;
+    // Don't show if permission already granted
+    if (isPermissionGranted) return;
 
-    // Show if: haven't seen prompt AND permission not already granted
-    if (!hasSeenPrompt && !isPermissionGranted) {
-      // Small delay to let the app settle after login
+    // Key fix: If permission is "undetermined", it means this device has NEVER been asked
+    // This happens after app reinstall - we should always prompt in this case,
+    // regardless of whether we have old token records in the database
+    const isNeverAskedOnDevice = permissionStatus === "undetermined";
+
+    if (isNeverAskedOnDevice) {
+      // Always show prompt if never asked on this device
       const timeout = setTimeout(() => {
         bottomSheetRef.current?.present();
       }, 500);
       return () => clearTimeout(timeout);
     }
-  }, [hasSeenPrompt, isPermissionGranted, user?.has_registered_push_token]);
+
+    // For devices that HAVE been asked before (permission is "denied"):
+    // Only show if user hasn't seen our custom prompt AND has no previous token
+    // This respects users who explicitly disabled notifications
+    if (!hasSeenPrompt && !user?.has_registered_push_token) {
+      const timeout = setTimeout(() => {
+        bottomSheetRef.current?.present();
+      }, 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [hasSeenPrompt, isPermissionGranted, permissionStatus, user?.has_registered_push_token]);
 
   // Update enabled state when permission changes
   useEffect(() => {
@@ -100,11 +120,15 @@ export function NotificationPermissionPrompt() {
     bottomSheetRef.current?.dismiss();
   }, [markPromptAsSeen]);
 
-  // Don't render anything if:
-  // - Already seen the prompt
-  // - Permission already granted
-  // - User has previously registered a token (they consciously disabled notifications)
-  if (hasSeenPrompt || isPermissionGranted || user?.has_registered_push_token) {
+  // Determine if we should render
+  // Show if: permission is undetermined (never asked on this device, e.g., after reinstall)
+  // OR: haven't seen prompt AND not granted AND no previous token
+  const isNeverAskedOnDevice = permissionStatus === "undetermined";
+  const shouldShow =
+    isNeverAskedOnDevice ||
+    (!hasSeenPrompt && !isPermissionGranted && !user?.has_registered_push_token);
+
+  if (!shouldShow || isPermissionGranted) {
     return null;
   }
 
