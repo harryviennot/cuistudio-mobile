@@ -8,7 +8,13 @@
  * - "saved" = user_recipe_data WHERE is_favorite = true
  */
 
-import { useQuery, useMutation, useQueryClient, InfiniteData } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+  InfiniteData,
+} from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
 import { collectionService } from "@/api/services/collection.service";
@@ -16,6 +22,7 @@ import type { CollectionCountsResponse, CollectionWithRecipes } from "@/types/co
 import type { Recipe } from "@/types/recipe";
 
 const COLLECTIONS_KEY = "collections";
+const COLLECTION_PAGE_SIZE = 20;
 
 /**
  * Hook to fetch recipe counts for system collections
@@ -29,16 +36,22 @@ export function useCollectionCounts() {
 }
 
 /**
- * Hook to fetch a virtual collection by slug with its recipes
+ * Hook to fetch a virtual collection by slug with its recipes (paginated).
  *
  * Supported slugs:
  * - 'extracted': All recipes the user has extracted
  * - 'saved': All recipes the user has favorited
  */
-export function useCollectionBySlug(slug: string, limit = 20, offset = 0) {
-  return useQuery<CollectionWithRecipes, Error>({
-    queryKey: [COLLECTIONS_KEY, "by-slug", slug, { limit, offset }],
-    queryFn: () => collectionService.getCollectionBySlug(slug, limit, offset),
+export function useCollectionBySlug(slug: string, pageSize = COLLECTION_PAGE_SIZE) {
+  return useInfiniteQuery<CollectionWithRecipes, Error>({
+    queryKey: [COLLECTIONS_KEY, "by-slug", slug],
+    queryFn: ({ pageParam = 0 }) =>
+      collectionService.getCollectionBySlug(slug, pageSize, pageParam as number),
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.recipes.length < pageSize) return undefined;
+      return allPages.length * pageSize;
+    },
+    initialPageParam: 0,
     enabled: !!slug,
   });
 }
@@ -83,7 +96,10 @@ export function useUnfavoriteRecipe() {
 interface ToggleFavoriteContext {
   previousRecipe: Recipe | undefined;
   previousRecipes: InfiniteData<Recipe[]> | undefined;
-  previousSavedCollections: [readonly unknown[], CollectionWithRecipes | undefined][];
+  previousSavedCollections: [
+    readonly unknown[],
+    InfiniteData<CollectionWithRecipes> | undefined,
+  ][];
   previousCounts: CollectionCountsResponse | undefined;
   previousDiscoveryQueries: [readonly unknown[], unknown][];
 }
@@ -122,12 +138,15 @@ export function useToggleFavorite() {
           "counts",
         ]);
 
-        // Snapshot all saved collection queries (there could be multiple with different pagination)
-        const savedCollectionQueries = queryClient.getQueriesData<CollectionWithRecipes>({
+        // Snapshot all saved collection queries (paginated infinite queries)
+        const savedCollectionQueries = queryClient.getQueriesData<
+          InfiniteData<CollectionWithRecipes>
+        >({
           queryKey: [COLLECTIONS_KEY, "by-slug", "saved"],
         });
         const previousSavedCollections = savedCollectionQueries.map(
-          ([key, data]) => [key, data] as [readonly unknown[], CollectionWithRecipes | undefined]
+          ([key, data]) =>
+            [key, data] as [readonly unknown[], InfiniteData<CollectionWithRecipes> | undefined]
         );
 
         // Snapshot all discovery queries for rollback
@@ -173,19 +192,22 @@ export function useToggleFavorite() {
 
         // 5. Optimistically update saved collection (remove recipe if unfavoriting)
         if (isFavorite) {
-          // Removing from favorites - filter out the recipe
-          queryClient.setQueriesData<CollectionWithRecipes>(
+          // Removing from favorites - filter out the recipe across every page
+          queryClient.setQueriesData<InfiniteData<CollectionWithRecipes>>(
             { queryKey: [COLLECTIONS_KEY, "by-slug", "saved"] },
             (old) => {
               if (!old) return old;
               return {
                 ...old,
-                recipes: old.recipes.filter((r) => r.id !== recipeId),
-                total_count: Math.max(0, old.total_count - 1),
-                collection: {
-                  ...old.collection,
-                  recipe_count: Math.max(0, old.collection.recipe_count - 1),
-                },
+                pages: old.pages.map((page) => ({
+                  ...page,
+                  recipes: page.recipes.filter((r) => r.id !== recipeId),
+                  total_count: Math.max(0, page.total_count - 1),
+                  collection: {
+                    ...page.collection,
+                    recipe_count: Math.max(0, page.collection.recipe_count - 1),
+                  },
+                })),
               };
             }
           );

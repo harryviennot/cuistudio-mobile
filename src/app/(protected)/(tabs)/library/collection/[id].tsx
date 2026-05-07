@@ -38,8 +38,17 @@ export default function CollectionDetailScreen() {
   // The route param is [id] but we pass slug values directly
   const { id: slug } = useLocalSearchParams<{ id: string }>();
 
-  // Fetch collection by slug
-  const { data, isLoading, error, refetch, isRefetching } = useCollectionBySlug(slug || "");
+  // Fetch collection by slug (paginated infinite query)
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    isRefetching,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useCollectionBySlug(slug || "");
 
   // Scroll handler for sticky header animations
   const scrollY = useSharedValue(0);
@@ -50,7 +59,7 @@ export default function CollectionDetailScreen() {
   });
 
   // Determine collection type from data or params
-  const collectionSlug = data?.collection?.slug || slug || "extracted";
+  const collectionSlug = data?.pages[0]?.collection?.slug || slug || "extracted";
 
   // Get title and subtitle based on collection slug
   const collectionTitle =
@@ -114,9 +123,15 @@ export default function CollectionDetailScreen() {
     router.push("/(protected)/(tabs)");
   }, [router]);
 
-  const { recipes = [] } = data || {};
+  const recipes = useMemo(() => data?.pages.flatMap((p) => p.recipes) ?? [], [data]);
   const mappedRecipes = useMemo(() => recipes.map(mapToRecipe), [recipes, mapToRecipe]);
   const headerTopPadding = insets.top + 60;
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Empty state props based on collection type
   const isExtracted = collectionSlug === "extracted";
@@ -148,6 +163,8 @@ export default function CollectionDetailScreen() {
             recipes={mappedRecipes}
             refreshing={isRefetching}
             onRefresh={handleRefresh}
+            onEndReached={handleEndReached}
+            showLoadingFooter={isFetchingNextPage}
             ListEmptyComponent={<EmptyState {...emptyStateProps} />}
             ListHeaderComponent={
               <PageHeader
